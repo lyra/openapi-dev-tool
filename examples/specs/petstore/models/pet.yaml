@@ -1,0 +1,14 @@
+Pet:
+  type: object
+  description: <%=version%>
+  required:
+  - pet_type
+  properties:
+    pet_type:
+      type: string
+  discriminator:
+    propertyName: pet_type
+    mapping:
+      dog: "#/components/schemas/Dog"
+      cat: "#/components/schemas/Cat"
+      lizard: "#/components/schemas/Lizard"

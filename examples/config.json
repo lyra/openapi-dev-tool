@@ -1,0 +1,26 @@
+{
+  "folder": "./examples/specs",
+  "specs": [
+    {
+      "file": "/petstore/petstore-one-file.yaml",
+      "context": {
+        "public": false,
+        "version": "1.0.0"
+      }
+    },
+    {
+      "file": "/petstore/petstore-several-files.yaml",
+      "context": {
+        "public": true,
+        "version": "1.0.0"
+      }
+    },
+    {
+      "file": "/petstore/petstore-one-file.yaml",
+      "context": {
+        "public": true,
+        "version": "1.0.0"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Lizard:
+  allOf:
+  - $ref: '../specs.yaml#/components/schemas/Pet'
+  - type: object
+    # all other properties specific to a `Lizard`
+    properties:
+      lovesRocks:
+        type: boolean

@@ -1,0 +1,7 @@
+Model1:
+  type: object
+  properties:
+    attribute1:
+      type: string
+    attribute2:
+      type: number

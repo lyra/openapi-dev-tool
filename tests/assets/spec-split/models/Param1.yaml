@@ -1,0 +1,7 @@
+Param1:
+  in: query
+  name: param1
+  description: Param1
+  required: true
+  schema:
+    type: string

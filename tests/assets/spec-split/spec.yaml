@@ -1,0 +1,38 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: one-spec-to-rule-them-all
+  description: Multiple files for 1 spec
+  license:
+    name: MIT
+  x-tags:
+    - toto
+    - tata
+
+paths:
+  /test:
+    get:
+      tags:
+        - my-tag
+      operationId: getTest
+      summary: Get Test summary
+      description: Get Test description
+      parameters:
+        - $ref: '#/components/parameters/Param1'
+      responses:
+        '200':
+          description: Model 1 response description
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model1'
+
+components:
+  schemas:
+    Model1:
+      $ref: 'models/Model1.yaml#/Model1'
+
+  parameters:
+    Param1:
+      $ref: 'models/Param1.yaml#/Param1'
+

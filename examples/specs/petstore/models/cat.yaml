@@ -1,0 +1,8 @@
+Cat:
+  allOf:
+  - $ref: "../specs.yaml#/components/schemas/Pet"
+  - type: object
+    # all other properties specific to a `Cat`
+    properties:
+      name:
+        type: string

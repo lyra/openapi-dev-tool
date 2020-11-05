@@ -1,0 +1,5 @@
+dist
+node_modules/
+.nyc_output
+.openapi-dev-toolrc
+doc-assets/*.stg

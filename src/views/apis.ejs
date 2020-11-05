@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lyra API List</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link rel="icon" href="./assets/favicon.ico" />
+
+    <!--
+    ReDoc doesn't change outer page styles
+    -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family:'ProximaNova-Regular';
+      }
+
+      .mdl-card__title-text, .list-title {
+        font-family:'ProximaNova-Bold';
+        color: #293c7a;
+        font-size: 24px;
+      }
+
+      .mdl-layout__content .material-icons {
+        color: #293c7a;
+      }
+
+      .mdl-list__item {
+        position: relative;
+        border-bottom: 1px solid lightgray;
+      }
+      
+      .list-version {
+        font-size: 10px !important;
+        color: #000 !important;
+        position: absolute;
+        top: 40px;
+      }
+
+      p, ul {
+        font-size: 16px;
+      }
+      .mdl-grid.center-items {
+        justify-content: center;
+      }
+
+      .mdl-layout__header {
+        background-color: #293c7a;
+      }
+
+      .mdl-button.mdl-button--colored{
+        color: #293c7a;
+      }
+
+      .logo {
+        background-color: white;
+      }
+
+      .mdl-layout__drawer-button {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      .mdl-chip {
+        right: 5px;
+        border: 1px solid#f45907;
+        background-color: transparent;
+      }
+
+      .version {
+        position: absolute;
+        margin-top: 35px;
+        font-size: 10px;
+      }
+
+      .demo-card-square {
+        height: 350px;
+      }
+
+      .mdl-card__supporting-text {
+        height: 100%;
+        overflow: auto;
+        font-size: 14px;
+      }
+
+      .mdl-card__supporting-text p, .mdl-card__supporting-text ul {
+        font-size: 14px;
+      }
+
+      .mdl-card__title.tags {
+        padding-top: 0px;
+        padding-bottom: 0px;
+      }
+      
+      .mdl-card__title.tags .mdl-chip {
+        height: 24px;
+        line-height: 24px;
+      }
+
+      .mdl-card__title.tags .mdl-chip__text {
+        font-size: 12px;
+      }
+
+      @font-face{
+        font-family:'ProximaNova-Regular';
+        src:url("./assets/ProximaNova-Regular.woff") format("woff"),
+          url("./assets/ProximaNova-Regular.ttf") format("truetype"),
+          url("./assets/ProximaNova-Regular.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
+        font-style:normal;font-weight:500;font-display:swap
+      }
+      @font-face{
+        font-family:'ProximaNova-Bold';
+        src:url("./assets/ProximaNova-Bold.woff") format("woff"),
+          url("./assets/ProximaNova-Bold.ttf") format("truetype"),
+          url("./assets/ProximaNova-Bold.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
+        font-style:normal;font-weight:500;font-display:swap
+      }
+    </style>
+  </head>
+  <body>
+      <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+          
+          <header class="mdl-layout__header">
+              <div class="mdl-layout__drawer-button">
+                  <!-- Logo -->
+                  <img class="logo" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAEeklEQVR4nO2YS2xUVRjHf985d15AIRiKxBiQaBDKyzhqgEIKqMGF8T1NJCbuiIluDAsoEm9vSACNLtAQkBjixk1n4UJj8BHChEqA0KgUMCLKQ4QEUUJ5dObOvfdzMW0thalzKSiY/nbnfufxP9855/vOuTDMMP8tUtXiuqZpB2bg58JCIjwvAsi1qT2zsbV6HzXSv8/bjqtmn8vlbD6fD6fNW/VKIpGeH4TdScAAkbVpGwbF7Ye+Wbcx++LH45KT79rQfeRwunTsiEoyCcR2QuTYjB9FxfYDO9du7h27fwVnYIszZxoEQIQlxkk8I2HxBKgDEoA4ghwHiDKSVNWHRRghgIgKGlefBMYmJoZhdx2wuXfsQQX2NRUtl0tdJw62r5t0Lfu3W5eeAqbElTSQhsaWX4ByNftVh6AXrdiqTuAG4iDVdVQ13CoMCxwqcQUKgwX3m0DcQxA7kAyVWB7MZt0RDU3uqJ6ikMvZPqPrGlAB1+C6Jpdrs5Uyksu1WXI5+3ed2qnJg01NrlMoeMHljL/ahOY+oFlRJC+9UV8qudQDUDzI92ufzzf3yw5eHH2xl7gOdCzAQ4+tHD292DIj3f3H3o6OLeXpjStmK5wjlKRYZ6QknBm26O/4fvfa32Yt9J6PysUuDcKTgc2c/3GXd4rKXv7HLRNriQUToAR9y6RsK6bHPZHNfpBAzF4rUi+ObBLDdlGW+44uamhc9akqb6rIayY98kCC8lMATU2uHXSw6xFYESYhiHZ8/dZ5xHykoi90Z46+BPzU2b6+Q5F6jaI1nYXWB0XMKYRHOgvu7IPta58Ow1JnaEjGGTF+KjOMmrG45U4uQUD4vlHZJmIfV1hemcAbVlTPgmtE/RJIZtbc5eMT/qiLJYnGRhrEigSxPKjIGWNTs7Uku0mlOhAzCmQP6Mh661TOhWpXZI3iwjib3IPymSbrvutOl78UYx2jcinOmDV5sFDwAoBEprgh8MdsDfWCqUvfYX09/WfQnZygyHuVOh447pJDBe8iO6FQuSAunb5ozb1OlLiwv9D6eza7zOnf5w0R2Mv+r969BPR5YOa81feLhHPLTiI3Z87rmQs2vYKw9PO0+StPg0xQ9AdrMPgXfd+xY2Y2rsoWoX5Sk9t2vOCVuNGnGBBQyWaXJUAlMtHbKnx+uOCdveSk0qicVDVTBfOkUVJW5QEi87Iau8BE+pxCWoXJY0O/rhZxcF2pTujooAxbUFZuCqNwPyCdj6bO43kfDtJUQBT45IoMdIMFXsGh9vXb+gqep1Q8TI+QAUiPHWXAu2MwhnbdyuXsgNyq1xbX3x6PoV3p8/nwZt++/ncX1n+dqgKlEmRrCqZDJECrv/ir7kFVSSRTdRMbGluOAjWHBQBE0KCs6bsnm+SUqcXw3PnF+zY9++v0BavesTbVHJRLIagFwmRq9D1lv6uzZoHjxx/SikC+iCL/siBJFY0tUEBVEKBs/W4fQOGYIvsEQhWsqIRR5O8C2vuPfVsR+/dbXMa/2qr55p6nQQ2/9IYZ5lbjLxwqz/c2QifkAAAAAElFTkSuQmCC">
+              </div> 
+              <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <span class="mdl-layout-title">Lyra API List</span>
+                <!-- Add spacer, to align navigation to the right -->
+                <div class="mdl-layout-spacer"></div>
+                  <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="displayAsList()">
+                    <i class="material-icons">list</i>
+                  </button>
+                  <!-- Expandable Textfield -->
+                  <form action="#" onsubmit="return search();">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                      <label class="mdl-button mdl-js-button mdl-button--icon" for="query">
+                        <i class="material-icons">search</i>
+                      </label>
+                      <div class="mdl-textfield__expandable-holder">
+                        <input class="mdl-textfield__input" type="text" id="query">
+                        <label class="mdl-textfield__label" for="sample-expandable">Query</label>
+                      </div>
+                    </div>
+                  </form>
+              </div>
+          </header>
+
+          <main class="mdl-layout__content">
+
+            
+
+              <div class="mdl-grid center-items list-display" style="display:none">
+
+                <ul class="demo-list-two mdl-list mdl-cell--6-col">
+                  <% specs.forEach(function(spec){ %>
+                  <li class="mdl-list__item mdl-list__item--two-line">
+                    <span class="mdl-list__item-primary-content">
+                      <span class="list-title"><%=spec.name%></span>
+                      <% spec.tags.forEach(function(tag){ %>
+                        <span class="mdl-chip">
+                          <span class="mdl-chip__text"><%=tag%></span>
+                        </span>
+                      <% }); %>
+                      <span class="mdl-list__item-sub-title list-version">v<%=spec.version%></span>
+                    </span>
+                    <span class="mdl-list__item-secondary-content">
+                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('./redoc?specName=<%=spec.name%>', '<%=spec.name%>')"><i class="material-icons">share</i></button>
+                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: goto('./redoc?specName=<%=spec.name%>')"><i class="material-icons">text_snippet</i></button>
+                    </span>
+                  </li>
+                  <% }); %>
+                </ul>
+              </div>
+
+                <div class="mdl-grid center-items cards-display">
+                  <% specs.forEach(function(spec){ %>
+                  <div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone mdl-cell--6-col-tablet">
+                      <div class="demo-card-square mdl-card mdl-shadow--2dp">
+                          <div class="mdl-card__title">
+                              <h2 class="mdl-card__title-text"><%=spec.name%></h2>
+                              <div class="version">v<%=spec.version%></div>
+                          </div>
+                          <div class="mdl-card__title tags">
+                              <div class="tags">
+                              <% spec.tags.forEach(function(tag){ %>
+                                <span class="mdl-chip">
+                                  <span class="mdl-chip__text"><%=tag%></span>
+                                </span>
+                              <% }); %>
+                              </div>
+                          </div>
+                          <div class="mdl-card__supporting-text">
+                              <%-spec.description%>
+                          </div>
+                          
+                          <div class="mdl-card__actions mdl-card--border">
+                              <a href="./redoc?specName=<%=spec.name%>" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                                  Go to documentation
+                              </a>
+                          </div>
+                          
+                          <div class="mdl-card__menu">
+                              <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('./redoc?specName=<%=spec.name%>', '<%=spec.name%>')">
+                                  <i class="material-icons">share</i>
+                              </button>
+                          </div>
+                          
+                      </div>
+                  </div>
+                  <% }); %>
+                </div>
+              </div>
+          </main>
+        </div>
+        <div id="demo-snackbar-example" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
+        </div>
+
+        <script src="./reload/reload.js"></script>
+        <script>
+          function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+              var c = ca[i];
+              while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+              }
+            }
+            return "";
+          }
+
+          let asList = getCookie("displayAsList") == 'true';
+          document.querySelector('.list-display').style.display = asList?'flex':'none';
+          document.querySelector('.cards-display').style.display = asList?'none':'flex';
+
+          function displayAsList() {
+            asList = !asList;
+            document.querySelector('.list-display').style.display = asList?'flex':'none';
+            document.querySelector('.cards-display').style.display = asList?'none':'flex';
+            document.cookie = `displayAsList=${asList}; expires=Thu, 01 Jan 2030 00:00:00 UTC`;
+          }
+
+          function goto(url) {
+            document.location.href=url;
+          }
+
+          function search() {
+            const token = document.querySelector('#query').value;
+
+            // Cards
+            document.querySelectorAll('.mdl-card').forEach((element) => {
+              const title = element.querySelector('.mdl-card__title-text').innerHTML;
+              if (!title.includes(token)) {
+                element.parentElement.style.display="none";
+              } else {
+                element.parentElement.style.display="block";
+              }
+            });
+
+            // List
+            document.querySelectorAll('.mdl-list__item').forEach((element) => {
+              const title = element.querySelector('.list-title').innerHTML;
+              if (!title.includes(token)) {
+                element.style.display="none";
+              } else {
+                element.style.display="flex";
+              }
+            });
+
+            return false;
+          }
+
+          var link, textarea;
+          function copy(href, name) {
+            var url = (function(url) {
+              if(!link) link = document.createElement('a');
+              link.href = url;
+
+              return link.href;
+            })(href)
+
+            if(!textarea) {
+              textarea = document.createElement('textarea');
+              textarea.style.height = 0
+              textarea.style.width = 0
+              textarea.style.border = 0
+              document.body.appendChild(textarea);
+            }
+            textarea.innerHTML=url;
+
+            textarea.focus();
+            textarea.select();
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Copying text command was ' + msg);
+            var snackbarContainer = document.querySelector('#demo-snackbar-example');
+            snackbarContainer.MaterialSnackbar.showSnackbar({
+              message: `Documentation ${name} link copied.`,
+              timeout: 2000,
+            });
+          }
+        </script>
+  </body>
+</html>

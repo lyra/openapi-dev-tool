@@ -1,0 +1,68 @@
+{
+  "name": "@lyra-network/openapi-dev-tool",
+  "version": "6.0.0",
+  "description": "OpenAPI Development tool",
+  "main": "dist/src/lib.js",
+  "scripts": {
+    "build": "rimraf dist && npm run lint-prettier && npm test && build-esm",
+    "cmd:serve:dev": "nodemon --watch .. -e json,yaml,yml,js,ejs -r esm src/cli -- serve -c examples/config.json",
+    "cmd:serve:prod": "node -r esm src/cli serve -v -c examples/config.json",
+    "cmd:publish": "node -r esm src/cli publish -v -c examples/config.json",
+    "cmd:merge": "node -r esm src/cli merge -v -c examples/config.json --output dist",
+    "test": "mocha -r esm tests/**/*.spec.js",
+    "coverage": "nyc npm test",
+    "prettier": "prettier --write \"src/**/*.js\"",
+    "lint-prettier": "prettier --check \"src/**/*.js\""
+  },
+  "bin": {
+    "openapi-dev-tool": "./dist/src/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.lbg.office.fr.lyra:dguerin/openapi-dev-tool.git"
+  },
+  "author": "Damien Guérin <damien.guerin@lyra-network.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@lyra-network/nexus-deployer": "0.1.9",
+    "@redoc/redoc-pro": "1.0.0-beta.38",
+    "archiver": "3.1.1",
+    "change-case": "4.1.1",
+    "chokidar": "3.2.2",
+    "colors": "1.4.0",
+    "command-line-args": "5.1.1",
+    "command-line-usage": "6.0.2",
+    "ejs": "2.7.1",
+    "express": "4.17.1",
+    "figlet": "1.2.4",
+    "json-validator": "0.0.34",
+    "mkdirp": "0.5.1",
+    "rc": "1.2.8",
+    "redoc": "2.0.0-rc.35",
+    "reload": "3.0.1",
+    "showdown": "1.9.1",
+    "swagger-parser": "10.0.1",
+    "swagger-ui-dist": "3.30.2",
+    "tmp": "0.1.0",
+    "yaml": "1.7.2"
+  },
+  "devDependencies": {
+    "build-esm": "4.2.2",
+    "chai": "4.2.0",
+    "chai-string": "1.5.0",
+    "esm": "3.2.25",
+    "husky": "4.3.0",
+    "markdown-magic": "1.0.0",
+    "markdown-magic-branch-badge": "1.1.0",
+    "mocha": "6.2.2",
+    "nodemon": "1.19.3",
+    "nyc": "15.0.0",
+    "prettier": "1.19.1",
+    "rimraf": "3.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "post-checkout": "markdown-badge -u ./scripts/update-readme.js"
+    }
+  }
+}
