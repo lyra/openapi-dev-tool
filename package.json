@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@git.lbg.office.fr.lyra:dguerin/openapi-dev-tool.git"
+    "url": "git@github.com:lyra/openapi-dev-tool.git"
   },
   "author": "Damien Guérin <damien.guerin@lyra-network.com>",
   "license": "Apache-2.0",
