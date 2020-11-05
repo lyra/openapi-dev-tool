@@ -4,8 +4,8 @@
 <!-- AUTO-GENERATED-CONTENT:START (badgePlugin:src=./scripts/badge-template) -->
 [![Build Status](https://img.shields.io/travis/lyra/openapi-dev-tool/develop)](https://travis-ci.org/lyra/openapi-dev-tool)
 <!-- AUTO-GENERATED-CONTENT:END -->
-[![npm package](https://img.shields.io/npm/v/openapi-dev-tool/latest.svg?style=flat-square)](https://www.npmjs.com/package/openapi-dev-tool)
-[![npm downloads](https://img.shields.io/npm/dt/openapi-dev-tool.svg?style=flat-square)](https://www.npmjs.com/package/openapi-dev-tool)
+[![npm package](https://img.shields.io/npm/v/@lyra-network/openapi-dev-tool/latest.svg?style=flat-square)](https://www.npmjs.com/package/@lyra-network/openapi-dev-tool)
+[![npm downloads](https://img.shields.io/npm/dt/@lyra-network/openapi-dev-tool.svg?style=flat-square)](https://www.npmjs.com/package/@lyra-network/openapi-dev-tool)
 
 ## Sponsor
 
