@@ -187,18 +187,18 @@ Global Options
 Configuration file is the main item to execute `openapi-dev-tool`. Written in JSON or YAML format, this configuration file contains the specifications list that have to be served, published or merged.
 It also describes additional parameters used by specific commands (as described above).
 
-```json
+```yaml
 {
-    "folder": "./specs",  // Root folder where the specifications are stored
-    "specs": [            // Array of specifications (several specifications can be exposed)
-        { // First specification file
+    "folder": "./specs",              // Root folder where the specifications are stored
+    "specs": [                        // Array of specifications (several specifications can be exposed)
+        {                             // First specification file
             "file": "/petstore.yaml", // Relative path of the specification main file (from "folder" parameter). It has to be an OpenAPI file in YAML or JSON.
-            "context": {    // Object used for template generation (see Template usage chapter below)
+            "context": {              // Object used for template generation (see Template usage chapter below)
               ...
             }
         },
-        { // Second specification file
-            "file": "/petstore2.yaml"
+        {                             // Second specification file
+            "file": "/petstore2.yaml",
             ...
         }
     ]
