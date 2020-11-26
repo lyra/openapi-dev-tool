@@ -22,7 +22,7 @@ export function merge(config = { config: { specs: [] } }) {
       promises.push(
         new Promise(async (resolve, reject) => {
           try {
-            const outputDir = getOutputDirFromConfig(config);
+            const outputDir = getOutputDirFromConfig(config.config);
             const filename = path.basename(spec.file);
             const api = await bundleSpec(config, spec);
 
