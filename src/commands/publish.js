@@ -102,14 +102,20 @@ export function publish(config = { config: { specs: [] } }) {
             err => {
               if (err) {
                 reject();
-                console.log(colors.red('Unable to publish specs'));
+                console.error(
+                  colors.red(
+                    `Unable to publish specs '${paramCase(api.info.title)}'`
+                  )
+                );
               } else {
                 resolve();
               }
             }
           );
         } catch (err) {
-          console.log(colors.red('The API is invalid: ' + err.message));
+          console.error(
+            colors.red(`The API file '${spec.file}' is invalid: ${err.message}`)
+          );
           reject();
         }
       })

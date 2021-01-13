@@ -52,11 +52,17 @@ export function merge(config = { config: { specs: [] } }) {
             reject();
             if (config.verbose) {
               console.error(
-                colors.red('The API is invalid: ' + err.message),
+                colors.red(
+                  `The API file '${spec.file}' is invalid: ${err.message}`
+                ),
                 err
               );
             } else {
-              console.error(colors.red('The API is invalid: ' + err.message));
+              console.error(
+                colors.red(
+                  `The API file '${spec.file}' is invalid: ${err.message}`
+                )
+              );
             }
           }
         })

@@ -27,13 +27,9 @@ figlet('OpenAPI Dev Tool', async (err, data) => {
     });
   } else if (config.command === 'publish') {
     // Publish
-    publish(config.config).catch(() => {
-      process.exit(1);
-    });
+    publish(config.config);
   } else if (config.command === 'merge') {
     // merge specs into one single file
-    merge(config.config).catch(() => {
-      process.exit(1);
-    });
+    merge(config.config);
   }
 });
