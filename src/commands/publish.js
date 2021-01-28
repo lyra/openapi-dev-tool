@@ -2,6 +2,7 @@ import deployer from '@lyra-network/nexus-deployer';
 import colors from 'colors';
 import path from 'path';
 import { paramCase } from 'change-case';
+import settle from 'promise-settle';
 
 import { generateSpecsArchive } from '../lib/archiver';
 import { getTempDir } from '../lib/utils';
@@ -122,5 +123,5 @@ export function publish(config = { config: { specs: [] } }) {
     );
   });
 
-  return Promise.all(promises);
+  return settle(promises);
 }

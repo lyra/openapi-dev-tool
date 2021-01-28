@@ -1,6 +1,6 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "6.0.5",
+  "version": "6.0.7",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "figlet": "1.2.4",
     "json-validator": "0.0.34",
     "mkdirp": "1.0.4",
+    "promise-settle": "0.3.0",
     "rc": "1.2.8",
     "redoc": "2.0.0-rc.46",
     "reload": "3.0.1",

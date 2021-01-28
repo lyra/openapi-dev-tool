@@ -1,6 +1,8 @@
 import colors from 'colors';
 import path from 'path';
 import { paramCase } from 'change-case';
+import settle from 'promise-settle';
+
 import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
 
 // ##################################################################
@@ -70,7 +72,7 @@ export function merge(config = { config: { specs: [] } }) {
     });
   }
 
-  return Promise.all(promises);
+  return settle(promises);
 }
 
 /**
