@@ -130,8 +130,9 @@ export function publishValidation(options) {
     return {};
   }
 
+  console.log(options)
   // We merge configuration from rc file
-  options = { ...options, ...rc('openapi-dev-tool'), config: options.config };
+  options = { ...rc('openapi-dev-tool'), ...options, config: options.config };
 
   let errors = [];
 
