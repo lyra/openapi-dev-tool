@@ -1,6 +1,6 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "6.0.8",
+  "version": "6.0.9",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
