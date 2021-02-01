@@ -133,12 +133,13 @@ export function publishValidation(options) {
   // We merge configuration from rc file
   const optionsBack = options;
   options = { ...options, ...rc('openapi-dev-tool'), config: options.config };
-  
+
   // User and password can be overriden from command line
   if (optionsBack.repoUser) options.repoUser = optionsBack.repoUser;
   if (optionsBack.repoPassword) options.repoPassword = optionsBack.repoPassword;
-  if (optionsBack.groupId && optionsBack.groupId !== 'com.openapi') options.groupId = optionsBack.groupId;
-  
+  if (optionsBack.groupId && optionsBack.groupId !== 'com.openapi')
+    options.groupId = optionsBack.groupId;
+
   let errors = [];
 
   if (!options.config || typeof options.config !== 'string') {
