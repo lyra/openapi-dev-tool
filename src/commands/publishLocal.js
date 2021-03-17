@@ -6,7 +6,7 @@ import mkdirp from 'mkdirp';
 import fs from 'fs';
 
 import { generateSpecsArchive } from '../lib/archiver';
-import { getTempDir } from '../lib/utils';
+import { getTempDir, getPOMContent } from '../lib/utils';
 import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
 
 // ##################################################################
@@ -87,13 +87,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
           fs.copyFileSync(archive, `${target}/${artifactName}.zip`);
 
           // Copy POM
-          let pomContent = '<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">\n';
-          pomContent += '\t<modelVersion>4.0.0</modelVersion>\n';
-          pomContent += `\t<groupId>${config.groupId}</groupId>\n`;
-          pomContent += `\t<artifactId>${paramCase(api.info.title)}</artifactId>\n`;
-          pomContent += `\t<version>${api.info.version}</version>\n`;
-          pomContent += '\t<packaging>zip</packaging>\n';
-          pomContent += '</project>';
+          const pomContent = getPOMContent(paramCase(api.info.title), api.info.version, config.groupId, 'zip');
 
           fs.writeFileSync(`${target}/${artifactName}.pom`, pomContent);
         } catch (err) {
