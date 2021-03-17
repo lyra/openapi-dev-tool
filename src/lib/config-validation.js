@@ -3,10 +3,14 @@ import jsonValidator from 'json-validator';
 import YAML from 'yaml';
 import rc from 'rc';
 import fs from 'fs';
+import { execSync } from 'child_process';
 import path from 'path';
+import commandExists from 'command-exists';
 
 import { isYAMLFile } from './utils';
-import { serveUsage, publishUsage, mergeUsage } from './config-definitions';
+import { serveUsage, publishUsage, publishLocalUsage, mergeUsage } from './config-definitions';
+
+const mavenLocalPathCmd = 'mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout';
 
 // ######################################
 // Configuration file schema to validate
@@ -188,6 +192,71 @@ export function publishValidation(options) {
       console.log(`\t- ${error}`);
     });
     console.log(publishUsage);
+    process.exit(1);
+  }
+
+  return options;
+}
+
+export function publishLocalValidation(options) {
+  if (!options) {
+    return {};
+  }
+
+  // We merge configuration from rc file
+  const optionsBack = options;
+  options = { ...options, ...rc('openapi-dev-tool'), config: options.config };
+
+  // User and password can be overriden from command line
+  if (optionsBack.repoPath && optionsBack.repoPath !== 'auto') options.repoPath = optionsBack.repoPath;
+
+  let errors = [];
+
+  if (!options.config || typeof options.config !== 'string') {
+    errors.push(`config is mandatory`);
+  }
+
+  if (!options.repoPath || typeof options.repoPath !== 'string') {
+    errors.push(`repoPath is mandatory`);
+  }
+
+  if (!options.groupId || typeof options.groupId !== 'string') {
+    errors.push(`groupId is mandatory`);
+  }
+
+  // If repoPath is not auto then directory has to exist
+  if (
+    options.repoPath &&
+    options.repoPath !== 'auto' &&
+    !fs.existsSync(options.repoPath)
+  ) {
+    errors.push(`repoPath '${options.repoPath}' does not exist`);
+  }
+
+  // If repoPath is auto then trying to determinate by using mvn command
+  if (options.repoPath &&
+    options.repoPath === 'auto'
+  ) {
+    if (!commandExists.sync('mvn')) {
+      errors.push(`'mvn' command does not exist. Impossible to determinate local repo path.`);
+    } else {
+      options.repoPath = execSync(mavenLocalPathCmd).toString();
+      if (!fs.existsSync(options.repoPath)) {
+        errors.push(`repoPath '${options.repoPath}' does not exist`);
+      }
+    }
+  }
+
+  
+
+  globalValidation(options, errors);
+
+  if (errors.length != 0) {
+    console.log(colors.red('Syntax error!'));
+    errors.forEach(error => {
+      console.log(`\t- ${error}`);
+    });
+    console.log(publishLocalUsage);
     process.exit(1);
   }
 

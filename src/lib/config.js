@@ -5,9 +5,11 @@ import {
   globalOptionsDefinitions,
   mergeOptionsDefinitions,
   publishOptionsDefinitions,
+  publishLocalOptionsDefinitions,
   globalUsage,
   serveUsage,
   publishUsage,
+  publishLocalUsage,
   mergeUsage,
 } from './config-definitions';
 
@@ -15,6 +17,7 @@ import {
   serveValidation,
   mergeValidation,
   publishValidation,
+  publishLocalValidation,
 } from './config-validation';
 
 // ##################################################################
@@ -50,6 +53,13 @@ if (mainOptions.command === 'help') {
   } else if (
     mainOptions._unknown &&
     mainOptions._unknown.length > 0 &&
+    mainOptions._unknown[0] === 'publish-local'
+  ) {
+    console.log(publishLocalUsage);
+    process.exit(0);
+  } else if (
+    mainOptions._unknown &&
+    mainOptions._unknown.length > 0 &&
     mainOptions._unknown[0] === 'merge'
   ) {
     console.log(mergeUsage);
@@ -68,7 +78,12 @@ if (mainOptions.command === 'help') {
     publishOptionsDefinitions.concat(globalOptionsDefinitions),
     { argv, stopAtFirstUnknown: true }
   );
-} else if (mainOptions.command === 'merge') {
+} else if (mainOptions.command === 'publish-local') {
+  options = commandLineArgs(
+    publishLocalOptionsDefinitions.concat(globalOptionsDefinitions),
+    { argv, stopAtFirstUnknown: true }
+  );
+}  else if (mainOptions.command === 'merge') {
   options = commandLineArgs(
     mergeOptionsDefinitions.concat(globalOptionsDefinitions),
     { argv, stopAtFirstUnknown: true }
@@ -83,6 +98,8 @@ if (mainOptions.command === 'serve') {
   config = serveValidation(options);
 } else if (mainOptions.command === 'publish') {
   config = publishValidation(options);
+} else if (mainOptions.command === 'publish-local') {
+  config = publishLocalValidation(options);
 } else if (mainOptions.command === 'merge') {
   config = mergeValidation(options);
 }
