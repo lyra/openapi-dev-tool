@@ -6,7 +6,7 @@ import colors from 'colors';
 import config from './lib/config';
 import { serve } from './commands/serve';
 import { publish } from './commands/publish';
-import { publishLocal } from './commands/publishLocal';
+import { publishLocal } from './commands/publish-local';
 import { merge } from './commands/merge';
 import app from '../package.json';
 
