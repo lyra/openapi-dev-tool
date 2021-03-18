@@ -31,7 +31,7 @@
     "change-case": "4.1.1",
     "chokidar": "3.2.2",
     "colors": "1.4.0",
-    "command-exists": "^1.2.9",
+    "command-exists": "1.2.9",
     "command-line-args": "5.1.1",
     "command-line-usage": "6.0.2",
     "ejs": "2.7.1",
