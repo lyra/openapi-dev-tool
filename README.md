@@ -191,7 +191,7 @@ Global Options
 #### Overview
 
 > Merge your specification!
-> To debug, it can be interesting to get the merge result used by `publish` and `serve` command.
+> To debug, it can be interesting to get the merge result used by `publish`, `publish-local` and `serve` command.
 
 - **Merge split OpenAPI specification files** i.e. components specific files, paths specific files, info, etc. that can be written in YAML or JSON into a single file (per OpenAPI specification)
 
@@ -243,7 +243,7 @@ It also describes additional parameters used by specific commands (as described 
 
 ### Command options from RC File
 
-It is possible to specify the whole of command options of `publish`, `serve`, `merge` commands by using a rc file (in JSON) rather to specify these from command-line.
+It is possible to specify the whole of command options of `publish`, `publish-local`, `serve`, `merge` commands by using a rc file (in JSON) rather to specify these from command-line.
 For example:
 
 `cat .openapi-dev-toolrc`
