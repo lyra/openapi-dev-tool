@@ -227,14 +227,15 @@ export function publishLocalValidation(options) {
   // If repoPath is not auto then directory has to exist
   if (
     options.repoPath &&
+    typeof options.repoPath === 'string' &&
     options.repoPath !== 'auto' &&
     !fs.existsSync(options.repoPath)
   ) {
-    errors.push(`repoPath '${options.repoPath}' does not exist`);
+    errors.push(`repoPath '${options.repoPath}' folder does not exist`);
   }
 
   // If repoPath is auto then trying to determinate by using mvn command
-  if (options.repoPath &&
+  if (options.repoPath && typeof options.repoPath === 'string' &&
     options.repoPath === 'auto'
   ) {
     if (!commandExists.sync('mvn')) {

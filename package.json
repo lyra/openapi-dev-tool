@@ -10,7 +10,7 @@
     "cmd:publish": "node -r esm src/cli publish -v -c examples/config.json",
     "cmd:publish-local": "node -r esm src/cli publish-local -v -c examples/config.json",
     "cmd:merge": "node -r esm src/cli merge -v -c examples/config.json --output dist",
-    "test": "mocha -r esm tests/**/*.spec.js",
+    "test": "mocha --timeout 10000 -r esm tests/**/*.spec.js",
     "coverage": "nyc npm test",
     "prettier": "prettier --write \"src/**/*.js\"",
     "lint-prettier": "prettier --check \"src/**/*.js\""

@@ -66,6 +66,16 @@ describe('config.js file', function () {
       assert.equal(0, exitCode);
     });
 
+    it("should return publish help message when 'help publish-local' command is sent", async function () {
+      process.argv[2] = 'help';
+      process.argv[3] = 'publish-local';
+      require('../../src/lib/config');
+      assert.isTrue(messages.length > 0);
+      const help = messages[0];
+      assert.include(help, 'openapi-dev-tool publish-local');
+      assert.equal(0, exitCode);
+    });
+
     it("should return publish help message when 'help merge' command is sent", async function () {
       process.argv[2] = 'help';
       process.argv[3] = 'merge';
@@ -141,6 +151,17 @@ describe('config.js file', function () {
       assert.equal(1, exitCode);
     });
 
+    it("should return error when config file doesn't exist in publish-local command", async function () {
+      process.argv[2] = 'publish-local';
+      process.argv[3] = '--config';
+      process.argv[4] = 'fake.yaml';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], "File 'fake.yaml' does not exit");
+      assert.equal(1, exitCode);
+    });
+
     it('should return error when repoServer is not sent in publish command', async function () {
       process.argv[2] = 'publish';
       process.argv[3] = '--config';
@@ -154,6 +175,31 @@ describe('config.js file', function () {
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
       assert.include(messages[1], 'repoServer is mandatory');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when repoPath is not sent in publish-local command', async function () {
+      process.argv[2] = 'publish-local';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--repoPath';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'repoPath is mandatory');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when repoPath is invalid in publish-local command', async function () {
+      process.argv[2] = 'publish-local';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--repoPath';
+      process.argv[6] = 'fake';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'repoPath \'fake\' folder does not exist');
       assert.equal(1, exitCode);
     });
 
@@ -208,6 +254,54 @@ describe('config.js file', function () {
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
       assert.include(messages[1], 'groupId is mandatory');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when groupId is not sent in publish-local command', async function () {
+      process.argv[2] = 'publish-local';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--groupId';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'groupId is mandatory');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when repoServer is incorrect in publish command', async function () {
+      process.argv[2] = 'publish';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--repoServer';
+      process.argv[6] = 'invalidserver';
+      process.argv[7] = '--repoUser';
+      process.argv[8] = 'user';
+      process.argv[9] = '--repoPassword';
+      process.argv[10] = 'password';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'repoServer is not a valid url');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when repoSnapshotsServer is incorrect in publish command', async function () {
+      process.argv[2] = 'publish';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--repoServer';
+      process.argv[6] = 'http://server.com';
+      process.argv[7] = '--repoSnapshotsServer';
+      process.argv[8] = 'invalidserver';
+      process.argv[9] = '--repoUser';
+      process.argv[10] = 'user';
+      process.argv[11] = '--repoPassword';
+      process.argv[12] = 'password';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'repoSnapshotsServer is not a valid url');
       assert.equal(1, exitCode);
     });
 
