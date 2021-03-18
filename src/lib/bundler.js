@@ -55,7 +55,7 @@ export async function bundleSpec(config, spec) {
   }
 
   if (config.verbose) {
-    console.log('\tOpenAPI specification validated');
+    console.log(`\tSpecification validated: ${paramCase(api.info.title)}`);
   }
   return api;
 }
