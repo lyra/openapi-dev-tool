@@ -23,8 +23,10 @@ export function generateSpecsArchive(api, apiFilename) {
 
     zip.finalize();
 
-    zipOutput.on('close', () => resolve(
-      `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
-    ));
+    zipOutput.on('close', () =>
+      resolve(
+        `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
+      )
+    );
   });
 }

@@ -83,7 +83,7 @@ if (mainOptions.command === 'help') {
     publishLocalOptionsDefinitions.concat(globalOptionsDefinitions),
     { argv, stopAtFirstUnknown: true }
   );
-}  else if (mainOptions.command === 'merge') {
+} else if (mainOptions.command === 'merge') {
   options = commandLineArgs(
     mergeOptionsDefinitions.concat(globalOptionsDefinitions),
     { argv, stopAtFirstUnknown: true }

@@ -77,7 +77,10 @@ export function publishLocal(config = { config: { specs: [] } }) {
 
           // Publish!!
           // copy archive file into config.repoPath / config.groupId / paramCase(api.info.title) / api.info.version
-          const target = `${config.repoPath}/${config.groupId.replace(/\./g, '/')}/${paramCase(api.info.title)}/${api.info.version}`;
+          const target = `${config.repoPath}/${config.groupId.replace(
+            /\./g,
+            '/'
+          )}/${paramCase(api.info.title)}/${api.info.version}`;
           if (!fs.existsSync(target) || !fs.lstatSync(target).isDirectory()) {
             mkdirp.sync(target);
           }
@@ -87,7 +90,12 @@ export function publishLocal(config = { config: { specs: [] } }) {
           fs.copyFileSync(archive, `${target}/${artifactName}.zip`);
 
           // Copy POM
-          const pomContent = getPOMContent(paramCase(api.info.title), api.info.version, config.groupId, 'zip');
+          const pomContent = getPOMContent(
+            paramCase(api.info.title),
+            api.info.version,
+            config.groupId,
+            'zip'
+          );
 
           fs.writeFileSync(`${target}/${artifactName}.pom`, pomContent);
         } catch (err) {

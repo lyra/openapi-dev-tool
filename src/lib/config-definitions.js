@@ -20,8 +20,7 @@ const commandDefinitions = [
   },
   {
     name: 'publish-local',
-    summary:
-      'Publish into a local Maven repository',
+    summary: 'Publish into a local Maven repository',
   },
   {
     name: 'merge',
@@ -155,7 +154,8 @@ const publishLocalOptionsDefinitions = [
     alias: 'd',
     type: String,
     defaultValue: 'auto',
-    description: 'Path of Maven local repository, default is \'auto\': determinated automatically by using \'mvn\' command (if available)',
+    description:
+      "Path of Maven local repository, default is 'auto': determinated automatically by using 'mvn' command (if available)",
   },
   {
     name: 'skipValidation',
@@ -233,8 +233,7 @@ const publishUsage = commandLineUsage([
 const publishLocalUsage = commandLineUsage([
   {
     header: 'openapi-dev-tool publish-local',
-    content:
-      'Publish into a local Maven repository',
+    content: 'Publish into a local Maven repository',
   },
   {
     header: 'Command Options',

@@ -8,9 +8,15 @@ import path from 'path';
 import commandExists from 'command-exists';
 
 import { isYAMLFile } from './utils';
-import { serveUsage, publishUsage, publishLocalUsage, mergeUsage } from './config-definitions';
+import {
+  serveUsage,
+  publishUsage,
+  publishLocalUsage,
+  mergeUsage,
+} from './config-definitions';
 
-const mavenLocalPathCmd = 'mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout';
+const mavenLocalPathCmd =
+  'mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout';
 
 // ######################################
 // Configuration file schema to validate
@@ -208,7 +214,8 @@ export function publishLocalValidation(options) {
   options = { ...options, ...rc('openapi-dev-tool'), config: options.config };
 
   // User and password can be overriden from command line
-  if (optionsBack.repoPath && optionsBack.repoPath !== 'auto') options.repoPath = optionsBack.repoPath;
+  if (optionsBack.repoPath && optionsBack.repoPath !== 'auto')
+    options.repoPath = optionsBack.repoPath;
 
   let errors = [];
 
@@ -235,11 +242,15 @@ export function publishLocalValidation(options) {
   }
 
   // If repoPath is auto then trying to determinate by using mvn command
-  if (options.repoPath && typeof options.repoPath === 'string' &&
+  if (
+    options.repoPath &&
+    typeof options.repoPath === 'string' &&
     options.repoPath === 'auto'
   ) {
     if (!commandExists.sync('mvn')) {
-      errors.push(`'mvn' command does not exist. Impossible to determinate local repo path.`);
+      errors.push(
+        `'mvn' command does not exist. Impossible to determinate local repo path.`
+      );
     } else {
       options.repoPath = execSync(mavenLocalPathCmd).toString();
       if (!fs.existsSync(options.repoPath)) {
@@ -247,8 +258,6 @@ export function publishLocalValidation(options) {
       }
     }
   }
-
-  
 
   globalValidation(options, errors);
 
