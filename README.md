@@ -152,6 +152,40 @@ Global Options
   -v, --verbose         Verbose mode, default is false
 ```
 
+
+
+### Publishing Locally
+
+#### Usage
+
+Usage can be displayed by typing the command
+
+> `openapi-dev-tool help publish-local`
+
+```
+openapi-dev-tool publish-local
+
+  Publish into a local Maven repository
+
+Command Options
+
+  -b, --skipBundle               Skips bundle openapi files into one before serving or publishing, default is
+                                 false
+  -g, --groupId string           GroupId used in repo server, default is com.openapi
+  -d, --repoPath string          Path of Maven local repository, default is 'auto': determinated automatically
+                                 by using 'mvn' command (if available)
+  -x, --skipValidation           Skips OpenAPI validation process, default is false
+
+Global Options
+
+  -c, --config string   Configuration file in JSON or YAML format where specifications are defined, default is config.json
+  -v, --verbose         Verbose mode, default is false
+```
+
+> **Warning**
+>
+> By using `repoPath` with `auto`, `openapi-dev-tool` is going to determinate local repository path automatically from `mvn` command. So, in this mode, `mvn` command has to be available in PATH.
+
 ### Merging
 
 #### Overview
