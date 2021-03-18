@@ -20,3 +20,16 @@ export function isJSONFile(filename) {
 export function getTempDir() {
   return tmp.dirSync({ prefix: 'openapi-dev-tool_', unsafeCleanup: true });
 }
+
+export function getPOMContent(artifactId, version, groupId, packaging) {
+  let pomContent =
+    '<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">\n';
+  pomContent += '\t<modelVersion>4.0.0</modelVersion>\n';
+  pomContent += `\t<groupId>${groupId}</groupId>\n`;
+  pomContent += `\t<artifactId>${artifactId}</artifactId>\n`;
+  pomContent += `\t<version>${version}</version>\n`;
+  pomContent += `\t<packaging>${packaging}</packaging>\n`;
+  pomContent += '</project>';
+
+  return pomContent;
+}

@@ -1,6 +1,6 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "6.0.9",
+  "version": "6.1.0",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
@@ -8,8 +8,9 @@
     "cmd:serve:dev": "nodemon --watch .. -e json,yaml,yml,js,ejs -r esm src/cli -- serve -c examples/config.json",
     "cmd:serve:prod": "node -r esm src/cli serve -v -c examples/config.json",
     "cmd:publish": "node -r esm src/cli publish -v -c examples/config.json",
+    "cmd:publish-local": "node -r esm src/cli publish-local -v -c examples/config.json",
     "cmd:merge": "node -r esm src/cli merge -v -c examples/config.json --output dist",
-    "test": "mocha -r esm tests/**/*.spec.js",
+    "test": "mocha --timeout 10000 -r esm tests/**/*.spec.js",
     "coverage": "nyc npm test",
     "prettier": "prettier --write \"src/**/*.js\"",
     "lint-prettier": "prettier --check \"src/**/*.js\""
@@ -30,6 +31,7 @@
     "change-case": "4.1.1",
     "chokidar": "3.2.2",
     "colors": "1.4.0",
+    "command-exists": "1.2.9",
     "command-line-args": "5.1.1",
     "command-line-usage": "6.0.2",
     "ejs": "2.7.1",

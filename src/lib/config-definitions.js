@@ -19,6 +19,10 @@ const commandDefinitions = [
       'Publish into a software repository server (like Sonartype Nexus) one or serveral OpenAPI specifications files',
   },
   {
+    name: 'publish-local',
+    summary: 'Publish into a local Maven repository',
+  },
+  {
     name: 'merge',
     summary:
       'Merge split OpenAPI specification (components, paths, info, etc.) into a bundled specification file',
@@ -129,6 +133,39 @@ const publishOptionsDefinitions = [
   },
 ];
 
+const publishLocalOptionsDefinitions = [
+  {
+    name: 'skipBundle',
+    alias: 'b',
+    type: Boolean,
+    defaultValue: false,
+    description:
+      'Skips bundle openapi files into one before serving or publishing, default is false',
+  },
+  {
+    name: 'groupId',
+    alias: 'g',
+    type: String,
+    defaultValue: 'com.openapi',
+    description: 'GroupId used in repo server, default is com.openapi',
+  },
+  {
+    name: 'repoPath',
+    alias: 'd',
+    type: String,
+    defaultValue: 'auto',
+    description:
+      "Path of Maven local repository, default is 'auto': determinated automatically by using 'mvn' command (if available)",
+  },
+  {
+    name: 'skipValidation',
+    alias: 'x',
+    type: Boolean,
+    defaultValue: false,
+    description: 'Skips OpenAPI validation process, default is false',
+  },
+];
+
 const mergeOptionsDefinitions = [
   {
     name: 'output',
@@ -193,6 +230,21 @@ const publishUsage = commandLineUsage([
   },
 ]);
 
+const publishLocalUsage = commandLineUsage([
+  {
+    header: 'openapi-dev-tool publish-local',
+    content: 'Publish into a local Maven repository',
+  },
+  {
+    header: 'Command Options',
+    optionList: publishLocalOptionsDefinitions,
+  },
+  {
+    header: 'Global Options',
+    optionList: globalOptionsDefinitions,
+  },
+]);
+
 const mergeUsage = commandLineUsage([
   {
     header: 'openapi-dev-tool merge',
@@ -215,8 +267,10 @@ export {
   globalOptionsDefinitions,
   mergeOptionsDefinitions,
   publishOptionsDefinitions,
+  publishLocalOptionsDefinitions,
   globalUsage,
   serveUsage,
   publishUsage,
+  publishLocalUsage,
   mergeUsage,
 };
