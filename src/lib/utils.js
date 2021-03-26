@@ -41,9 +41,13 @@ export async function validateExamples(targetFile) {
     const errors = {};
     result.errors.forEach(error => {
       if (!errors[error.examplePath]) errors[error.examplePath] = [];
-      if (error.dataPath)
-        errors[error.examplePath].push(`'${error.dataPath}': ${error.message}`);
-      else errors[error.examplePath].push(`${error.message}`);
+      let errorMsg = '';
+      if (error.dataPath) errorMsg += `'${error.dataPath}': `;
+      errorMsg += `${error.message}`;
+
+      if (error.params.allowedValues)
+        errorMsg += ` (${error.params.allowedValues})`;
+      errors[error.examplePath].push(errorMsg);
     });
     let errorsMsg = '';
     Object.keys(errors).forEach(path => {
