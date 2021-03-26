@@ -38,11 +38,20 @@ export function getPOMContent(artifactId, version, groupId, packaging) {
 export async function validateExamples(targetFile) {
   const result = await validateFile(targetFile);
   if (!result.valid) {
-    let errorMsg = '';
+    const errors = {};
     result.errors.forEach(error => {
-      errorMsg += `\n- ${error.message}: ${error.examplePath}`;
+      if (!errors[error.examplePath]) errors[error.examplePath] = [];
+      if (error.dataPath)
+        errors[error.examplePath].push(`'${error.dataPath}': ${error.message}`);
+      else errors[error.examplePath].push(`${error.message}`);
     });
-
-    throw new Error(`some examples are invalid : ${errorMsg}`);
+    let errorsMsg = '';
+    Object.keys(errors).forEach(path => {
+      errorsMsg += `\nFrom '${path}':`;
+      errors[path].forEach(error => {
+        errorsMsg += `\n\t- ${error}`;
+      });
+    });
+    throw new Error(`some examples are invalid: ${errorsMsg}`);
   }
 }
