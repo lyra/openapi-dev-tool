@@ -1,10 +1,11 @@
 import path from 'path';
 import fs from 'fs';
-import SwaggerParser from 'swagger-parser';
+import colors from 'colors';
 import YAML from 'yaml';
 
 import { parseFolder } from './templater';
 import { isJSONFile } from './utils';
+import { bundleSpec } from './bundler';
 
 // ##################################################################
 // This file has to expose API files:
@@ -37,28 +38,23 @@ export default function middleware(config, specs) {
       });
 
       if (spec) {
-        // Here, we have to apply ejs in complete folder
-        // Before bundling with SwaggerParser
-        const specsFolder = path.dirname(
-          `${config.config.folder}/${spec.file}`
-        );
-        const specsFolderTemplated = parseFolder(specsFolder, spec.context);
-        if (config.verbose) {
-          console.log(
-            `OpenAPI files compiled in ${specsFolderTemplated.name} folder!`
-          );
-        }
-        let api = await SwaggerParser.bundle(
-          specsFolderTemplated.name + '/' + path.basename(spec.file)
-        );
-        let bundle;
-        if (isJSONFile(spec.file)) {
-          bundle = JSON.stringify(api, null, 2);
-        } else {
-          bundle = YAML.stringify(api, { schema: 'yaml-1.1' });
-        }
+        try {
+          const api = await bundleSpec(config, spec);
 
-        send(spec, bundle, res);
+          let bundle;
+          if (isJSONFile(spec.file)) {
+            bundle = JSON.stringify(api, null, 2);
+          } else {
+            bundle = YAML.stringify(api, { schema: 'yaml-1.1' });
+          }
+
+          send(spec, bundle, res);
+        } catch (err) {
+          console.error(
+            colors.red(`The API file '${spec.file}' is invalid: ${err.message}`)
+          );
+          next();
+        }
       } else {
         next();
       }

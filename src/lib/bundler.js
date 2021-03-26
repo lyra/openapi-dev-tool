@@ -1,6 +1,6 @@
 import { parseFolder } from './templater';
 import SwaggerParser from 'swagger-parser';
-import { isJSONFile } from './utils';
+import { isJSONFile, validateExamples } from './utils';
 import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs';
@@ -16,6 +16,11 @@ export async function bundleSpec(config, spec) {
   // Apply EJS on specs folder
   const specsFolder = path.dirname(`${config.config.folder}/${spec.file}`);
   const specsFolderTemplated = parseFolder(specsFolder, spec.context);
+  if (config.verbose) {
+    console.log(
+      `OpenAPI files compiled in ${specsFolderTemplated.name} folder!`
+    );
+  }
 
   const filePath = path.join(
     specsFolderTemplated.name,
@@ -29,6 +34,7 @@ export async function bundleSpec(config, spec) {
   let api;
   if (!config.skipValidation) {
     await SwaggerParser.validate(filePath);
+    await validateExamples(filePath);
   }
 
   api = await SwaggerParser.bundle(filePath);

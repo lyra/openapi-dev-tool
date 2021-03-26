@@ -1,5 +1,6 @@
 import path from 'path';
 import tmp from 'tmp';
+import { validateFile } from 'openapi-examples-validator';
 
 // ##################################################################
 // The aim of this file is exposed several utils functions
@@ -32,4 +33,16 @@ export function getPOMContent(artifactId, version, groupId, packaging) {
   pomContent += '</project>';
 
   return pomContent;
+}
+
+export async function validateExamples(targetFile) {
+  const result = await validateFile(targetFile);
+  if (!result.valid) {
+    let errorMsg = '';
+    result.errors.forEach(error => {
+      errorMsg += `\n- ${error.message}: ${error.examplePath}`;
+    });
+
+    throw new Error(`some examples are invalid : ${errorMsg}`);
+  }
 }

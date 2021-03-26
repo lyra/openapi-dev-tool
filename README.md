@@ -35,6 +35,7 @@ From `openapi-dev-tool` command-line interface, you can:
 - write your OpenAPI specifications by using several files (to avoid having a unique large and unmaintainable file) ;
 - easily publish your OpenAPI files and reuse them to generate your client or your server ;
 - view documentation in real-time ;
+- validate your OpenAPI specifications and your examples automatically ;
 - etc.
 
 ![presentation](doc-assets/pres.gif)
@@ -69,6 +70,7 @@ From `openapi-dev-tool` command-line interface, you can:
   - RedocPro (http://localhost:3000) --> RedocPro to have "try it" feature
   - Swagger UI (http://localhost:3000/swagger-ui)
 - **`x-tags` vendor extension** in `Info` object to be able to [tag OpenAPI files](#tags-usage). OpenAPI doesn't support specifications tags and only supports operations tags (for organization purposes). With the `x-tags` vendor extension and for Redoc viewer, it is now possible to categorize and organize specifications.
+- **Validate** your specifications and your examples automatically
 
 For example, declare a private and a public specifications:
 
