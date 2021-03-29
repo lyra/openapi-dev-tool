@@ -25,7 +25,7 @@ function getConfigSchema(options) {
   return {
     folder: {
       required: true,
-      validate: function(name) {
+      validate: function (name) {
         return {
           isValid: name ? fs.existsSync(name) : true,
           message: `Folder ${name} doesn\'t exist`,
@@ -36,7 +36,7 @@ function getConfigSchema(options) {
       {
         file: {
           required: true,
-          validate: function(name) {
+          validate: function (name) {
             return {
               isValid: name
                 ? fs.existsSync(path.join(options.config.folder, name))
@@ -88,11 +88,11 @@ function globalValidation(options, errors) {
       // We have to get message in deep objet!
       function extractMessages(messages) {
         if (Array.isArray(messages)) {
-          messages.forEach(message => {
+          messages.forEach((message) => {
             extractMessages(message);
           });
         } else if (typeof messages === 'object') {
-          Object.keys(messages).forEach(attr => {
+          Object.keys(messages).forEach((attr) => {
             extractMessages(messages[attr]);
           });
         } else {
@@ -125,7 +125,7 @@ export function mergeValidation(options) {
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));
-    errors.forEach(error => {
+    errors.forEach((error) => {
       console.log(`\t- ${error}`);
     });
     console.log(mergeUsage);
@@ -194,7 +194,7 @@ export function publishValidation(options) {
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));
-    errors.forEach(error => {
+    errors.forEach((error) => {
       console.log(`\t- ${error}`);
     });
     console.log(publishUsage);
@@ -263,7 +263,7 @@ export function publishLocalValidation(options) {
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));
-    errors.forEach(error => {
+    errors.forEach((error) => {
       console.log(`\t- ${error}`);
     });
     console.log(publishLocalUsage);
@@ -299,7 +299,7 @@ export function serveValidation(options) {
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));
-    errors.forEach(error => {
+    errors.forEach((error) => {
       console.log(`\t- ${error}`);
     });
     console.log(serveUsage);

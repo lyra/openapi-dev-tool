@@ -28,12 +28,12 @@ function send(spec, body, res) {
 export default function middleware(config, specs) {
   return {
     // To be able to update new specs (after change)
-    updateSpecs: newSpecs => {
+    updateSpecs: (newSpecs) => {
       specs = newSpecs;
     },
     // Express middleware to expose API bundled
     bundle: async (req, res, next) => {
-      const spec = specs.find(spec => {
+      const spec = specs.find((spec) => {
         return spec.name === req.params.specName;
       });
 
@@ -61,7 +61,7 @@ export default function middleware(config, specs) {
     },
     // Express middleware to expose API original
     original: (req, res, next) => {
-      const spec = specs.find(spec => {
+      const spec = specs.find((spec) => {
         return spec.name === req.params.specName;
       });
       if (spec) {

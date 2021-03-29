@@ -11,7 +11,7 @@ import { getTempDir } from './utils';
 // ##################################################################
 
 export function generateSpecsArchive(api, apiFilename) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const workDir = getTempDir();
     const zipOutput = createWriteStream(
       `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`

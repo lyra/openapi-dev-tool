@@ -20,7 +20,7 @@ import { isJSONFile } from './utils';
 const converter = new showdown.Converter();
 
 export function loadSpecs(config) {
-  const specsPromises = config.config.specs.map(async spec => {
+  const specsPromises = config.config.specs.map(async (spec) => {
     let api;
     let raw = parseFile(config.config.folder + '/' + spec.file, spec.context);
     if (isJSONFile(spec.file)) {

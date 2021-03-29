@@ -23,7 +23,7 @@ export function parseFolder(path, context, initialPath, destFolder) {
   if (!initialPath) {
     initialPath = '/';
   }
-  content.forEach(file => {
+  content.forEach((file) => {
     const stats = fs.statSync(`${path}/${file}`);
     // If it is a directory, we call again (recursively)
     if (stats.isDirectory()) {

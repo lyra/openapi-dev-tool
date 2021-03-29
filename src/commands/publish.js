@@ -18,7 +18,7 @@ export function publish(config = { config: { specs: [] } }) {
   const artifactIds = [];
 
   // Publish for each spec
-  config.config.specs.forEach(async spec => {
+  config.config.specs.forEach(async (spec) => {
     promises.push(
       new Promise(async (resolve, reject) => {
         try {
@@ -100,7 +100,7 @@ export function publish(config = { config: { specs: [] } }) {
               insecure: true,
               quiet: !config.verbose,
             },
-            err => {
+            (err) => {
               if (err) {
                 reject();
                 console.error(

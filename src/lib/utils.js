@@ -39,7 +39,7 @@ export async function validateExamples(targetFile) {
   const result = await validateFile(targetFile);
   if (!result.valid) {
     const errors = {};
-    result.errors.forEach(error => {
+    result.errors.forEach((error) => {
       if (!errors[error.examplePath]) errors[error.examplePath] = [];
       let errorMsg = '';
       if (error.dataPath) errorMsg += `'${error.dataPath}': `;
@@ -50,9 +50,9 @@ export async function validateExamples(targetFile) {
       errors[error.examplePath].push(errorMsg);
     });
     let errorsMsg = '';
-    Object.keys(errors).forEach(path => {
+    Object.keys(errors).forEach((path) => {
       errorsMsg += `\nFrom '${path}':`;
-      errors[path].forEach(error => {
+      errors[path].forEach((error) => {
         errorsMsg += `\n\t- ${error}`;
       });
     });

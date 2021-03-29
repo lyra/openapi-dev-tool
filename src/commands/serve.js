@@ -22,7 +22,7 @@ export function serve(config = { config: { specs: [] } }) {
   return new Promise((resolve, reject) => {
     // Load specs
     let specs;
-    loadSpecs(config).then(function(specsResult) {
+    loadSpecs(config).then(function (specsResult) {
       specs = specsResult;
 
       // Find doublon
@@ -86,11 +86,11 @@ export function serve(config = { config: { specs: [] } }) {
       );
 
       // Reloader
-      reload(app, { verbose: config.verbose }).then(reloadReturned => {
+      reload(app, { verbose: config.verbose }).then((reloadReturned) => {
         // Specs folder is watched
         chokidar.watch(config.config.folder).on('all', (event, path) => {
           // Fire server-side reload event
-          loadSpecs(config).then(specsResult => {
+          loadSpecs(config).then((specsResult) => {
             // Update middlewares with new specs
             exposerMiddleware.updateSpecs(specsResult);
             viewersMiddleware.updateSpecs(specsResult);
@@ -107,7 +107,7 @@ export function serve(config = { config: { specs: [] } }) {
         return;
       }
 
-      const server = app.listen(config.port, function() {
+      const server = app.listen(config.port, function () {
         console.log(`OpenAPI dev server listening on port ${config.port}!`);
         console.log(
           `You can now open your browser on ${colors.underline(

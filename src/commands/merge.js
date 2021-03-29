@@ -20,7 +20,7 @@ export function merge(config = { config: { specs: [] } }) {
 
   // Merge for each spec
   if (config.config && config.config.specs.length > 0) {
-    config.config.specs.forEach(async spec => {
+    config.config.specs.forEach(async (spec) => {
       promises.push(
         new Promise(async (resolve, reject) => {
           try {

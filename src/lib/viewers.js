@@ -12,14 +12,14 @@
 export default function middleware(specs, config) {
   return {
     // To be able to update new specs (after change)
-    updateSpecs: newSpecs => {
+    updateSpecs: (newSpecs) => {
       specs = newSpecs;
     },
     // Express middleware for Swagger UI
     swaggerUI: (req, res) => {
       res.render('swagger-ui', {
         // All specs are provided to SwaggerUI
-        specs: specs.map(spec => {
+        specs: specs.map((spec) => {
           return {
             name: spec.name,
             url: spec.url,
@@ -30,7 +30,7 @@ export default function middleware(specs, config) {
     // Express middleware for Redoc
     redoc: (req, res, next) => {
       // Just one spec has been selected
-      const spec = specs.find(spec => {
+      const spec = specs.find((spec) => {
         return spec.name === req.query.specName;
       });
 

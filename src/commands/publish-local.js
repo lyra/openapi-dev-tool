@@ -21,7 +21,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
   console.log('\tPublishing into: %s\n', config.repoPath);
 
   // Publish for each spec
-  config.config.specs.forEach(async spec => {
+  config.config.specs.forEach(async (spec) => {
     promises.push(
       new Promise(async (resolve, reject) => {
         try {
