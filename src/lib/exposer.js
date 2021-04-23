@@ -16,6 +16,9 @@ import { bundleSpec } from './bundler';
 // to generate specs in specifics contexts
 // ##################################################################
 
+// Cache is used to avoid to reconstruct bundle for each call
+let cache =  {}
+
 // Send to express response a content with correct Content-Type header
 function send(spec, body, res) {
   if (isJSONFile(spec.file)) {
@@ -30,6 +33,9 @@ export default function middleware(config, specs) {
     // To be able to update new specs (after change)
     updateSpecs: (newSpecs) => {
       specs = newSpecs;
+
+      // Invalidate cache
+      cache =  {};
     },
     // Express middleware to expose API bundled
     bundle: async (req, res, next) => {
@@ -39,16 +45,24 @@ export default function middleware(config, specs) {
 
       if (spec) {
         try {
-          const api = await bundleSpec(config, spec);
-
-          let bundle;
-          if (isJSONFile(spec.file)) {
-            bundle = JSON.stringify(api, null, 2);
+          // Check if cache exists
+          if (cache[spec.name]) {
+            send(spec, cache[spec.name], res);
           } else {
-            bundle = YAML.stringify(api, { schema: 'yaml-1.1' });
+            const api = await bundleSpec(config, spec);
+          
+            let bundle;
+            if (isJSONFile(spec.file)) {
+              bundle = JSON.stringify(api, null, 2);
+            } else {
+              bundle = YAML.stringify(api, { schema: 'yaml-1.1' });
+            }
+  
+            // Complete cache
+            cache[spec.name] = bundle;
+  
+            send(spec, bundle, res);
           }
-
-          send(spec, bundle, res);
         } catch (err) {
           console.error(
             colors.red(`The API file '${spec.file}' is invalid: ${err.message}`)
