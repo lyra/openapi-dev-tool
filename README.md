@@ -96,6 +96,7 @@ Command Options
   -b, --skipBundle               Skips bundle openapi files into one before serving or publishing, default is
                                  false
   -p, --port number              Port to use, default is 3000
+  -u, --contextPath string       Context used to expose openapi documentations. Has to be start with '/', default is '/'
   -r, --skipRedocConsoleUse      Skips Redoc console use (RedocPro) to disable "try it" feature, default is
                                  false
   -e, --viewsFolder string       Folder that contains views in EJS to override defaults
@@ -105,7 +106,7 @@ Command Options
   -s, --staticFolders string[]   Exposes a static folder in addition of openapi documentation, for example, if
                                  you want expose general documentation (migration, API overview,...)
                                  Has to be a map like :
-                                 <path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+
+                                 /<path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+
                                  openapi-dev-tool will create a path "/path1" where static files of folder
                                  "folder1" will be exposed
 
@@ -286,7 +287,7 @@ For example, `api.ejs`:
   <head>
   <body>
   <% specs.forEach(function(spec){ %>
-    <a href="./redoc?specName=<%=spec.name%>"><%=spec.name%></a>
+    <a href="/redoc?specName=<%=spec.name%>"><%=spec.name%></a>
   <% }); %>
   </body>
 </html>

@@ -68,6 +68,13 @@ const serveOptionsDefinitions = [
     description: 'Port to use, default is 3000',
   },
   {
+    name: 'contextPath',
+    alias: 'u',
+    type: String,
+    defaultValue: '/',
+    description: 'Context used to expose openapi documentations. Has to be start with \'/\', default is \'/\'',
+  },
+  {
     name: 'skipRedocConsoleUse',
     alias: 'r',
     type: Boolean,
@@ -88,7 +95,7 @@ const serveOptionsDefinitions = [
     type: String,
     multiple: true,
     description:
-      'Exposes a static folder in addition of openapi documentation, for example, if you want expose general documentation (migration, API overview,...)\nHas to be a map like :\n<path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+\nopenapi-dev-tool will create a path "/path1" where static files of folder "folder1" will be exposed',
+      'Exposes a static folder in addition of openapi documentation, for example, if you want expose general documentation (migration, API overview,...)\nHas to be a map like :\n/<path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+\nopenapi-dev-tool will create a path "/path1" where static files of folder "folder1" will be exposed',
   },
 ];
 

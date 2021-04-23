@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    <link rel="icon" href="./assets/favicon.ico" />
+    <link rel="icon" href="/assets/favicon.ico" />
 
     <!--
     ReDoc doesn't change outer page styles
@@ -108,16 +108,16 @@
 
       @font-face{
         font-family:'ProximaNova-Regular';
-        src:url("./assets/ProximaNova-Regular.woff") format("woff"),
-          url("./assets/ProximaNova-Regular.ttf") format("truetype"),
-          url("./assets/ProximaNova-Regular.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
+        src:url("/assets/ProximaNova-Regular.woff") format("woff"),
+          url("/assets/ProximaNova-Regular.ttf") format("truetype"),
+          url("/assets/ProximaNova-Regular.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
         font-style:normal;font-weight:500;font-display:swap
       }
       @font-face{
         font-family:'ProximaNova-Bold';
-        src:url("./assets/ProximaNova-Bold.woff") format("woff"),
-          url("./assets/ProximaNova-Bold.ttf") format("truetype"),
-          url("./assets/ProximaNova-Bold.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
+        src:url("/assets/ProximaNova-Bold.woff") format("woff"),
+          url("/assets/ProximaNova-Bold.ttf") format("truetype"),
+          url("/assets/ProximaNova-Bold.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
         font-style:normal;font-weight:500;font-display:swap
       }
     </style>
@@ -172,8 +172,8 @@
                       <span class="mdl-list__item-sub-title list-version">v<%=spec.version%></span>
                     </span>
                     <span class="mdl-list__item-secondary-content">
-                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('./redoc?specName=<%=spec.name%>', '<%=spec.name%>')"><i class="material-icons">share</i></button>
-                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: goto('./redoc?specName=<%=spec.name%>')"><i class="material-icons">text_snippet</i></button>
+                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('/redoc?specName=<%=spec.name%>', '<%=spec.name%>')"><i class="material-icons">share</i></button>
+                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: goto('/redoc?specName=<%=spec.name%>')"><i class="material-icons">text_snippet</i></button>
                     </span>
                   </li>
                   <% }); %>
@@ -202,13 +202,13 @@
                           </div>
                           
                           <div class="mdl-card__actions mdl-card--border">
-                              <a href="./redoc?specName=<%=spec.name%>" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                              <a href="/redoc?specName=<%=spec.name%>" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
                                   Go to documentation
                               </a>
                           </div>
                           
                           <div class="mdl-card__menu">
-                              <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('./redoc?specName=<%=spec.name%>', '<%=spec.name%>')">
+                              <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('/redoc?specName=<%=spec.name%>', '<%=spec.name%>')">
                                   <i class="material-icons">share</i>
                               </button>
                           </div>

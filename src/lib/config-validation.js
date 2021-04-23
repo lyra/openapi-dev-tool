@@ -287,6 +287,14 @@ export function serveValidation(options) {
     errors.push(`config is mandatory`);
   }
 
+  if (!options.contextPath) {
+    errors.push(`contextPath is mandatory`);
+  } else {
+    if (!options.contextPath.match(/^\/[0-9a-zA-Z_-]*/)) {
+      errors.push(`contextPath is invalid`);
+    }
+  }
+
   if (!options.port) {
     errors.push(`port is mandatory`);
   }
@@ -310,14 +318,14 @@ export function serveValidation(options) {
       options.staticFolders = [options.staticFolders];
     }
     options.staticFolders = options.staticFolders.map((staticFolder) => {
-      const parts = staticFolder.match(/^([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)$/);
+      const parts = staticFolder.match(/^(\/[a-zA-Z0-9_-]*):([a-zA-Z0-9_-]+)$/);
       if (!parts || parts.length !== 3) {
         errors.push(`staticFolders '${staticFolder}' incorrect syntax`);
       } else {
         const path = parts[1];
         const folder = parts[2];
 
-        if (path === 'swagger-ui' || path === 'redoc' || path === 'assets') {
+        if (path === '/swagger-ui' || path === '/redoc' || path === '/assets') {
           errors.push(
             `staticFolders '${path}' cannot be used. Reserved path for openapi-dev-tool`
           );
