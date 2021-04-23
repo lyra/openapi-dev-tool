@@ -34,10 +34,10 @@ export function loadSpecs(config) {
       version: api.info.version,
       description: converter.makeHtml(api.info.description),
       url: !config.skipBundle
-        ? `./raw/bundle/${encodeURIComponent(api.info.title)}.${
+        ? `/raw/bundle/${encodeURIComponent(api.info.title)}.${
             isJSONFile(spec.file) ? 'json' : 'yaml'
           }`
-        : `./raw/original/${encodeURIComponent(api.info.title)}/${path.basename(
+        : `/raw/original/${encodeURIComponent(api.info.title)}/${path.basename(
             spec.file
           )}`,
       file: spec.file,

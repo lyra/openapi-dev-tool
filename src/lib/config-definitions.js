@@ -72,7 +72,8 @@ const serveOptionsDefinitions = [
     alias: 'u',
     type: String,
     defaultValue: '/',
-    description: 'Context used to expose openapi documentations. Has to be start with \'/\', default is \'/\'',
+    description:
+      "Context used to expose openapi documentations. Has to be start with '/', default is '/'",
   },
   {
     name: 'skipRedocConsoleUse',

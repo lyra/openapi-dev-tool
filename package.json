@@ -1,11 +1,11 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "7.2.0",
+  "version": "7.2.1",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
     "build": "rimraf dist && npm run lint-prettier && npm test && build-esm",
-    "cmd:serve:dev": "nodemon --watch .. -e json,yaml,yml,js,ejs -r esm src/cli -- serve -v -c examples/config.json -s /:static-folder -u",
+    "cmd:serve:dev": "nodemon --watch .. -e json,yaml,yml,js,ejs -r esm src/cli -- serve -v -c examples/config.json",
     "cmd:serve:prod": "node -r esm src/cli serve -v -c examples/config.json",
     "cmd:publish": "node -r esm src/cli publish -v -c examples/config.json",
     "cmd:publish-local": "node -r esm src/cli publish-local -v -c examples/config.json",
