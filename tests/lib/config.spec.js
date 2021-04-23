@@ -123,6 +123,59 @@ describe('config.js file', function () {
       assert.equal(1, exitCode);
     });
 
+    it('should return error when viewsFolder sent is invalid in serve command', async function () {
+      process.argv[2] = 'serve';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--viewsFolder';
+      process.argv[6] = 'toto';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'viewsFolder \'toto\' does not exist');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when staticFolders sent is invalid in serve command', async function () {
+      process.argv[2] = 'serve';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--staticFolders';
+      process.argv[6] = 'toto';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'staticFolders \'toto\' incorrect syntax');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when staticFolders sent is invalid in serve command', async function () {
+      process.argv[2] = 'serve';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--staticFolders';
+      process.argv[6] = 'redoc:static-folder';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'staticFolders \'redoc\' cannot be used');
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when staticFolders sent is invalid in serve command', async function () {
+      process.argv[2] = 'serve';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--staticFolders';
+      process.argv[6] = 'path:fake';
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], 'staticFolders \'fake\' does not exist');
+      assert.equal(1, exitCode);
+    });
+
+
     it("should return error when config file doesn't exist in serve command", async function () {
       process.argv[2] = 'serve';
       process.argv[3] = '--config';

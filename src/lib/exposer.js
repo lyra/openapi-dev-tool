@@ -17,7 +17,7 @@ import { bundleSpec } from './bundler';
 // ##################################################################
 
 // Cache is used to avoid to reconstruct bundle for each call
-let cache =  {}
+let cache = {};
 
 // Send to express response a content with correct Content-Type header
 function send(spec, body, res) {
@@ -35,7 +35,7 @@ export default function middleware(config, specs) {
       specs = newSpecs;
 
       // Invalidate cache
-      cache =  {};
+      cache = {};
     },
     // Express middleware to expose API bundled
     bundle: async (req, res, next) => {
@@ -50,17 +50,17 @@ export default function middleware(config, specs) {
             send(spec, cache[spec.name], res);
           } else {
             const api = await bundleSpec(config, spec);
-          
+
             let bundle;
             if (isJSONFile(spec.file)) {
               bundle = JSON.stringify(api, null, 2);
             } else {
               bundle = YAML.stringify(api, { schema: 'yaml-1.1' });
             }
-  
+
             // Complete cache
             cache[spec.name] = bundle;
-  
+
             send(spec, bundle, res);
           }
         } catch (err) {

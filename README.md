@@ -71,6 +71,7 @@ From `openapi-dev-tool` command-line interface, you can:
   - Swagger UI (http://localhost:3000/swagger-ui)
 - **`x-tags` vendor extension** in `Info` object to be able to [tag OpenAPI files](#tags-usage). OpenAPI doesn't support specifications tags and only supports operations tags (for organization purposes). With the `x-tags` vendor extension and for Redoc viewer, it is now possible to categorize and organize specifications.
 - **Validate** your specifications and your examples automatically
+- **Static files** can be exposed in addition of your openapi documentation
 
 For example, declare a private and a public specifications:
 
@@ -92,15 +93,21 @@ openapi-dev-tool serve
 
 Command Options
 
-  -b, --skipBundle             Skips bundle openapi files into one before serving or publishing, default is
-                               false
-  -p, --port string            Port to use, default is 3000
-  -r, --skipRedocConsoleUse    Skips Redoc console use (RedocPro) to disable "try it" feature, default is
-                               false
-  -e, --viewsFolder string     Folder that contains views in EJS to override defaults
-                               - "api.ejs": for API List page
-                               - "redoc.ejs": for Redoc page
-                               - "swagger-ui.ejs": for Swagger UI page
+  -b, --skipBundle               Skips bundle openapi files into one before serving or publishing, default is
+                                 false
+  -p, --port number              Port to use, default is 3000
+  -r, --skipRedocConsoleUse      Skips Redoc console use (RedocPro) to disable "try it" feature, default is
+                                 false
+  -e, --viewsFolder string       Folder that contains views in EJS to override defaults
+                                 - "api.ejs": for API List page
+                                 - "redoc.ejs": for Redoc page
+                                 - "swagger-ui.ejs": for Swagger UI page
+  -s, --staticFolders string[]   Exposes a static folder in addition of openapi documentation, for example, if
+                                 you want expose general documentation (migration, API overview,...)
+                                 Has to be a map like :
+                                 <path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+
+                                 openapi-dev-tool will create a path "/path1" where static files of folder
+                                 "folder1" will be exposed
 
 Global Options
 

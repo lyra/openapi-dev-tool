@@ -295,6 +295,42 @@ export function serveValidation(options) {
     errors.push(`port is invalid`);
   }
 
+  if (options.viewsFolder) {
+    if (
+      !fs.existsSync(options.viewsFolder) ||
+      fs.lstatSync(options.viewsFolder).isDirectory()
+    ) {
+      errors.push(`viewsFolder '${options.viewsFolder}' does not exist`);
+    }
+  }
+
+  if (options.staticFolders) {
+    if (typeof options.staticFolders === 'string') {
+      // Just one value
+      options.staticFolders = [options.staticFolders];
+    }
+    options.staticFolders = options.staticFolders.map((staticFolder) => {
+      const parts = staticFolder.match(/^([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)$/);
+      if (!parts || parts.length !== 3) {
+        errors.push(`staticFolders '${staticFolder}' incorrect syntax`);
+      } else {
+        const path = parts[1];
+        const folder = parts[2];
+
+        if (path === 'swagger-ui' || path === 'redoc' || path === 'assets') {
+          errors.push(
+            `staticFolders '${path}' cannot be used. Reserved path for openapi-dev-tool`
+          );
+        }
+
+        if (!fs.existsSync(folder)) {
+          errors.push(`staticFolders '${folder}' does not exist`);
+        }
+        return { path, folder };
+      }
+    });
+  }
+
   globalValidation(options, errors);
 
   if (errors.length != 0) {

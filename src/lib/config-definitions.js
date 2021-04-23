@@ -82,6 +82,14 @@ const serveOptionsDefinitions = [
     description:
       'Folder that contains views in EJS to override defaults\n- "api.ejs": for API List page\n- "redoc.ejs": for Redoc page\n- "swagger-ui.ejs": for Swagger UI page',
   },
+  {
+    name: 'staticFolders',
+    alias: 's',
+    type: String,
+    multiple: true,
+    description:
+      'Exposes a static folder in addition of openapi documentation, for example, if you want expose general documentation (migration, API overview,...)\nHas to be a map like :\n<path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+\nopenapi-dev-tool will create a path "/path1" where static files of folder "folder1" will be exposed',
+  },
 ];
 
 const publishOptionsDefinitions = [

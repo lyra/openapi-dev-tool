@@ -51,6 +51,16 @@ export function serve(config = { config: { specs: [] } }) {
       viewsFolder.push(__dirname + '/../views');
       app.set('views', viewsFolder);
 
+      // Add static folder
+      if (config.staticFolders) {
+        config.staticFolders.forEach((staticFolder) => {
+          app.use(
+            `/${staticFolder.path}`,
+            express.static(`${staticFolder.folder}`)
+          );
+        });
+      }
+
       // Middleware to expose OpenAPI files original and bundle
       const exposerMiddleware = exposer(config, specs);
       app.get('/raw/bundle/:specName.(yaml|json)', exposerMiddleware.bundle);
