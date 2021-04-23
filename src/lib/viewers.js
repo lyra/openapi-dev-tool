@@ -49,9 +49,14 @@ export default function middleware(specs, config) {
     // Express middleware for Home
     home: (req, res) => {
       // Display the whole of API
-      res.render('apis', {
-        specs,
-      });
+      if (specs.length > 1) {
+        res.render('apis', {
+          specs,
+        });
+      } else {
+        // Just one spec, display it directly
+        res.redirect(`./redoc?specName=${specs[0].name}`);
+      }
     },
   };
 }
