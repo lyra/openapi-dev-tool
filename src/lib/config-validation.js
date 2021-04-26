@@ -306,7 +306,7 @@ export function serveValidation(options) {
   if (options.viewsFolder) {
     if (
       !fs.existsSync(options.viewsFolder) ||
-      fs.lstatSync(options.viewsFolder).isDirectory()
+      !fs.lstatSync(options.viewsFolder).isDirectory()
     ) {
       errors.push(`viewsFolder '${options.viewsFolder}' does not exist`);
     }
