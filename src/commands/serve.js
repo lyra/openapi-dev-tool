@@ -16,6 +16,18 @@ import viewers from '../lib/viewers';
 // The aim of this file is manage the serve command
 // ##################################################################
 
+function checkDoublon(specs) {
+  specs.forEach((spec, index) => {
+    const foundDoublon = specs.find((specsFilter, indexFilter) => {
+      return specsFilter.name === spec.name && index != indexFilter;
+    });
+    if (foundDoublon) {
+      console.error(colors.red(`Spec ${spec.name} is already defined!`));
+      throw new Error(`Spec ${spec.name} is already defined!`);
+    }
+  });
+}
+
 export function serve(config = { config: { specs: [] } }) {
   const app = express();
 
@@ -26,15 +38,11 @@ export function serve(config = { config: { specs: [] } }) {
       specs = specsResult;
 
       // Find doublon
-      specs.forEach((spec, index) => {
-        const foundDoublon = specs.find((specsFilter, indexFilter) => {
-          return specsFilter.name === spec.name && index != indexFilter;
-        });
-        if (foundDoublon) {
-          console.error(colors.red(`Spec ${spec.name} is already defined!`));
-          throw new Error(`Spec ${spec.name} is already defined!`);
-        }
-      });
+      try {
+        checkDoublon(specs);
+      } catch (err) {
+        reject(err);
+      }
 
       // set the view engine to ejs
       app.set('view engine', 'ejs');
@@ -98,16 +106,29 @@ export function serve(config = { config: { specs: [] } }) {
       // Reloader
       reload(app, { verbose: config.verbose }).then((reloadReturned) => {
         // Specs folder is watched
-        chokidar.watch(config.config.folder).on('all', (event, path) => {
-          // Fire server-side reload event
-          loadSpecs(config).then((specsResult) => {
-            // Update middlewares with new specs
-            exposerMiddleware.updateSpecs(specsResult);
-            viewersMiddleware.updateSpecs(specsResult);
+        chokidar
+          .watch(config.config.folder, {
+            awaitWriteFinish: {
+              stabilityThreshold: 500,
+            },
+          })
+          .on('all', (event, path) => {
+            // Fire server-side reload event
+            loadSpecs(config).then((specsResult) => {
+              // Find doublon
+              try {
+                checkDoublon(specsResult);
+              } catch (err) {
+                process.exit(1);
+              }
 
-            reloadReturned.reload();
+              // Update middlewares with new specs
+              exposerMiddleware.updateSpecs(specsResult);
+              viewersMiddleware.updateSpecs(specsResult);
+
+              reloadReturned.reload();
+            });
           });
-        });
       });
 
       // Start listening
