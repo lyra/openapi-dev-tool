@@ -122,7 +122,7 @@
       }
     </style>
   </head>
-  <body>
+  <body style="display: none;">
       <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
           
           <header class="mdl-layout__header">
@@ -154,9 +154,6 @@
           </header>
 
           <main class="mdl-layout__content">
-
-            
-
               <div class="mdl-grid center-items list-display" style="display:none">
 
                 <ul class="demo-list-two mdl-list mdl-cell--6-col">
@@ -230,7 +227,16 @@
           // Add trailing slash
           if (!document.location.pathname.match(/\/$/)) {
             document.location.pathname = document.location.pathname + '/';
+          } else {
+            // Redirect if only one specs
+            <% if (specs.length == 1) { %>
+              document.location.href = './redoc?specName=<%=specs[0].name%>';
+            <% } else { %>
+            document.body.style.display = "block";
+            <% } %>
           }
+          
+
           function getCookie(cname) {
             var name = cname + "=";
             var decodedCookie = decodeURIComponent(document.cookie);
