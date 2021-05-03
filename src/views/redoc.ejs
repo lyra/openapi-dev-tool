@@ -5,7 +5,7 @@
     <!-- needed for adaptive design -->
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="/assets/favicon.ico" />
+    <link rel="icon" href="./assets/favicon.ico" />
 
     <!--
     ReDoc doesn't change outer page styles
@@ -18,17 +18,17 @@
 
       @font-face{
         font-family:'ProximaNova-Regular';
-        src:url("/assets/ProximaNova-Regular.woff") format("woff"),
-          url("/assets/ProximaNova-Regular.ttf") format("truetype"),
-          url("/assets/ProximaNova-Regular.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
+        src:url("./assets/ProximaNova-Regular.woff") format("woff"),
+          url("./assets/ProximaNova-Regular.ttf") format("truetype"),
+          url("./assets/ProximaNova-Regular.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
         font-style:normal;font-weight:500;font-display:swap
       }
 
       @font-face{
         font-family:'ProximaNova-Bold';
-        src:url("/assets/ProximaNova-Bold.woff") format("woff"),
-          url("/assets/ProximaNova-Bold.ttf") format("truetype"),
-          url("/assets/ProximaNova-Bold.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
+        src:url("./assets/ProximaNova-Bold.woff") format("woff"),
+          url("./assets/ProximaNova-Bold.ttf") format("truetype"),
+          url("./assets/ProximaNova-Bold.svg#320f207653f69fdcd61a1fbd5dbebb46") format("svg");
         font-style:normal;font-weight:500;font-display:swap
       }
     </style>
@@ -38,12 +38,16 @@
     
     <%if (!skipRedocConsoleUse) { %>
       <!-- Redoc console exists only if RedocPro -->
-      <script src="/assets/redocpro-standalone.min.js"> </script>
+      <script src="./assets/redocpro-standalone.min.js"> </script>
     <% } else{ %>
-      <script src="/assets/redoc.standalone.js"> </script>
+      <script src="./assets/redoc.standalone.js"> </script>
     <% } %>
-    <script src="/reload/reload.js"></script> 
+    <script src="./reload/reload.js"></script> 
     <script>
+      // Remove trailing slash
+      if (document.location.pathname.match(/\/$/)) {
+        document.location.pathname = document.location.pathname.replace(/\/$/, '');
+      }
       <%if (!skipRedocConsoleUse) { %>RedocPro<% } else{ %>Redoc<% } %>.init(<%-JSON.stringify(spec.url)%>, {
         <%if (!skipRedocConsoleUse) { %>
           showConsole: true,

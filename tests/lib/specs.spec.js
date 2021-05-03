@@ -24,7 +24,7 @@ describe('specs.js file', function() {
             name: 'petstore',
             version: '1.0.0',
             description: '<p>description</p>',
-            url: '/raw/bundle/petstore.yaml',
+            url: './raw/bundle/petstore.yaml',
             file: 'specs.yaml',
             context: { label: 'value' },
             tags: ['toto', 'tata'],

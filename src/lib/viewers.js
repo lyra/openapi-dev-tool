@@ -55,7 +55,7 @@ export default function middleware(specs, config) {
         });
       } else {
         // Just one spec, display it directly
-        res.redirect(`/redoc?specName=${specs[0].name}`);
+        res.redirect(`${config.contextPath}/redoc?specName=${specs[0].name}`);
       }
     },
   };

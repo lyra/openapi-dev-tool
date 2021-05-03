@@ -294,6 +294,9 @@ export function serveValidation(options) {
       errors.push(`contextPath is invalid`);
     }
   }
+  if (!options.contextPath.match(/\/$/)) {
+    options.contextPath = `${options.contextPath}/`;
+  }
 
   if (!options.port) {
     errors.push(`port is mandatory`);
@@ -325,7 +328,12 @@ export function serveValidation(options) {
         const path = parts[1];
         const folder = parts[2];
 
-        if (path === '/swagger-ui' || path === '/redoc' || path === '/assets') {
+        if (
+          path === `${options.contextPath}swagger-ui` ||
+          path === `${options.contextPath}redoc` ||
+          path === `${options.contextPath}assets` ||
+          path === `${options.contextPath}reload`
+        ) {
           errors.push(
             `staticFolders '${path}' cannot be used. Reserved path for openapi-dev-tool`
           );

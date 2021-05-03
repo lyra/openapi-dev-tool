@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Swagger UI</title>
-    <link rel="stylesheet" type="text/css" href="/assets/swagger-ui.css" >
+    <link rel="stylesheet" type="text/css" href="./assets/swagger-ui.css" >
     <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
     <style>
@@ -33,9 +33,13 @@
   <body>
     <div id="swagger-ui"></div>
 
-    <script src="/assets/swagger-ui-bundle.js"> </script>
-    <script src="/assets/swagger-ui-standalone-preset.js"> </script>
+    <script src="./assets/swagger-ui-bundle.js"> </script>
+    <script src="./assets/swagger-ui-standalone-preset.js"> </script>
     <script>
+    // Remove trailing slash
+    if (document.location.pathname.match(/\/$/)) {
+      document.location.pathname = document.location.pathname.replace(/\/$/, '');
+    }
     window.onload = function() {
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
@@ -56,6 +60,6 @@
       window.ui = ui
     }
   </script>
-  <script src="/reload/reload.js"></script> 
+  <script src="./reload/reload.js"></script> 
   </body>
 </html>

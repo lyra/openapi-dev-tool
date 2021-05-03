@@ -61,13 +61,19 @@ export function serve(config = { config: { specs: [] } }) {
 
       // Middleware to expose OpenAPI files original and bundle
       const exposerMiddleware = exposer(config, specs);
-      app.get('/raw/bundle/:specName.(yaml|json)', exposerMiddleware.bundle);
-      app.get('/raw/original/:specName*', exposerMiddleware.original);
+      app.get(
+        `${config.contextPath}raw/bundle/:specName.(yaml|json)`,
+        exposerMiddleware.bundle
+      );
+      app.get(
+        `${config.contextPath}raw/original/:specName*`,
+        exposerMiddleware.original
+      );
 
       // Middleware to expose viewers (SwaggerUI & Redoc)
       const viewersMiddleware = viewers(specs, config);
-      app.get('/swagger-ui', viewersMiddleware.swaggerUI);
-      app.get('/redoc', viewersMiddleware.redoc);
+      app.get(`${config.contextPath}swagger-ui`, viewersMiddleware.swaggerUI);
+      app.get(`${config.contextPath}redoc`, viewersMiddleware.redoc);
       app.get(config.contextPath, viewersMiddleware.home);
 
       // Add static folder
@@ -81,30 +87,34 @@ export function serve(config = { config: { specs: [] } }) {
       }
 
       // Add static folders
-      app.use('/assets', express.static(`${__dirname}/../static`));
+      app.use(
+        `${config.contextPath}assets`,
+        express.static(`${__dirname}/../static`)
+      );
       // Swagger UI folder
-      app.use('/assets', express.static(getAbsoluteFSPath()));
+      app.use(
+        `${config.contextPath}assets`,
+        express.static(getAbsoluteFSPath())
+      );
       // Redoc folder
       app.use(
-        '/assets',
+        `${config.contextPath}assets`,
         express.static(path.dirname(require.resolve('redoc')))
       );
       // RedocPro folder
       app.use(
-        '/assets',
+        `${config.contextPath}assets`,
         express.static(
           path.resolve(path.dirname(require.resolve('@redoc/redoc-pro'))) +
             '/../dist'
         )
       );
 
-      app.use(
-        '/assets',
-        express.static(path.dirname(require.resolve('reload') + '/lib'))
-      );
-
       // Reloader
-      reload(app, { verbose: config.verbose }).then((reloadReturned) => {
+      reload(app, {
+        verbose: config.verbose,
+        route: `${config.contextPath}reload`,
+      }).then((reloadReturned) => {
         // Specs folder is watched
         chokidar
           .watch(config.config.folder, {

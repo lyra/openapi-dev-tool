@@ -136,6 +136,19 @@ describe('config.js file', function () {
       assert.equal(1, exitCode);
     });
 
+    it('should return error when viewsFolder sent is invalid in serve command', async function () {
+      process.argv[2] = 'serve';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
+      process.argv[5] = '--viewsFolder';
+      process.argv[6] = `${__dirname}/../assets/config_ok.json`;
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(messages[1], `viewsFolder \'${__dirname}/../assets/config_ok.json\' does not exist`);
+      assert.equal(1, exitCode);
+    });
+
     it('should return error when staticFolders sent is invalid in serve command', async function () {
       process.argv[2] = 'serve';
       process.argv[3] = '--config';
