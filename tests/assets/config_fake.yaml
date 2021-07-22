@@ -1,3 +1,2 @@
-folder: toto
 specs:
-    -   file: tata
+    -   file: toto/tata

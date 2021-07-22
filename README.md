@@ -233,19 +233,20 @@ It also describes additional parameters used by specific commands (as described 
 
 ```yaml
 {
-    "folder": "./specs",              // Root folder where the specifications are stored
-    "specs": [                        // Array of specifications (several specifications can be exposed)
-        {                             // First specification file
-            "file": "/petstore.yaml", // Relative path of the specification main file (from "folder" parameter). It has to be an OpenAPI file in YAML or JSON.
-            "context": {              // Object used for template generation (see Template usage chapter below)
+    "specs": [                         // Array of specifications (several specifications can be exposed)
+        {                              // First specification file
+            "file": "./petstore.yaml", // Relative path of the specification main file. It has to be an OpenAPI file in YAML or JSON.
+            "enabled": true,           // Enable or not specification file to avoid to serve / publish / merge some specification file (default is true)
+            "context": {               // Object used for template generation (see Template usage chapter below)
               ...
             }
         },
-        {                             // Second specification file
-            "file": "/petstore2.yaml",
+        {                              // Second specification file
+            "file": "./petstore2.yaml",
             ...
         }
-    ]
+    ],
+    "html-injector": []                // To change render of pages of serve command you can provide your own template files but you can also use this HTML injector where each lines will be injected into HTML
 }
 ```
 
@@ -348,16 +349,15 @@ This specification could be used in several contexts (public or internal):
 
 ```json
 {
-  "folder": "./specs",
   "specs": [
     {
-      "file": "/specs.yaml",
+      "file": "./specs/specs.yaml",
       "context": {
         "public": false
       }
     },
     {
-      "file": "/specs.yaml",
+      "file": "./specs/specs.yaml",
       "context": {
         "public": true
       }

@@ -79,9 +79,7 @@ export default function middleware(config, specs) {
         return spec.name === req.params.specName;
       });
       if (spec) {
-        const specsFolder = path.dirname(
-          `${config.config.folder}/${spec.file}`
-        );
+        const specsFolder = path.dirname(`${spec.file}`);
         const specsFolderTemplated = parseFolder(specsFolder, spec.context);
         if (config.verbose) {
           console.log(

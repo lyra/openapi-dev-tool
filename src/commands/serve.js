@@ -115,13 +115,21 @@ export function serve(config = { config: { specs: [] } }) {
         verbose: config.verbose,
         route: `${config.contextPath}reload`,
       }).then((reloadReturned) => {
-        // Specs folder is watched
+        // Specs folders are watched
+        // ...new Set but remove items duplicated
         chokidar
-          .watch(config.config.folder, {
-            awaitWriteFinish: {
-              stabilityThreshold: 500,
-            },
-          })
+          .watch(
+            [
+              ...new Set(
+                config.config.specs.map((spec) => path.dirname(spec.file))
+              ),
+            ],
+            {
+              awaitWriteFinish: {
+                stabilityThreshold: 500,
+              },
+            }
+          )
           .on('all', (event, path) => {
             // Fire server-side reload event
             loadSpecs(config).then((specsResult) => {

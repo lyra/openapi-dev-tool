@@ -13,12 +13,10 @@ describe('bundler.js file', function () {
     describe('bundleSpec function', function () {
         it('should bundle spec multiple files to a model', async function () {
             const config = {
-                config: {
-                    folder: `${__dirname}/../assets/spec-split`,
-                }
+                config: { }
             };
             const spec = {
-                file: 'spec.yaml',
+                file: `${__dirname}/../assets/spec-split/spec.yaml`,
                 context: { label: 'value' },
             };
             const api = await bundleSpec(config, spec);
@@ -33,11 +31,9 @@ describe('bundler.js file', function () {
 
             try {
                 const originalConfig = {
-                    config: {
-                        folder: `${__dirname}/../assets/spec-split`,
-                    }
+                    config: { }
                 };
-                const originalSpec = { file: 'spec.yaml' };
+                const originalSpec = { file: `${__dirname}/../assets/spec-split/spec.yaml` };
                 const originalApi = await bundleSpec(originalConfig, originalSpec);
 
                 if (!fs.existsSync(outputDir)) {
@@ -54,12 +50,10 @@ describe('bundler.js file', function () {
 
                 // re-read the output file and ensure it matches the original parsed one
                 const config2 = {
-                    config: {
-                        folder: outputDir,
-                    }
+                    config: { }
                 };
                 const spec2 = {
-                    file: outputFilename
+                    file: `${outputDir}/${outputFilename}`
                 };
                 const api2 = await bundleSpec(config2, spec2);
 
@@ -74,8 +68,8 @@ describe('bundler.js file', function () {
     it('should accept correct version and refuse wrong ones', async function () {
         try {
             const api = await bundleSpec(
-                { config: { folder: `${__dirname}/../assets/versions/long` } },
-                { file: `specs-long-version.yaml` });
+                { config: { } },
+                { file: `${__dirname}/../assets/versions/long/specs-long-version.yaml` });
             assert.exists(api);
             assert.exists(api.info.version);
         } catch (error) {
@@ -84,8 +78,8 @@ describe('bundler.js file', function () {
 
         try {
             const api = await bundleSpec(
-                { config: { folder: `${__dirname}/../assets/versions/wrong` } },
-                { file: `specs-wrong-version.yaml` });
+                { config: { } },
+                { file: `${__dirname}/../assets/versions/wrong/specs-wrong-version.yaml` });
             assert.fail(`Did not fail with a wrong version: ${api.info.version} !!`);
         } catch (error) {
             // OK

@@ -434,14 +434,10 @@ describe('config.js file', function () {
       process.argv[3] = '--config';
       process.argv[4] = `${__dirname}/../assets/config_empty.yaml`;
       require('../../src/lib/config');
-      assert.equal(4, messages.length);
+      assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
       assert.include(
         messages[1],
-        '\t- In config file: folder is required but was either undefined or null'
-      );
-      assert.include(
-        messages[2],
         '\t- In config file: specs.0.file is required but was either undefined or null'
       );
       assert.equal(1, exitCode);
@@ -452,15 +448,11 @@ describe('config.js file', function () {
       process.argv[3] = '--config';
       process.argv[4] = `${__dirname}/../assets/config_fake.yaml`;
       require('../../src/lib/config');
-      assert.equal(4, messages.length);
+      assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
       assert.include(
         messages[1],
-        "\t- In config file: Folder toto doesn't exist"
-      );
-      assert.include(
-        messages[2],
-        `\t- In config file: File ${path.join('toto', 'tata')} doesn't exist`
+        `\t- In config file: File toto/tata doesn't exist`
       );
       assert.equal(1, exitCode);
     });

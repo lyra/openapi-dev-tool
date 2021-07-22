@@ -14,7 +14,7 @@ import { paramCase } from 'change-case';
  */
 export async function bundleSpec(config, spec) {
   // Apply EJS on specs folder
-  const specsFolder = path.dirname(`${config.config.folder}/${spec.file}`);
+  const specsFolder = path.dirname(`${spec.file}`);
   const specsFolderTemplated = parseFolder(specsFolder, spec.context);
   if (config.verbose) {
     console.log(

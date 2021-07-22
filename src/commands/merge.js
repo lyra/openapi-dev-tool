@@ -2,6 +2,7 @@ import colors from 'colors';
 import path from 'path';
 import { paramCase } from 'change-case';
 import settle from 'promise-settle';
+import fs from 'fs';
 
 import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
 
@@ -19,12 +20,24 @@ export function merge(config = { config: { specs: [] } }) {
   const artifactIds = [];
 
   // Merge for each spec
-  if (config.config && config.config.specs.length > 0) {
-    config.config.specs.forEach(async (spec) => {
+  // We filter to work only on enabled specs
+  config.config.specs
+    .filter((spec) => spec.enabled)
+    .forEach(async (spec) => {
       promises.push(
         new Promise(async (resolve, reject) => {
           try {
             const outputDir = getOutputDirFromConfig(config);
+
+            // Create output dir if does not exist
+            if (!fs.existsSync(outputDir)) {
+              fs.mkdirSync(outputDir, { recursive: true });
+            } else {
+              const stats = fs.lstatSync(outputDir);
+              if (!stats.isDirectory()) {
+                fs.mkdirSync(outputDir, { recursive: true });
+              }
+            }
             const filename = path.basename(spec.file);
             const api = await bundleSpec(config, spec);
 
@@ -70,7 +83,6 @@ export function merge(config = { config: { specs: [] } }) {
         })
       );
     });
-  }
 
   return settle(promises);
 }

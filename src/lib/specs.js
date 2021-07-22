@@ -20,31 +20,34 @@ import { isJSONFile } from './utils';
 const converter = new showdown.Converter();
 
 export function loadSpecs(config) {
-  const specsPromises = config.config.specs.map(async (spec) => {
-    let api;
-    let raw = parseFile(config.config.folder + '/' + spec.file, spec.context);
-    if (isJSONFile(spec.file)) {
-      api = JSON.parse(raw, null, 2);
-    } else {
-      api = YAML.parse(raw);
-    }
+  // We filter to work only on enabled specs
+  const specsPromises = config.config.specs
+    .filter((spec) => spec.enabled)
+    .map(async (spec) => {
+      let api;
+      let raw = parseFile(spec.file, spec.context);
+      if (isJSONFile(spec.file)) {
+        api = JSON.parse(raw, null, 2);
+      } else {
+        api = YAML.parse(raw);
+      }
 
-    return await {
-      name: api.info.title,
-      version: api.info.version,
-      description: converter.makeHtml(api.info.description),
-      url: !config.skipBundle
-        ? `./raw/bundle/${encodeURIComponent(api.info.title)}.${
-            isJSONFile(spec.file) ? 'json' : 'yaml'
-          }`
-        : `./raw/original/${encodeURIComponent(api.info.title)}/${path.basename(
-            spec.file
-          )}`,
-      file: spec.file,
-      context: spec.context,
-      tags: api.info['x-tags'] || [],
-    };
-  });
+      return await {
+        name: api.info.title,
+        version: api.info.version,
+        description: converter.makeHtml(api.info.description),
+        url: !config.skipBundle
+          ? `./raw/bundle/${encodeURIComponent(api.info.title)}.${
+              isJSONFile(spec.file) ? 'json' : 'yaml'
+            }`
+          : `./raw/original/${encodeURIComponent(
+              api.info.title
+            )}/${path.basename(spec.file)}`,
+        file: spec.file,
+        context: spec.context,
+        tags: api.info['x-tags'] || [],
+      };
+    });
 
   return Promise.all(specsPromises);
 }

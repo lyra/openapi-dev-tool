@@ -23,32 +23,20 @@ const mavenLocalPathCmd =
 // ######################################
 function getConfigSchema(options) {
   return {
-    folder: {
-      required: true,
-      validate: function (name) {
-        return {
-          isValid: name ? fs.existsSync(name) : true,
-          message: `Folder ${name} doesn\'t exist`,
-        };
-      },
-    },
     specs: [
       {
         file: {
           required: true,
           validate: function (name) {
             return {
-              isValid: name
-                ? fs.existsSync(path.join(options.config.folder, name))
-                : true,
-              message: options.config.folder
-                ? `File ${path.join(
-                    options.config.folder,
-                    name
-                  )} doesn\'t exist`
-                : `File ${name} doesn\'t exist`,
+              isValid: name ? fs.existsSync(name) : true,
+              message: `File ${name} doesn\'t exist`,
             };
           },
+        },
+        enabled: {
+          default: true,
+          isBoolean: true,
         },
         context: {
           required: false,

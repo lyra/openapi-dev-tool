@@ -10,6 +10,14 @@
 // ##################################################################
 
 export default function middleware(specs, config) {
+  // Manage HTML injector
+  let htmlInjector = config.config['html-injector'];
+  if (config.config['html-injector']) {
+    if (Array.isArray(config.config['html-injector'])) {
+      htmlInjector = config.config['html-injector'].join('\n');
+    }
+  }
+
   return {
     // To be able to update new specs (after change)
     updateSpecs: (newSpecs) => {
@@ -25,6 +33,7 @@ export default function middleware(specs, config) {
             url: spec.url,
           };
         }),
+        htmlInjector,
       });
     },
     // Express middleware for Redoc
@@ -41,6 +50,7 @@ export default function middleware(specs, config) {
           },
           // If console is skip, we use Redoc, otherwise, we use RedocPro
           skipRedocConsoleUse: config.skipRedocConsoleUse,
+          htmlInjector,
         });
       } else {
         next();
@@ -51,6 +61,7 @@ export default function middleware(specs, config) {
       // Display the whole of API
       res.render('apis', {
         specs,
+        htmlInjector,
       });
     },
   };

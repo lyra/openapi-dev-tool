@@ -1,26 +1,40 @@
 {
-  "folder": "./examples/specs",
   "specs": [
     {
-      "file": "/petstore/petstore-one-file.yaml",
+      "file": "./examples/specs/petstore/petstore-one-file.yaml",
+      "enabled": true,
       "context": {
         "public": false,
         "version": "1.0.0"
       }
     },
     {
-      "file": "/petstore/petstore-several-files.yaml",
+      "file": "./examples/specs/petstore/petstore-several-files.yaml",
       "context": {
         "public": true,
         "version": "1.0.0"
       }
     },
     {
-      "file": "/petstore/petstore-one-file.yaml",
+      "file": "./examples/specs/petstore/petstore-one-file.yaml",
+      "context": {
+        "public": true,
+        "version": "1.0.0"
+      }
+    },
+    {
+      "file": "./examples/specs/petstore/petstore-one-file.yaml",
+      "enabled": false,
       "context": {
         "public": true,
         "version": "1.0.0"
       }
     }
+  ],
+  "html-injector":[
+    "<script>",
+    "console.log('html-injector');",
+    "console.log('yoda');",
+    "</script>"
   ]
 }
