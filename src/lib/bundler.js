@@ -53,7 +53,8 @@ export async function bundleSpec(config, spec) {
     );
   }
 
-  const versionRegex = /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
+  const versionRegex =
+    /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
   if (!api.info.version.match(versionRegex)) {
     throw new Error(
       `version \'${api.info.version}\' is not valid. Should be correct with ${versionRegex}`
