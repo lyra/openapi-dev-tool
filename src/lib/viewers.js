@@ -1,7 +1,7 @@
 // ##################################################################
 // This defines the express middlewares of viewers:
 // - SwaggerUI
-// - Redoc (or RedocPro in function of skipRedocConsoleUse config parameter)
+// - Redoc
 // - Home (to list API)
 //
 // Home is used to displayed API before going to Redoc
@@ -48,8 +48,6 @@ export default function middleware(specs, config) {
           spec: {
             url: spec.url,
           },
-          // If console is skip, we use Redoc, otherwise, we use RedocPro
-          skipRedocConsoleUse: config.skipRedocConsoleUse,
           htmlInjector,
         });
       } else {

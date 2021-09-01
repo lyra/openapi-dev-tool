@@ -36,22 +36,14 @@
   <body>
     <div id="redoc-container"></div>
     
-    <%if (!skipRedocConsoleUse) { %>
-      <!-- Redoc console exists only if RedocPro -->
-      <script src="./assets/redocpro-standalone.min.js"> </script>
-    <% } else{ %>
-      <script src="./assets/redoc.standalone.js"> </script>
-    <% } %>
+    <script src="./assets/redoc.standalone.js"> </script>
     <script src="./reload/reload.js"></script> 
     <script>
       // Remove trailing slash
       if (document.location.pathname.match(/\/$/)) {
         document.location.pathname = document.location.pathname.replace(/\/$/, '');
       }
-      <%if (!skipRedocConsoleUse) { %>RedocPro<% } else{ %>Redoc<% } %>.init(<%-JSON.stringify(spec.url)%>, {
-        <%if (!skipRedocConsoleUse) { %>
-          showConsole: true,
-        <% } %>
+      Redoc.init(<%-JSON.stringify(spec.url)%>, {
         theme: {
           colors: {
             primary: {

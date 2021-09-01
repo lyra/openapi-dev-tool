@@ -101,14 +101,6 @@ export function serve(config = { config: { specs: [] } }) {
         `${config.contextPath}assets`,
         express.static(path.dirname(require.resolve('redoc')))
       );
-      // RedocPro folder
-      app.use(
-        `${config.contextPath}assets`,
-        express.static(
-          path.resolve(path.dirname(require.resolve('@redoc/redoc-pro'))) +
-            '/../dist'
-        )
-      );
 
       // Reloader
       reload(app, {

@@ -76,14 +76,6 @@ const serveOptionsDefinitions = [
       "Context used to expose openapi documentations. Has to be start with '/', default is '/'",
   },
   {
-    name: 'skipRedocConsoleUse',
-    alias: 'r',
-    type: Boolean,
-    defaultValue: false,
-    description:
-      'Skips Redoc console use (RedocPro) to disable "try it" feature, default is false',
-  },
-  {
     name: 'viewsFolder',
     alias: 'e',
     type: String,

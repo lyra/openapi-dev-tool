@@ -26,7 +26,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@lyra-network/nexus-deployer": "^0.1.12",
-    "@redoc/redoc-pro": "1.0.0-beta.38",
     "archiver": "5.3.0",
     "change-case": "4.1.2",
     "chokidar": "3.5.2",

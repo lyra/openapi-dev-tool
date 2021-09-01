@@ -67,7 +67,6 @@ From `openapi-dev-tool` command-line interface, you can:
 - **Bundle OpenAPI files** to merge all the files before serving. By using [OpenAPI remote reference](https://swagger.io/docs/specification/using-ref/), you can work on several files. It improves the maintainability and avoids having a large OpenAPI file!
 - **Several documentation viewers embedded** with the possibility to [override the templates](#templates-override) used:
   - Redoc (http://localhost:3000)
-  - RedocPro (http://localhost:3000) --> RedocPro to have "try it" feature
   - Swagger UI (http://localhost:3000/swagger-ui)
 - **`x-tags` vendor extension** in `Info` object to be able to [tag OpenAPI files](#tags-usage). OpenAPI doesn't support specifications tags and only supports operations tags (for organization purposes). With the `x-tags` vendor extension and for Redoc viewer, it is now possible to categorize and organize specifications.
 - **Validate** your specifications and your examples automatically
@@ -97,8 +96,6 @@ Command Options
                                  false
   -p, --port number              Port to use, default is 3000
   -u, --contextPath string       Context used to expose openapi documentations. Has to be start with '/', default is '/'
-  -r, --skipRedocConsoleUse      Skips Redoc console use (RedocPro) to disable "try it" feature, default is
-                                 false
   -e, --viewsFolder string       Folder that contains views in EJS to override defaults
                                  - "api.ejs": for API List page
                                  - "redoc.ejs": for Redoc page
@@ -306,7 +303,6 @@ For each template, the following objects are loaded in EJS context:
     - `context`: current context
     - `tags`: tags loaded by using the `x-tags` vendor extension
 - `redoc.ejs`
-  - `skipRedocConsoleUse`: boolean that indicates if we want use Redoc or Redoc Pro viewer
   - `spec`: object with only `url` attribute
 - `swagger-ui.ejs`
   - `specs`: array of OpenAPI specifications where each `spec` item contains the following attributes:
