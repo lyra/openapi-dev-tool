@@ -20,6 +20,12 @@ export default function middleware(specs, config) {
     }
   }
 
+  const pro = fs.existsSync(
+    `${process.cwd()}/node_modules/${
+      viewersPath.find((viewer) => viewer.name == 'Redoc Pro').path
+    }`
+  );
+
   return {
     // To be able to update new specs (after change)
     updateSpecs: (newSpecs) => {
@@ -50,11 +56,7 @@ export default function middleware(specs, config) {
             url: spec.url,
           },
           htmlInjector,
-          pro: fs.existsSync(
-            `${process.cwd()}/node_modules/${
-              viewersPath.find((viewer) => viewer.name == 'Redoc Pro').path
-            }`
-          ),
+          pro,
         });
       } else {
         next();
