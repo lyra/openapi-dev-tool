@@ -1,6 +1,6 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "openapi-examples-validator": "4.4.0",
     "promise-settle": "0.3.0",
     "rc": "1.2.8",
-    "redoc": "2.0.0-rc.55",
+    "redoc": "2.0.0-rc.56",
     "reload": "3.2.0",
     "showdown": "1.9.1",
     "swagger-parser": "10.0.2",

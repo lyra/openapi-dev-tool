@@ -11,6 +11,7 @@ import colors from 'colors';
 import { loadSpecs } from '../lib/specs';
 import exposer from '../lib/exposer';
 import viewers from '../lib/viewers';
+import { viewersPath } from '../lib/viewers';
 
 // ##################################################################
 // The aim of this file is manage the serve command
@@ -91,6 +92,20 @@ export function serve(config = { config: { specs: [] } }) {
         `${config.contextPath}assets`,
         express.static(`${__dirname}/../static`)
       );
+
+      // Possibility for app to override viewers apps
+      viewersPath.forEach((viewer) => {
+        if (fs.existsSync(`${process.cwd()}/node_modules/${viewer.path}`)) {
+          app.use(
+            `${config.contextPath}assets`,
+            express.static(`${process.cwd()}/node_modules/${viewer.path}`)
+          );
+          if (config.verbose) {
+            console.log(`Viewer '${viewer.name}' loaded from app`);
+          }
+        }
+      });
+
       // Swagger UI folder
       app.use(
         `${config.contextPath}assets`,

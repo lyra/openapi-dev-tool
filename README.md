@@ -69,14 +69,15 @@ From `openapi-dev-tool` command-line interface, you can:
   - Redoc (http://localhost:3000)
   - Swagger UI (http://localhost:3000/swagger-ui)
 - **`x-tags` vendor extension** in `Info` object to be able to [tag OpenAPI files](#tags-usage). OpenAPI doesn't support specifications tags and only supports operations tags (for organization purposes). With the `x-tags` vendor extension and for Redoc viewer, it is now possible to categorize and organize specifications.
-- **Validate** your specifications and your examples automatically
-- **Static files** can be exposed in addition of your openapi documentation
 
 For example, declare a private and a public specifications:
 
 ![presentation](doc-assets/xtag.png)
 
+- **Validate** your specifications and your examples automatically
+- **Static files** can be exposed in addition of your openapi documentation
 - **Context uses**: it is possible to serve a same specification in [several contexts](#context-usage) (internal, public, etc.)
+- **Viewers up-to-date** you can use the latest releases of viewers directly by declaring it from your `package.json` ([swagger-ui-dist](https://www.npmjs.com/package/swagger-ui-dist) & [redoc](https://www.npmjs.com/package/redoc)).  `openapi-dev-tool` will automatically use the viewers defined in your app.
 
 #### Usage
 

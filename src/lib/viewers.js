@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 // ##################################################################
 // This defines the express middlewares of viewers:
 // - SwaggerUI
@@ -42,13 +44,17 @@ export default function middleware(specs, config) {
       const spec = specs.find((spec) => {
         return spec.name === req.query.specName;
       });
-
       if (spec) {
         res.render('redoc', {
           spec: {
             url: spec.url,
           },
           htmlInjector,
+          pro: fs.existsSync(
+            `${process.cwd()}/node_modules/${
+              viewersPath.find((viewer) => viewer.name == 'Redoc Pro').path
+            }`
+          ),
         });
       } else {
         next();
@@ -64,3 +70,9 @@ export default function middleware(specs, config) {
     },
   };
 }
+
+export const viewersPath = [
+  { name: 'Swagger UI', path: 'swagger-ui-dist' },
+  { name: 'Redoc', path: 'redoc/bundles' },
+  { name: 'Redoc Pro', path: '@redoc/redoc-pro/dist' },
+];

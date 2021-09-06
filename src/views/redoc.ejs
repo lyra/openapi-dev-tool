@@ -36,14 +36,15 @@
   <body>
     <div id="redoc-container"></div>
     
-    <script src="./assets/redoc.standalone.js"> </script>
+    <script src="./assets/<%if (pro) { %>redocpro-standalone.min.js<% } else{ %>redoc.standalone.js<% } %>"> </script>
     <script src="./reload/reload.js"></script> 
     <script>
       // Remove trailing slash
       if (document.location.pathname.match(/\/$/)) {
         document.location.pathname = document.location.pathname.replace(/\/$/, '');
       }
-      Redoc.init(<%-JSON.stringify(spec.url)%>, {
+      <%if (pro) { %>RedocPro<% } else{ %>Redoc<% } %>.init(<%-JSON.stringify(spec.url)%>, {
+        showConsole: true,
         theme: {
           colors: {
             primary: {
