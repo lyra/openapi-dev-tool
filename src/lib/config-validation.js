@@ -36,7 +36,16 @@ function getConfigSchema(options) {
         },
         enabled: {
           default: true,
-          isBoolean: true,
+          transform: function (value) {
+            if (typeof value == 'boolean') return value;
+            else if (typeof value == 'string') {
+              // Compute by using env var
+              const varEnv = value.replace(/[\${}]/g, '');
+              return process.env[varEnv] == 'true';
+            }
+
+            return false;
+          },
         },
         context: {
           required: false,

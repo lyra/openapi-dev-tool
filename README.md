@@ -234,7 +234,7 @@ It also describes additional parameters used by specific commands (as described 
     "specs": [                         // Array of specifications (several specifications can be exposed)
         {                              // First specification file
             "file": "./petstore.yaml", // Relative path of the specification main file. It has to be an OpenAPI file in YAML or JSON.
-            "enabled": true,           // Enable or not specification file to avoid to serve / publish / merge some specification file (default is true)
+            "enabled": true,           // Enable or not specification file to avoid to serve / publish / merge some specification file (default is true) --> can be an environment variable
             "context": {               // Object used for template generation (see Template usage chapter below)
               ...
             }
