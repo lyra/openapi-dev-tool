@@ -4,7 +4,6 @@ import YAML from 'yaml';
 import rc from 'rc';
 import fs from 'fs';
 import { execSync } from 'child_process';
-import path from 'path';
 import commandExists from 'command-exists';
 
 import { isYAMLFile } from './utils';
@@ -21,31 +20,47 @@ const mavenLocalPathCmd =
 // ######################################
 // Configuration file schema to validate
 // ######################################
-function getConfigSchema(options) {
+function getConfigSchema(data) {
+  const enabledDefaultValue = true;
+  function transformEnabledProperty(value) {
+    if (typeof value == 'boolean') return value;
+    else if (typeof value == 'string') {
+      // Compute by using env var
+      const varEnv = value.replace(/[\${}]/g, '');
+      return process.env[varEnv] == 'true';
+    }
+
+    // Default value is true
+    return enabledDefaultValue;
+  }
+
   return {
     specs: [
       {
         file: {
           required: true,
           validate: function (name) {
+            // Get enabled related property
+            let enabled = true;
+            if (name) {
+              const enabledString = data.specs.find(
+                (spec) => spec.file == name
+              ).enabled;
+              enabled = transformEnabledProperty(enabledString);
+            }
+
+            // Does not need to check file if is not enabled
+            const isValid =
+              !name || !enabled || (enabled && fs.existsSync(name));
             return {
-              isValid: name ? fs.existsSync(name) : true,
+              isValid,
               message: `File ${name} doesn\'t exist`,
             };
           },
         },
         enabled: {
-          default: true,
-          transform: function (value) {
-            if (typeof value == 'boolean') return value;
-            else if (typeof value == 'string') {
-              // Compute by using env var
-              const varEnv = value.replace(/[\${}]/g, '');
-              return process.env[varEnv] == 'true';
-            }
-
-            return false;
-          },
+          default: enabledDefaultValue,
+          transform: transformEnabledProperty,
         },
         context: {
           required: false,
@@ -79,7 +94,7 @@ function globalValidation(options, errors) {
 
   jsonValidator.validate(
     options.config,
-    getConfigSchema(options),
+    getConfigSchema(options.config),
     (err, messages) => {
       // Validation error messages are a complex structure
       // We have to get message in deep objet!
