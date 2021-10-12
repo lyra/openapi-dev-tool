@@ -90,6 +90,13 @@ const serveOptionsDefinitions = [
     description:
       'Exposes a static folder in addition of openapi documentation, for example, if you want expose general documentation (migration, API overview,...)\nHas to be a map like :\n/<path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+\nopenapi-dev-tool will create a path "/path1" where static files of folder "folder1" will be exposed',
   },
+  {
+    name: 'skipValidation',
+    alias: 'x',
+    type: Boolean,
+    defaultValue: false,
+    description: 'Skips OpenAPI validation process, default is false',
+  },
 ];
 
 const publishOptionsDefinitions = [

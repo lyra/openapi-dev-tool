@@ -107,6 +107,7 @@ Command Options
                                  /<path1>:<folder1> where path1 and folder1 have to [a-zA-Z0-9_-]+
                                  openapi-dev-tool will create a path "/path1" where static files of folder
                                  "folder1" will be exposed
+  -x, --skipValidation           Skips OpenAPI validation process, default is false
 
 Global Options
 
