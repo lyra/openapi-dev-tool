@@ -1,7 +1,7 @@
 {
   "specs": [
     {
-      "file": "./examples/specs/petstore/petstore-one-file.yaml",
+      "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
       "enabled": true,
       "context": {
         "public": false,
@@ -9,26 +9,29 @@
       }
     },
     {
-      "file": "./examples/specs/petstore/petstore-several-files.yaml",
+      "file": "./examples/specs/petstore/petstore-several-files/petstore-several-files.yaml",
       "context": {
         "public": true,
         "version": "1.0.0"
       }
     },
     {
-      "file": "./examples/specs/petstore/petstore-one-file.yaml",
+      "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
       "context": {
         "public": true,
         "version": "1.0.0"
       }
     },
     {
-      "file": "./examples/specs/petstore/petstore-one-file.yaml",
+      "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
       "enabled": false,
       "context": {
         "public": true,
         "version": "1.0.0"
       }
+    },
+    {
+      "file": "./examples/specs/petstore/petstore-inheritance/petstore-inheritance.yaml"
     }
   ],
   "html-injector":[

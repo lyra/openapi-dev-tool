@@ -43,9 +43,10 @@ export async function validateExamples(targetFile) {
       if (!errors[error.examplePath]) errors[error.examplePath] = [];
       let errorMsg = '';
       if (error.dataPath) errorMsg += `'${error.dataPath}': `;
+      if (error.instancePath)
+        errorMsg += `'${error.instancePath.replace(/^\//, '')}': `;
       errorMsg += `${error.message}`;
-
-      if (error.params.allowedValues)
+      if (error.params && error.params.allowedValues)
         errorMsg += ` (${error.params.allowedValues})`;
       errors[error.examplePath].push(errorMsg);
     });

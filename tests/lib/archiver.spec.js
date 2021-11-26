@@ -2,7 +2,6 @@ import path from 'path';
 
 import chai from 'chai';
 import chaiString from 'chai-string';
-import { paramCase } from 'change-case';
 import { generateSpecsArchive } from '../../src/lib/archiver';
 
 chai.use(chaiString);

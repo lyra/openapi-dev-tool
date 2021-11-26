@@ -53,7 +53,7 @@ export default function middleware(config, specs) {
 
             let bundle;
             if (isJSONFile(spec.file)) {
-              bundle = JSON.stringify(api, null, 2);
+              bundle = api;
             } else {
               bundle = YAML.stringify(api, { schema: 'yaml-1.1' });
             }
