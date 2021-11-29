@@ -36,23 +36,19 @@ paths:
 components:
   schemas:
     Dog: 
-      type: object
-      properties:
-        dogName:
-          type: string
-        type:
-          type: string
-          enum:
-            - DOG
+      allOf:
+        - $ref: "#/components/schemas/Pet"
+        - type: object
+          properties:
+            dogName:
+              type: string
     Cat:
-      type: object
-      properties:
-        catName:
-          type: string
-        type:
-          type: string
-          enum:
-            - CAT
+      allOf:
+        - $ref: "#/components/schemas/Pet"
+        - type: object
+          properties:
+            catName:
+              type: string
     Pet:
       required:
       - name
@@ -70,7 +66,7 @@ components:
           type: string
       discriminator:
         propertyName: type
-      oneOf:
-        - $ref: "#/components/schemas/Cat"
-        - $ref: "#/components/schemas/Dog"
+        mapping:
+          CAT: "#/components/schemas/Cat"
+          DOG: "#/components/schemas/Dog"
             
