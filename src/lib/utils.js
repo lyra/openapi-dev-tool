@@ -1,6 +1,6 @@
 import path from 'path';
 import tmp from 'tmp';
-import validator from '../../../openapi-examples-validator/src';
+import validator from 'openapi-examples-validator';
 
 // ##################################################################
 // The aim of this file is exposed several utils functions
