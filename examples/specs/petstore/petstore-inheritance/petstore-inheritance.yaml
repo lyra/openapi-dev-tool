@@ -1,72 +1,3821 @@
----
-openapi: 3.0.2
+openapi: 3.0.0
 info:
-  title: petstore Inheritance
-  version: 1.0.7
+  version: 1.4.0-SNAPSHOT
+  title: luma-api
+  x-tags:
+    - Public
+  contact:
+    email: support-luma@lyra-network.com
+  description: >
+    Specifications of luma-api.
+
+
+    These specifications describe the behaviour of the following resources:
+
+    - Device
+
+    - Application
+
+    - MID
+
+    - Order
+
+    - Pre Subscription
+
+
+
+    ### Pagination
+
+    Our search is paginated so if you want to list many POS you have to manage pagination.
+
+    When you make a search, on the returned json will get an object describing the pagination data:
+
+
+    ```json
+
+    "page": {
+      "number": 1,
+      "size": 10,
+      "totalElements": 45,
+      "totalPages": 5
+    }
+
+    ```
+
+    So when you want to request a specific page you have to specify pagination in the request using these parameters:
+
+
+    ```
+
+    page : Results page you want to retrieve (0..N)
+
+    size : Number of records per page
+
+    sort : Sorting criteria in the format: property(,asc|desc). Default sort order is ascending(asc). Multiple sort criteria are supported.
+
+    ```
+
+
+    For example
+
+    ```
+
+    <base_url>/v1/devices?serial=4568&strict=false&page=2&size=5&sort=serial(desc)
+
+    ```
+
+
+    ### Rate limit
+
+    **The number of request per second is limited to 3**. When this rate limit is exceeded the request returns a **429 http error**.
+
+    By managing this error code with a retry policy you can also manage this limit rate.
+
+
+    <div style="color: red; font-weight: bold">NB : This API is not designed to retrieve all terminals data. If you want do it you have to do it using exports (Exports are also downloadable through API).</div> 
+  x-logo:
+    url: data:image/png;base64,
+      iVBORw0KGgoAAAANSUhEUgAAAQYAAAEGCAYAAACHNTs8AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAAB3RJTUUH4goKCRQrP5b9dgAAD5pJREFUeNrt3XuwJFVhx/Hv3MeyuyBSPAJBFsKCPBoFrQrRmEZEIiAYJUSJlmUeljFJ5VmJUbHzMslYSWGlKlpiiPxhykoZWRYQUXlILGEgiEbjujsSQFgFwhJYsrCwLLv33skfpze73DPTPXNndrrvvd9P1fyxd87tPt079zfd59UgSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSVoiGuPcWZJmJwNnAp2qD3xADWA7cGu71dwxzIZe8Se3rAHOAiZ6nodOp9GYm51m1y5m7924m+d3dGiM9b9K9dIA7m63mg+Ma4dTYz7A84BPsDiD4X7gHGCoYCAE42cpOveNBp3JqQaTs7D4zpVGrwG8D1iywbDvgS42EyM+/j7OQYP+ymkZGOvnYJQfdklLhMEgKWIwSIoYDJIiBoOkiMEgKWIwSIoYDJIiVQ1w6sdO4BFgruqKEAJ0MzAzgm09SxhFOVlQpkGnM0VnrgHsxtGPS9EUcAywouqK9KpcXd0HXAo8TfWj/xqEUNg6gm3dDpxbuLO5ucbECzun2L2LDp2ZjsGw1HSAo4D1wNqqK9NNnYNhN7Cl3Wo+XXVFRmnj5eftBB6ruh6qVpJme75sask2BkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFDEYJEUMBkkRg0FSxGCQFJmqugJ1kaTZycDJQKdHkRngm+1W86mq6yrtbwbDXu8E/pIQAPM1gO3AW4A7q66otL8ZDHvtua3qdU6mCAEhLXm2MUiKGAySIgaDpIjBICliMEiKGAySIgaDpIjBICliMEiKGAySIg6JHqMkzSaByZJiHWB3u9UcZj8A05QP4d7dbjU78353guLPxUy71Zybd0xrgFcTJqEdCawGZoGtwA+BDcB97Vbz2SGOaRVwDHACcFy+n1X52zuBR4D/yl9PdjmuRn5Oepltt5qzCz7pS4zBMF5nApfR+7w3gKfyMg8PsZ8TgL8BXkr32aKTwHeAjwIvzHvvdOAvgBVdfm8O+FvyiWRJmp0E/DbwVkI4TPf4nW3AfyZpdjVwbbvVfKKfg8hD5yTgQuA84DTgcOCALsU7wHPAA8BNSZp9Hti4T4idTpgk1+24JoF/AT43xDlfUgyG8XoUeDlwakGZWeBW4J+H2M8vEmaLFvl6u9V8ocvPDwcuAFb2+L2vAXcmaXYB8HHCH2uRCeBQ4I3A2cB7kjT7KHDbvlce8yVp9nLgN4FLCVcKZVc/DeAg4FX56z3APyVp9ql2q7k138ZF9L5q+NYQ53vJsY1hjNqt5sPAF0uKTQIXJWk23ccmI0maHQa8vaTYQ8B1CzyM45M0Owe4kvJQ6HZsPwd8Cljbo/7TSZq9Kz9Pf0y4ElnIrNaXEa58PpOk2dHAgZTfxinnFcP4XQe8j/DN3MvrgBOBHyxg+2cTvjGL3Ajcv8D6n5Xv49ghzsEG4L/n/zBJs5WEMPgQ8JIhtr/HBOHqaRb4D5w23zevGMbve8AdJWVeBpw76IaTNFsB/DLd78H3+F/g6vmNcwN4NXDGEMe/Dfh0u9XcMa/u08AHgD9jNKGwr7cCvzHibS5pBsOY5ff1VwO7S4pemLfED+J04JySMt8Avj3EITQY7pv3RroH46XABykOtYVaQbh18YqhT95KVOPrwCaKL/nPBBLCJXC/fgk4ouD9XcDn263mzv14bHP0Do+twJXtVnPXvj/M19v8U/q/UngWeDB/bc1/diihN2YtoRFSQzAYKtBuNR9P0ux6ioPhcOBN9BkMSZqtIVwyF/keIZRGaRch5O4ijCF4inAleiThtuMs9vYqXAvcPa/eE8BvAaf0sa+twHrgC4R2im3sXaNzCjiEcJvzbuASQnetFsBgqM4XCX8QRxWUeXOSZle0W81n+tje+YQBRkXW9TuGoE9t4HLC7cHWLoOK9oxD+H1CyF3VbjXnL7Z7KuW9KBDGXXyY0M3abcHeGeBJ4LYkzW4HbiCMuSg7J+rCYKjOJsK397sKypyRvwobK5M0O4hwj17UHbeZ8q7SQXwTeH+71dzQq0A+kvAHSZr9EeGKYFOXYhcRriiKfAt4b7vV3NhPxdqt5m7g+iTNngQ+S7jF0ABsfKxI/uFdRzzycF8vJQw2KvPa/FVkmC7K+bYAHygKhXnH+ny71fxul7aF1cDPl/z648AH+w2FefttAX8O7Bj0d5c7g6FatxPu+4uclw9a6iq/R7+U4oa7bQzXRTnfOkbzfI1jCA2sRT5H6ElZqOuAr47ouJcNg6FC+VDda0uKJYQeil5Opvyq4naG66Lc1w7gSyMKmbUUD/TaCnxhmH21W83nCfMgXljoNpYjg6F6NxJmBvaymjCmodf7eyYw9bKni/L5EdV3C6H3YRSOo3jcwibg3hHs5x5CG4v6ZDBU717CxKQibwR+cv4P81uMS0p+dwPwbyOs71bg6RFt6yfKzs0wU7X38QSja19ZFgyGiuUt9+sobiA7EXhNl5+/FnhlyS7WtVvN/xlhlXdQPmqzX2UDmh4bxU7yRs+RbGu5MBjq4S6KBzIdAJyfLzYC/H+j49vYu1hJNz9itF2U0Ptp4AtRNkR5V19b6c8ot7XkGQw10G41txFG9BV5A3D0Pv/+KconWn2Zel9Cz5S8P5LJVHmgOkx6AAZDfXyF4gaytbx4rMK5hHDoZRuhRX+O+iprqzguHz05rFUMN0182XHkY338ELiJMEy6mxXABUmaXUtYXeltFAf7HdR/VaIthFuTXrcUpwGHAcO2kawhDM1Wn7xiqIn8m/0aYHtBsdcTeidOo3ik427gX0fYRbm//AgoquNJwM+OYD/n8uLbMJUwGOrlHsIchF6OJ6zu9GbCN2kvGyjvAq2DhwhDnntZCbw3nwuyIEmaHQX8Cq7FMBCDoUbareZ2QiNkr3aBaeBXgYtLNnXNiLso95fHgO+XlLkA+PV9e2T6laTZFPA7FI8cVRcGw2BG2VXXy02E9oZezqd4abUfA9eP8ZwsWL6a1a0Un9cVhOXe3j1IQ2S+VNz7gT/Az/nAbHzs3wHA7yZpdjHDXZY2gBvarWaviUGbCd2Mf9jj/bLVo78M3FfZWRrczYRbirUFZY4APgmcnKTZPwKP9nogTz50fA3we4RnXthNuQAGQ/+mKX9WQ79OSdLs2+1W87n5b7RbTZI0Ww/8GmFFokE8Tf27KOe7n7Ai02Ul5Q4BPkLojbk+SbNvEAJlT2PtQYTu2zcQlrg7Fa8UFsxgqMbrCc9XuKXH+98hjIa8cMDttqh/F+WL5EF4FfAWyod3T+RlXklYZn4re4PhJYQG2dVVH9NSYKJW4yDCE5m63hbkS6uvIzwPoV+7CbMoF92iJO1W80HCI/UGmZy1mnDLkOSvNfQOhQ4OiR6IwVCd8wmLpfZyK4NNOf4+i6OLspdrgY9RPK5hobbk219Mt1iVMhiqcwShpb1rQ2a71XwU+NIA27um3Wo+PkD5WskXeP0HwoNnRzWtG8Js0I8RVnIaR6/SkmAwVOtiipdNv46w8nGZRdNFWSTvvvx7wlOjNg25OQiDpz4EXEE4j6OaLr7kGQzVOpbwSLleNgD/3sd2vsLoVlWqVLvVnGm3musIK1P9HaH7dtBbgOcIy8e/A7gi76V5BtifD9pZUuyV2OtrhHUBx3kfOgE8lKTZdL5q9HzTlLeyj7qL8gHCgKJun40Jwh/qfv/mbbeaDyZp9hHgKkJ7zJuAVxAeZLOKFy+VP0e4ZfgxoTdnPXDHvO7gzYSnX3c7nxOEHh3lDIZcu9W8g/KHzY5cwVqOECZKvaZkE3cS5liM6jxsBj4+7vPQoy5zhKB6IEmzzxBC4VjCQ38PJTzafpawdNtmwojRJ/JVseZv60ngE1Uf02JhMFSsYATfJOE2o2jk3qLtohxUvjzbw/lL+5ltDPV1CuXLwm8kdGtKI2Uw1NfFhEvmIou6i1L1ZTDUUJJmRxLG+xd5mCXQRal6Mhjq6VxCC3yRrzKah7FIEYOhZpI0W0WYxVk0vfoZwtJtDvHVfmEw1M9PA2eVlBlpF6U0n8FQI/m8iXdQvA7DDOFq4bm+NiotgMFQLycAF5WU2UjvdRykkTAY6uUXKF7iDGB9u9XcUnVFtbQZDDWRpNmhhNuIIo8Q1hWQ9iuDoT7OpnjhFghdlEtiFqXqzWCogSTNVhC6KFcWFNtOmEU5yHJv0oIYDPVwBnBOSZk7gburrqiWB4OhHt5OWOqtF7soNVYGQ8WSNDuWsFpRkU3YRakxMhiqdyHlj2hf3241H6u6olo+DIYKJWl2MHApxf8PdlFq7AyGar0O+JmSMjfjLEqNmcFQkfwR7e8krFvYy3ZCo6NdlBorg6E6pxJWPi5yF3ZRqgIGQ3UuAY4ueH9PF+WzVVdUy4+rRFcgX7rtIsIff7fbhAnCsyhvrrquWp4MhmrsBC4jnP9uz1OcIDyI1VmUqoTBUIF2q/k0cFvV9ZB6sY1BUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUsRgkBQxGCRFDAZJEYNBUmSq6goUmAQOTtKsAzSqroxGpzG9gum1J8LKVcysOnCWRul/786Nl583M8w+kzSbBA6kHp+lDnAwNf5irnMwnATcAMxWXRGN2ESD2VUHNli5co5GY1dJ6Tngr4Fbhtzr8cCVwCGEP8yqTQPHVF2JXuocDKuBV1VdCe0fnYkJmJiETunfaAc4YgS7XAmcARxW9bEvBrW9lNEyUIfvbXVlMEiKGAySIgaDpIjBICliMEiKGAySIgaDpIjBoAo5kKGuxj3y8S7gw1UftCrXaMzMHMDUTKczOfVCSdkO8N0R7PNx4K+AVVUf/ALdU3UFJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmL0v8BruxVTvs2dP4AAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMTAtMTBUMTE6MjA6NDMrMDI6MDAmpdQUAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTEwLTEwVDExOjIwOjQzKzAyOjAwV/hsqAAAAABJRU5ErkJggg==
+    href: ./
 paths:
-  "/pet":
-    post:
+  /v1/devices:
+    get:
       tags:
-      - pet
-      summary: Add a new pet to the store
-      description: Add a new pet to the store
-      operationId: addPet
-      requestBody:
-        description: Create a new pet in the store
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Pet"
-            examples:
-              dog:
-                value:
-                  name: "12"
-                  catName: "123"
-                  type: "CAT"
-        required: true 
+        - Device
+      summary: Find devices
+      description: Find devices from several criteria
+      operationId: findDevices
+      parameters:
+        - in: query
+          name: criteria
+          schema:
+            $ref: "#/components/schemas/DeviceCriteria"
+        - in: query
+          name: pageable
+          schema:
+            $ref: "#/components/schemas/Pageable"
       responses:
-        '200':
-          description: Successful operation
+        "200":
+          description: Devices which match with criteria
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/Pet"
-        '405':
-          description: Invalid input
+                x-all-of-name: PagedModel
+                allOf:
+                  - $ref: "#/components/schemas/PagedModel"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Device"
+        "204":
+          $ref: "#/components/responses/204"
+        "206":
+          $ref: "#/components/responses/206"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "429":
+          $ref: "#/components/responses/429"
+  "/v1/devices/{id}":
+    get:
+      tags:
+        - Device
+      summary: Get the summary of a device
+      description: Get the summary of a device specified by the id provided in parameters
+      operationId: getDevice
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Device with correspond identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Device"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          description: Device not found
+        "429":
+          $ref: "#/components/responses/429"
+  "/v1/devices/{id}/details":
+    get:
+      tags:
+        - Device
+      summary: Get details of one device
+      description: Get the details of the device from its ID
+      operationId: getDeviceDetails
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Device with correspond identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceDetail"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          description: Device not found
+        "429":
+          $ref: "#/components/responses/429"
+  "/v1/devices/{id}/applications":
+    get:
+      tags:
+        - Application
+      summary: Device's applications
+      description: Get all applications of one device
+      operationId: getApplications
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Device's applications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Application"
+              examples:
+                get:
+                  value:
+                    - comment: CB Sans Contact
+                      domain: Bancaire
+                      version: "33870541"
+                      publisher: INGENICO
+                      subDomain: Paiement Proximité
+                      name: CB Sans Contact 5.5
+                    - comment: CB Contact
+                      domain: Bancaire
+                      version: "38530540"
+                      publisher: INGENICO
+                      subDomain: Sans Contact
+                      name: CB Contact 5.5
+                  summary: Get applications
+        "204":
+          $ref: "#/components/responses/204"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          description: Device not found
+        "429":
+          $ref: "#/components/responses/429"
+  "/v1/devices/{id}/mids":
+    get:
+      tags:
+        - MID
+      summary: Device's mids
+      description: Get all mids of one device
+      operationId: getMids
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Device's mids
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MID"
+              examples:
+                get:
+                  value:
+                    - date: "2017-07-21T17:32:28Z"
+                      type: TLC
+                      application: CB_EMV
+                      applicationDescription: string
+                      mid: "392094901"
+                      siret: "50537904000015"
+                      sourceApplication: string
+                      itp: "117550310152"
+                      bankCode: "30003"
+                      bankName: Banque GIE CB
+                      idsa: 20C7D1B2
+                      tasa: B0'-EMV 5.50 TLP
+                    - date: "2017-07-21T17:32:28Z"
+                      type: TLC
+                      group: "75611"
+                      address: 10.3.1.26:7810 1963782411811
+                      application: CB_EMV
+                      operator: string
+                      applicationDescription: string
+                      mid: "432097601"
+                      siret: "49533304000015"
+                      sourceApplication: string
+                      itp: "117550310152"
+                      bankCode: "30003"
+                      bankName: Banque GIE CB
+                      idsa: 20C7D1B2
+                      tasa: B0'-EMV 5.50 TLP
+                  summary: Get mids
+        "204":
+          $ref: "#/components/responses/204"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          description: Device not found
+        "429":
+          $ref: "#/components/responses/429"
+  "/v1/devices/{id}/orders":
+    post:
+      tags:
+        - Order
+      summary: Create a new device order
+      description: This part of the API provides allows to create and ask the POS to
+        execute a new order such as lauching a TMS download, print a message,
+        initilialize new instances of applications ...
+      operationId: createOrder
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+            examples:
+              sendMessageNoConfirm:
+                value:
+                  type: SEND_MESSAGE
+                  time: "2021-01-31T16:43:00Z"
+                  parameters:
+                    onScreen: true
+                    onPrinter: false
+                    message: test
+                summary: Send message on screen only with date, with no confirmation
+              sendMessageConfirm:
+                value:
+                  type: SEND_MESSAGE
+                  parameters:
+                    confirmation: true
+                    onScreen: true
+                    onPrinter: true
+                    message: test
+                summary: Send message on screen and printer with confirmation
+              mainConnectivityManualSIM:
+                value:
+                  type: MAIN_CONNECTIVITY
+                  parameters:
+                    connectionType: SIM
+                    simApn: gprsnac.com
+                    simLogin: mylogin
+                    simPassword: mypassword
+                    gateway: 43
+                    ipAddress: 192.168.151.200
+                    port: 1246
+                    sslEnabled: true
+                    sslProfile: SIMPLEAUTH
+                    terminalBase: SIM
+                summary: Main connectivity - Manual GPRS settings
+              mainConnectivityAutoSIM:
+                value:
+                  type: MAIN_CONNECTIVITY
+                  parameters:
+                    connectionType: SIM
+                    provider: GPRS_LYRA
+                    simApn: gprsnac.com
+                    simLogin: mylogin
+                    simPassword: mypassword
+                    terminalBase: SIM
+                summary: Main connectivity - Automatic GPRS settings
+              mainConnectivityMixedSIM:
+                value:
+                  type: MAIN_CONNECTIVITY
+                  parameters:
+                    connectionType: SIM
+                    provider: GPRS_LYRA
+                    simApn: gprsnac.com
+                    simLogin: mylogin
+                    simPassword: mypassword
+                    sslProfile: OVERRIDED_PROFILE
+                    terminalBase: SIM
+                summary: Main connectivity - mixed mode GPRS settings  (Overide SSL profile)
+              mainConnectivityManualIP:
+                value:
+                  type: MAIN_CONNECTIVITY
+                  parameters:
+                    connectionType: IP_ADSL
+                    gateway: 43
+                    ipAddress: 194.50.38.45
+                    port: 1146
+                    sslEnabled: true
+                    sslProfile: LYRASSL2
+                summary: Main connectivity - Manual IP settings
+              mainConnectivityAutoIP:
+                value:
+                  type: MAIN_CONNECTIVITY
+                  parameters:
+                    connectionType: IP_ADSL
+                    provider: IP_TLS_LYRA
+                summary: Main connectivity - Automatic IP settings
+              mainConnectivityMixedIP:
+                value:
+                  type: MAIN_CONNECTIVITY
+                  parameters:
+                    connectionType: IP_ADSL
+                    provider: IP_TLS_LYRA
+                    sslProfile: OVERRIDED_PROFILE
+                summary: Main connectivity - Mixed IP settings  (Overide SSL profile)
+              mainConnectivityRTC:
+                value:
+                  type: MAIN_CONNECTIVITY
+                  parameters:
+                    connectionType: RTC
+                summary: Main connectivity - RTC settings
+              fallbackConnectivityManualSIM:
+                value:
+                  type: FALLBACK_CONNECTIVITY
+                  parameters:
+                    allowFallback: 'true'
+                    connectionParameters:
+                      connectionType: SIM
+                      gateway: 43
+                      ipAddress: 192.168.151.200
+                      port: 1246
+                      sslEnabled: true
+                      sslProfile: SIMPLEAUTH
+                      apn: gprsnac.com
+                      login: mylogin
+                      password: mypassword
+                summary: Fallback connectivity - GPRS settings Manual
+              fallbackConnectivityAutoSIM:
+                value:
+                  type: FALLBACK_CONNECTIVITY
+                  parameters:
+                    allowFallback: 'true'
+                    connectionParameters:
+                      connectionType: SIM
+                      provider: GPRS_LYRA
+                      apn: gprsnac.com
+                      login: mylogin
+                      password: mypassword
+                summary: Fallback connectivity - GPRS settings Auto settings on Lyra
+              fallbackConnectivityManualIP:
+                value:
+                  type: FALLBACK_CONNECTIVITY
+                  parameters:
+                    allowFallback: 'true'
+                    connectionParameters:
+                      connectionType: IP_ADSL
+                      gateway: 43
+                      ipAddress: 194.50.38.173
+                      port: 1246
+                      sslEnabled: true
+                      sslProfile: LYRASSL2
+                summary: Fallback connectivity - IP settings Manual
+              fallbackConnectivityAutoIP:
+                value:
+                  type: FALLBACK_CONNECTIVITY
+                  parameters:
+                    allowFallback: 'true'
+                    connectionParameters:
+                      connectionType: IP_ADSL
+                      provider: IP_BDX_LYRA
+                summary: Fallback connectivity - IP settings Auto on lyra BDX
+              fallbackConnectivityRTC:
+                value:
+                  type: FALLBACK_CONNECTIVITY
+                  parameters:
+                    allowFallback: 'true'
+                    connectionParameters:
+                      connectionType: RTC
+                summary: Fallback connectivity - RTC settings
+              fallbackConnectivityDeactivate:
+                value:
+                  type: FALLBACK_CONNECTIVITY
+                  time: "2021-01-31T16:43:00Z"
+                  parameters:
+                    allowFallback: 'false'
+                summary: Fallback connectivity - No failback gateways
+              tmsConnectivityAutoIP:
+                value:
+                  type: TMS_CONNECTIVITY
+                  parameters:
+                    connectionType: IP_ADSL
+                    tmsPlatformAuto: TEM
+                    identifier: "1234567890"
+                    downloadProtection: false
+                summary: TMS connectivity IP auto
+              tmsConnectivityAutoSim:
+                value:
+                  type: TMS_CONNECTIVITY
+                  parameters:
+                    connectionType: SIM
+                    tmsPlatformAuto: TEM
+                    simApn: gprsnac.com
+                    simLogin: lyra
+                    simPassword: lyra
+                    identifier: "1234567890"
+                    downloadProtection: false
+                summary: TMS connectivity SIM auto
+              tmsConnectivitySimManual:
+                value:
+                  type: TMS_CONNECTIVITY
+                  parameters:
+                    connectionType: SIM
+                    tmsPlatformManual:
+                      ipAddress: 192.168.1.10
+                      port: 21000
+                      sslEnabled: false
+                    simApn: gprsnac.com
+                    simLogin: lyra
+                    simPassword: lyra
+                    identifier: "1234567890"
+                    downloadProtection: false
+                summary: TMS connectivity SIM manual
+              tmsConnectivityIPManual:
+                value:
+                  type: TMS_CONNECTIVITY
+                  parameters:
+                    connectionType: IP_ADSL
+                    tmsPlatformManual:
+                      ipAddress: 35.195.97.84
+                      port: 7019
+                      sslEnabled: false
+                    identifier: "1234567890"
+                    downloadProtection: false
+                summary: TMS connectivity IP manual
+              launchRemoteDownloadSIM:
+                value:
+                  type: LAUNCH_REMOTE_DOWNLOAD
+                  parameters:
+                    networkType: SIM
+                    tmsPlatformAuto: TEM
+                    contractNumber: "1231654654"
+                    softwareNumber: "0001234"
+                    launchRemoteCollection: false
+                summary: Launch remote download on TEM with SIM connectivity
+              launchRemoteDownloadIP:
+                value:
+                  type: LAUNCH_REMOTE_DOWNLOAD
+                  parameters:
+                    networkType: IP_ADSL
+                    tmsPlatformAuto: TEM
+                    contractNumber: "1231654654"
+                    softwareNumber: "0001234"
+                    launchRemoteCollection: false
+                summary: Launch remote download on TEM with IP connectivity
+              launchRemoteDownloadIPManual:
+                value:
+                  type: LAUNCH_REMOTE_DOWNLOAD
+                  parameters:
+                    networkType: IP_ADSL
+                    tmsPlatformManual:
+                      ipAddress: 35.195.97.84
+                      port: 7019
+                      sslEnabled: false
+                    contractNumber: "1231654654"
+                    softwareNumber: "0001234"
+                    launchRemoteCollection: false
+                summary: Launch remote download on custom TMS with IP connectivity
+              launchRemoteDownloadMMS:
+                value:
+                  type: LAUNCH_REMOTE_DOWNLOAD
+                  parameters:
+                    networkType: IP_ADSL
+                    tmsPlatformAuto: MMS
+                    softwareNumber: "75520"
+                summary: Launch remote download on MMS without TGI
+              launchRemoteDownloadMMSTGI:
+                value:
+                  type: LAUNCH_REMOTE_DOWNLOAD
+                  parameters:
+                    networkType: IP_ADSL
+                    tmsPlatformAuto: MMS
+                    contractNumber: "1234567890"
+                    softwareNumber: "75520"
+                summary: Launch remote download on MMS with TGI
+              initLyraSSL2:
+                value:
+                  type: INIT_LYRASSL2
+                  parameters:
+                    overrideProfile: true
+                    pki: "12345678"
+                summary: Init LYRASSL2
+              clessActivationAuto:
+                value:
+                  type: CLESS_ACTIVATION
+                  parameters:
+                    activate: true
+                    interface: AUTO
+                summary: Cless activation Automatic interface selection
+              clessActivationManualUSB:
+                value:
+                  type: CLESS_ACTIVATION
+                  parameters:
+                    activate: true
+                    interface: USB
+                summary: Cless activation manual interface selection
+              clessDeactivation:
+                value:
+                  type: CLESS_ACTIVATION
+                  parameters:
+                    activate: false
+                summary: Cless deactivation
+              setupAppCbContact:
+                value:
+                  type: SETUP_APP
+                  parameters:
+                    applicationType: CB_CONTACT
+                    version: B13
+                    applicationCode: CBEMV1
+                    merchantNumber: "1234567"
+                    logicalNumber: "001"
+                    bankCode: "12345"
+                    fctCapacity: 200
+                    printTnaTicket: true
+                    connectivity:
+                      type: X25
+                      centerNumber: "01234567890"
+                summary: Setup app - CB CONTACT
+              setupAppCbCless:
+                value:
+                  type: SETUP_APP
+                  parameters:
+                    applicationType: CB_CLESS
+                    version: B13
+                    applicationCode: CB CL1
+                    merchantNumber: "1234567"
+                    logicalNumber: "001"
+                    bankCode: "12345"
+                    fctCapacity: 200
+                    printTnaTicket: true
+                    connectivity:
+                      type: X25
+                      centerNumber: "01234567890"
+                summary: Setup app - CB CLESS
+              setupAppAmex:
+                value:
+                  type: SETUP_APP
+                  parameters:
+                    applicationType: AMEX
+                    applicationCode: AMEX1
+                    merchantNumber: "1234567"
+                    logicalNumber: "001"
+                    bankCode: "12345"
+                    printTnaTicket: true
+                    amexComCredit: true
+                    amexComCancel: true
+                    amexDelayedCall: true
+                    connectivity:
+                      type: X25
+                      centerNumber: "01234567890"
+                summary: Setup app - AMEX
+              setupAppAmexQp:
+                value:
+                  type: SETUP_APP
+                  parameters:
+                    applicationType: AMEX_QP
+                    applicationCode: AMEXQP
+                    merchantNumber: "1234567890"
+                    logicalNumber: "001"
+                    bankCode: "12345"
+                    printTnaTicket: true
+                    connectivity:
+                      type: X25
+                summary: Setup app - AMEX QP
+              setupAppVad:
+                value:
+                  type: SETUP_APP
+                  time: "2021-01-31T16:43:00Z"
+                  parameters:
+                    applicationType: VAD
+                    applicationCode: VAD1
+                    merchantNumber: "1234567890"
+                    logicalNumber: "001"
+                    bankCode: "12345"
+                    printTnaTicket: true
+                    connectivity:
+                      type: X25
+                      centerNumber: "01234567890"
+                summary: Setup app - VAD
+              setupAppPlbs:
+                value:
+                  type: SETUP_APP
+                  parameters:
+                    applicationType: PLBS
+                    version: Auto
+                    applicationCode: PLBS1
+                    merchantNumber: "1234567"
+                    logicalNumber: "001"
+                    bankCode: "12345"
+                    printTnaTicket: true
+                    connectivity:
+                      type: X25
+                      centerNumber: "01234567890"
+                summary: Setup app - PLBS
+              setupAppNxs:
+                value:
+                  type: SETUP_APP
+                  time: "2021-01-31T16:43:00Z"
+                  parameters:
+                    applicationType: NXS
+                    applicationCode: NXS1
+                    merchantNumber: "1234567890"
+                    logicalNumber: "001"
+                    bankCode: "12345"
+                    connectivity:
+                      type: X25
+                      centerNumber: "01234567890"
+                summary: Setup app - NXS
+              setupAppIzicap:
+                value:
+                  type: SETUP_APP
+                  parameters:
+                    applicationType: IZICAP
+                    rankNumber: "001"
+                    merchantNumber: "0123456"
+                    merchantCode: "951234"
+                summary: Setup app - IZICAP
+              timezone:
+                value:
+                  type: TIMEZONE
+                  parameters:
+                    region: FRANCE_REUNION
+                summary: Setup POS time Zone (Telium 2 POS only)
+              launchDiagnostic:
+                value:
+                  type: LAUNCH_DIAGNOSTIC
+                summary: Launch POS gateway and TMS diagnostic
+              launchStca2GprsPortMigration:
+                value:
+                  type: STCA2_GPRS_PORT_MIGRATION
+                summary: Launch GPRS STCA2 port migration
+              launchStca2IpPortMigration:
+                value:
+                  type: STCA2_IP_PORT_MIGRATION
+                summary: Launch IP/ADSL STCA2 port migration
+      responses:
+        "200":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          description: Device not found
+        "409":
+          description: Incompatible device or inconsistent parameters for the order
+        "429":
+          $ref: "#/components/responses/429"
+    get:
+      tags:
+        - Order
+      summary: Get device's orders
+      description: >
+        Get all orders of one device.<br>
+
+        A unitary order (launched by Back office or API) contains only an `execution` property. It describes the execution status of the order. 
+
+        ```
+
+        {
+          "id": "12A313G545487511F2132" 
+          "source": "API",
+          "context": "UNITARY",
+          "user": "userLogin1",
+          "time": "2021-07-30T14:57:09Z",
+          "type": "SEND_MESSAGE",
+          "label": "Merry christmas single order",
+          "execution": {
+            "status": "STARTED",
+            "createdAt": "2021-07-30T14:57:09Z",
+            "updatedAt": "2021-08-01T01:42:09Z",
+            "startedAt": "2021-07-30T14:59:09Z"
+          }
+        }
+
+        ```    
+
+
+        An order launched from a campaign (back office) contains an `execution` property (it describes the execution status of the order) and a "campaign" properties (it describes the campaign the order comes from)
+
+        ```
+
+        {
+          "id": "12A313G545487511F2132" 
+          "source": "BO",
+          "context": "CAMPAIGN",
+          "user": "userLogin2",
+          "time": "2021-07-30T14:57:09Z",
+          "type": "LAUNCH_REMOTE_DOWNLOAD",
+          "campaign": {
+            "name": "CB 5.5 update campaign",
+            "archived": false,
+            "createdAt": "2021-07-30T14:57:09Z",
+            "updatedAt": "2021-08-01T01:42:09Z"
+          },
+          "execution": {
+            "status": "STARTED",
+            "createdAt": "2021-07-30T14:57:09Z",
+            "updatedAt": "2021-08-01T01:42:09Z",
+            "startedAt": "2021-07-30T14:59:09Z"
+          }
+        }
+
+        ```
+
+
+        An order launched from a initialization code (back office) contains an `execution` property  (it describes the execution status of the order) and an `initCode` property (it describes the initialization code the order comes from)
+
+        ```
+
+        {
+          "id": "12A313G545487511F2132" 
+          "source": "BO",
+          "context": "INITCODE",      
+          "user": "userLogin1",
+          "time": "2021-07-30T14:57:09Z",
+          "type": "SETUP_APP",
+          "initCode": {
+            "code":"1234565"
+            "name": "App init with init code",
+            "archived": false,
+            "createdAt": "2021-07-30T14:57:09Z",
+            "updatedAt": "2021-08-01T01:42:09Z"
+          },
+          "execution": {
+            "status": "STARTED",
+            "createdAt": "2021-07-30T14:57:09Z",
+            "updatedAt": "2021-08-01T01:42:09Z",
+            "startedAt": "2021-07-30T14:59:09Z"
+          }
+        }
+
+        ```
+
+
+        <div style="color: red; font-weight: bold">NB : Order parameters are not available in this resource. If you want to consult it, you have to use the following resource: </div>
+
+
+        ```
+
+        /v1/devices/{deviceId}/orders/{orderId}
+
+        ```
+      operationId: getOrders
+      parameters:
+        - in: path
+          name: id
+          description: Device id
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: pageable
+          schema:
+            $ref: "#/components/schemas/Pageable"
+      responses:
+        "200":
+          description: Device's orders
+          content:
+            application/json:
+              schema:
+                x-all-of-name: PagedModel
+                allOf:
+                  - $ref: "#/components/schemas/PagedModel"
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Order"
+              examples:
+                get:
+                  value:
+                    page:
+                      number: 0
+                      size: 20
+                      totalElements: 3
+                      totalPages: 1
+                    content:
+                      - id: 12A313G545487511F2132
+                        user: userLogin1
+                        time: "2021-07-30T14:57:09Z"
+                        source: API
+                        context: UNITARY
+                        type: SEND_MESSAGE
+                        label: Merry christmas single order
+                        execution:
+                          status: STARTED
+                          createdAt: "2021-07-30T14:57:09Z"
+                          updatedAt: "2021-08-01T01:42:09Z"
+                          startedAt: "2021-07-30T14:59:09Z"
+                      - id: 12A313G545487511F2789
+                        user: userLogin2
+                        time: "2021-07-30T14:57:09Z"
+                        source: BO
+                        context: CAMPAIGN
+                        type: LAUNCH_REMOTE_DOWNLOAD
+                        campaign:
+                          name: CB 5.5 update campaign
+                          archived: false
+                          createdAt: "2021-07-30T14:57:09Z"
+                          updatedAt: "2021-08-01T01:42:09Z"
+                        execution:
+                          status: STARTED
+                          createdAt: "2021-07-30T14:57:09Z"
+                          updatedAt: "2021-08-01T01:42:09Z"
+                          startedAt: "2021-07-30T14:59:09Z"
+                      - id: 12A313G545487511F7532
+                        user: userLogin1
+                        time: "2021-07-30T14:57:09Z"
+                        source: BO
+                        context: INITCODE
+                        type: SETUP_APP
+                        initCode:
+                          code: "78945612"
+                          name: App init with init code
+                          archived: false
+                          createdAt: "2021-07-30T14:57:09Z"
+                          updatedAt: "2021-08-01T01:42:09Z"
+                        execution:
+                          status: STARTED
+                          createdAt: "2021-07-30T14:57:09Z"
+                          updatedAt: "2021-08-01T01:42:09Z"
+                          startedAt: "2021-07-30T14:59:09Z"
+                  summary: Get orders
+        "204":
+          $ref: "#/components/responses/204"
+        "206":
+          $ref: "#/components/responses/206"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          description: Device not found
+        "429":
+          $ref: "#/components/responses/429"
+  "/v1/devices/{deviceId}/orders/{orderId}":
+    get:
+      tags:
+        - Order
+      summary: Get an order on one device
+      description: |
+        <div style="color: red; font-weight: bold">NOT IMPLEMENTED YET</div>
+        Get one orders of one device
+      operationId: getOrder
+      parameters:
+        - in: path
+          name: deviceId
+          description: Device id
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: orderId
+          description: Order id
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: The requested order from targeted POS
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+              examples:
+                unitaryOrder:
+                  value:
+                    id: 12A313G545487511F2132
+                    source: API
+                    context: UNITARY
+                    user: userLogin1
+                    time: "2021-07-30T14:57:09Z"
+                    type: SEND_MESSAGE
+                    label: Merry christmas single order
+                    parameters:
+                      message: We wish you a merry xmas and a happy new year
+                      confirmation: false
+                      onScreen: true
+                      onPrinter: true
+                    execution:
+                      status: STARTED
+                      createdAt: "2021-07-30T14:57:09Z"
+                      updatedAt: "2021-08-01T01:42:09Z"
+                      startedAt: "2021-07-30T14:59:09Z"
+                  summary: Unitary order launched from API
+                campaignOrder:
+                  value:
+                    id: 12A313G545487511F2132
+                    source: BO
+                    context: CAMPAIGN
+                    user: userLogin2
+                    time: "2021-07-30T14:57:09Z"
+                    type: LAUNCH_REMOTE_DOWNLOAD
+                    parameters:
+                      networkType: IP_ADSL
+                      tmsPlatformAuto: TEM
+                      contractNumber: "1231654654"
+                      softwareNumber: "0001234"
+                      launchRemoteCollection: true
+                    campaign:
+                      name: CB 5.5 update campaign
+                      archived: false
+                      createdAt: "2021-07-30T14:57:09Z"
+                      updatedAt: "2021-08-01T01:42:09Z"
+                    execution:
+                      status: STARTED
+                      createdAt: "2021-07-30T14:57:09Z"
+                      updatedAt: "2021-08-01T01:42:09Z"
+                      startedAt: "2021-07-30T14:59:09Z"
+                  summary: Order from campaign
+                initCodeOrder:
+                  value:
+                    id: 12A313G545487511F2132
+                    source: BO
+                    context: INITCODE
+                    user: userLogin1
+                    time: "2021-07-30T14:57:09Z"
+                    type: SETUP_APP
+                    parameters:
+                      applicationType: CB_CONTACT
+                      applicationCode: code
+                      version: "5.5"
+                      merchantNumber: "1234567"
+                      logicalNumber: "001"
+                      bankCode: "12345"
+                      fctCapacity: 200
+                      printTnaTicket: true
+                      connectivity:
+                        type: X25
+                        centerNumber: "01234567890"
+                      initCode:
+                        code: "7894563"
+                        name: App init with init code
+                        archived: false
+                        createdAt: "2021-07-30T14:57:09Z"
+                        updatedAt: "2021-08-01T01:42:09Z"
+                      execution:
+                        status: STARTED
+                        createdAt: "2021-07-30T14:57:09Z"
+                        updatedAt: "2021-08-01T01:42:09Z"
+                        startedAt: "2021-07-30T14:59:09Z"
+                  summary: Order from intialization code
+        "206":
+          $ref: "#/components/responses/206"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          description: Device or order not found (missing resource specified in response
+            body)
+        "429":
+          $ref: "#/components/responses/429"
+  /v1/presubscriptions:
+    post:
+      tags:
+        - Pre Subscription
+      summary: Pre subscription of devices
+      description: Pre subscription of devices
+      operationId: presubscriptions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreSubscription"
+            examples:
+              fromSerials:
+                value:
+                  clientCode: "01234567"
+                  devices:
+                    - type: TELIUM
+                      serial: 12345WL12345678
+                    - type: TELIUM
+                      serial: WL45678901
+                    - type: TETRA
+                      serial: "172487333191009912345678"
+                    - type: TETRA
+                      serial: "3191009912345678"
+                    - type: ENGAGE
+                      serial: "123456123"
+                    - serial: "0001234123456123"
+                    - mobileNetwork:
+                        imei: "0001234123456123"
+                    - mobileNetwork:
+                        iccid: "89330126436012345678"
+      responses:
+        "200":
+          description: Device presubscribed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreSubscription"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "429":
+          $ref: "#/components/responses/429"
 components:
+  responses:
+    "204":
+      description: No content
+    "206":
+      description: Partial result (in several pages)
+    "400":
+      description: Request is invalid
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+            required:
+              - field
+              - message
+    "401":
+      description: Request unauthorized
+    "403":
+      description: Access forbidden
+    "429":
+      description: Too many requests
   schemas:
-    Dog: 
-      allOf:
-        - $ref: "#/components/schemas/Pet"
-        - type: object
-          properties:
-            dogName:
-              type: string
-    Cat:
-      allOf:
-        - $ref: "#/components/schemas/Pet"
-        - type: object
-          properties:
-            catName:
-              type: string
-    Pet:
-      required:
-      - name
-      - type
+    Link:
       type: object
-      properties:  
-        id:
+      description: External links
+      properties:
+        frontDetailPage:
+          type: object
+          description: Link to the POS detail page of LUMA front office.
+          properties:
+            href:
+              type: string
+    PagedModel:
+      description: Page Model
+      type: object
+      properties:
+        page:
+          type: object
+          properties:
+            number:
+              type: integer
+              description: Current page number
+              format: int32
+              example: 1
+              readOnly: true
+            size:
+              type: integer
+              description: Number of items per page
+              format: int32
+              example: 10
+              readOnly: true
+            totalElements:
+              type: integer
+              description: Total of items for the whole of pages
+              format: int32
+              example: 1
+              readOnly: true
+            totalPages:
+              type: integer
+              description: Total of pages
+              format: int32
+              example: 1
+              readOnly: true
+        links:
+          type: object
+          description: Navigate between response pages
+          properties:
+            first:
+              type: object
+              description: First page
+              properties:
+                href:
+                  type: string
+            self:
+              type: object
+              description: Current page
+              properties:
+                href:
+                  type: string
+            next:
+              type: object
+              description: Next page
+              properties:
+                href:
+                  type: string
+            last:
+              type: object
+              description: Last page
+              properties:
+                href:
+                  type: string
+        content:
+          type: array
+          description: Items in the current page
+          items:
+            type: object
+    Pageable:
+      description: minimal Pageable query parameters
+      type: object
+      properties:
+        page:
           type: integer
-          format: int64
-          example: 10
-        name:
+          description: Results page you want to retrieve (0..N)
+          default: 1
+          minimum: 1
+        size:
+          type: integer
+          description: Number of records per page
+          maximum: 100
+          default: 20
+        sort:
           type: string
-          example: doggie
+          description: "Sorting criteria in the format: property(,asc|desc). Default sort
+            order is ascending(asc). Multiple sort criteria are supported."
+          example: serial(desc)
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ed456a456b45g
+          description: Order technical id
+          readOnly: true
+        context:
+          type: string
+          readOnly: true
+          description: >
+            The context describe how order was created
+              * `CAMPAIGN` The order was created from a campaign
+              * `UNITARY` The order was created as a unitayr order
+              * `INITCODE` The order was createdby executing an initilization code
+          enum:
+            - CAMPAIGN
+            - UNITARY
+            - INITCODE
+        source:
+          type: string
+          readOnly: true
+          description: >
+            The context describe where order was created
+              * `BO` The order was created from the back office
+              * `API` The order was created from the API
+              * `SYSTEM` The order was created by SYSTEM (Luma auto update, Setup Luma)
+          enum:
+            - BO
+            - API
+            - SYSTEM
+        user:
+          type: string
+          example: lionel
+          readOnly: true
+        time:
+          description: The date (in date-time format 2021-01-31T16:43:00Z) when you want
+            to execute order. Keep empty for an execution as soon as possible
+            (next Luma synchronization).
+          type: string
+          format: date-time
         type:
+          description: >
+            Gateway protocol.
+              * `SEND_MESSAGE` sends messages a to the POS 
+              * `MAIN_CONNECTIVITY` modifies the main gateway connection settings
+              * `FALLBACK_CONNECTIVITY` activates / deactivate and modify the backup gateway connection settings  
+              * `TMS_CONNECTIVITY` modifies the POS TMS connection settings
+              * `LAUNCH_REMOTE_DOWNLOAD` launches TMS/TEM/MMS download on POS
+              * `SETUP_APP` initializes a banking contract on banking applications
+              * `INIT_LYRASSL2` creates a LYRASSL2 profile using a PKI
+              * `CLESS_ACTIVATION` activates / deactivates contactless feature on POS
+              * `TIMEZONE` changes the POS time zone
+              * `LAUNCH_DIAGNOSTIC` launches a LUMA diagnosis
+              * `STCA2_GPRS_PORT_MIGRATION` launches a GPRS STCA2 port migration
+              * `STCA2_IP_PORT_MIGRATION` launches an IP STCA2 port migration
+              * `SETUP_DISPLAY` changes the POS display and add set a logo as screen saver. This order cannot be launched using LUMA API, but it can be viewed into POS orders list
+              * `UPDATE_LUMA` updates LUMA on POS side. Luma version will be the latest
+              * `SETUP_MANAGER` This order cannot be launched using LUMA API, but it can be viewed into POS orders list
+              * `UPDATE_LUMA_CERTIFICATES` This order cannot be launched using LUMA API, but it can be viewed into POS orders list
+              * `UPDATE_OTHER_CERTIFICATES` This order cannot be launched using LUMA API, but it can be viewed into POS orders list
           type: string
+          example: SEND_MESSAGE
+          enum:
+            - SEND_MESSAGE
+            - MAIN_CONNECTIVITY
+            - FALLBACK_CONNECTIVITY
+            - TMS_CONNECTIVITY
+            - LAUNCH_REMOTE_DOWNLOAD
+            - SETUP_APP
+            - INIT_LYRASSL2
+            - CLESS_ACTIVATION
+            - TIMEZONE
+            - LAUNCH_DIAGNOSTIC
+            - STCA2_GPRS_PORT_MIGRATION
+            - STCA2_IP_PORT_MIGRATION
+            - SETUP_DISPLAY
+            - UPDATE_LUMA
+            - SETUP_MANAGER
+            - UPDATE_LUMA_CERTIFICATES
+            - UPDATE_OTHER_CERTIFICATES
+        label:
+          type: string
+        parameters:
+          type: object
+        initCode:
+          type: object
+          readOnly: true
+          properties:
+            archived:
+              type: boolean
+              example: false
+            code:
+              type: string
+              example: 887463
+            createdAt:
+              type: string
+              format: date-time
+              example: 2021-01-18T15:51:35.497+0000
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2021-01-18T15:51:35.497+0000
+            name:
+              type: string
+              example: code de preparation
+        campaign:
+          type: object
+          readOnly: true
+          properties:
+            archived:
+              type: boolean
+              example: false
+            createdAt:
+              type: string
+              format: date-time
+              example: 2021-01-18T15:51:35.497+0000
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2021-01-18T15:51:35.497+0000
+            name:
+              type: string
+              example: code de preparation
+        execution:
+          type: object
+          readOnly: true
+          properties:
+            status:
+              type: string
+              enum:
+                - CREATED
+                - STARTING
+                - PUBLISHING
+                - STARTED
+                - CANCELLATION
+                - CANCELED
+                - ENDED
+              example: STARTED
+            createdAt:
+              type: string
+              format: date-time
+              example: 2021-01-18T15:51:35.497+0000
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2021-01-18T15:51:35.497+0000
+            startedAt:
+              type: string
+              format: date-time
+              example: 2021-01-18T15:51:35.497+0000
+      required:
+        - type
       discriminator:
         propertyName: type
         mapping:
-          CAT: "#/components/schemas/Cat"
-          DOG: "#/components/schemas/Dog"
-            
+          SEND_MESSAGE: "#/components/schemas/SendMessageOrder"
+          MAIN_CONNECTIVITY: "#/components/schemas/MainConnectivityOrder"
+          FALLBACK_CONNECTIVITY: "#/components/schemas/FallbackConnectivityOrder"
+          TMS_CONNECTIVITY: "#/components/schemas/TmsConnectivityOrder"
+          LAUNCH_REMOTE_DOWNLOAD: "#/components/schemas/LaunchRemoteDownloadOrder"
+          SETUP_APP: "#/components/schemas/SetupAppOrder"
+          INIT_LYRASSL2: "#/components/schemas/InitLyraSSL2Order"
+          CLESS_ACTIVATION: "#/components/schemas/ClessActivationOrder"
+          TIMEZONE: "#/components/schemas/TimeZoneOrder"
+          LAUNCH_DIAGNOSTIC: "#/components/schemas/DiagnosticsOrder"
+          STCA2_GPRS_PORT_MIGRATION: "#/components/schemas/GprsStca2Order"
+          STCA2_IP_PORT_MIGRATION: "#/components/schemas/IpStca2Order"
+          SETUP_DISPLAY: "#/components/schemas/SetupDisplayOrder"
+          SETUP_MANAGER: "#/components/schemas/AdvancedSetupManagerOrder"
+          UPDATE_LUMA: "#/components/schemas/LumaUpdateOrder"
+          UPDATE_LUMA_CERTIFICATES: "#/components/schemas/LumaCertificateUpdateOrder"
+          UPDATE_OTHER_CERTIFICATES: "#/components/schemas/OtherCertificateUpdateOrder"
+    SendMessageOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: Message sending order parameters
+              type: object
+              properties:
+                message:
+                  type: string
+                confirmation:
+                  description: It set to true the message wait the user press a button before
+                    hidding the message
+                  type: boolean
+                  default: false
+                onScreen:
+                  description: If you set it to true the message will be displayed on screen. One
+                    of these parrameter onScreen or onPrinter shall be true
+                  type: boolean
+                onPrinter:
+                  description: If you set it to true the message will be printed on ticket. One of
+                    these parrameter onScreen or onPrinter shall be true
+                  type: boolean
+    MainConnectivityOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              $ref: "#/components/schemas/MainConnectivityOrderParameters"
+    MainConnectivityOrderParameters:
+      description: Main gateway connectivity order parameters
+      type: object
+      properties:
+        connectionType:
+          type: string
+          description: |
+            Connection used to reach Main gateway:
+             * `SIM` Join Main gateway using mobile network
+             * `IP_ADSL` Main gateway using ADSL/IP network 
+             * `RTC` Join Main gateway using RTC network
+          enum:
+            - SIM
+            - IP_ADSL
+            - RTC
+      required:
+        - connectionType
+      discriminator:
+        propertyName: connectionType
+        mapping:
+          SIM: "#/components/schemas/MainConnectivityOrderParametersSim"
+          IP_ADSL: "#/components/schemas/MainConnectivityOrderParametersIPAdsl"
+          RTC: "#/components/schemas/MainConnectivityOrderParametersRTC"
+    MainConnectivityOrderParametersSim:
+      allOf:
+        - $ref: "#/components/schemas/MainConnectivityOrderParameters"
+        - type: object
+          properties:
+            provider:
+              description: >
+                Provider allows to easily define Lyra gateways settings. 
+                  * `GPRS_LYRA` Join lyra gateway using mobile network. It's equivalent to :
+                    * ipAddress : 192.168.151.200
+                    * Port : 1246
+                    * gateway : 43 (RFC1086+ SSL)
+                    * sslEnabled : true
+                    * sslProfile : SIMPLEAUTH
+              enum:
+                - GPRS_LYRA
+            gateway:
+              description: |
+                Gateway protocol.
+                  * `32` PAD X28
+                  * `33` PAD X28 SSL
+                  * `40` RFC1086
+                  * `41` RFC1086 SSL
+                  * `42` RFC1086+
+                  * `43` RFC1086+ SSL
+                  * `64` GIPX25 V2
+                  * `65` GIPX25 V2 SSL
+                  * `66` GIPX25 V1
+                  * `67` GIPX25 V1 SSL
+              type: integer
+              format: int32
+              enum:
+                - 32
+                - 33
+                - 40
+                - 41
+                - 42
+                - 43
+                - 64
+                - 65
+                - 66
+                - 67
+            ipAddress:
+              description: |
+                IP adress of the gateway. Here is the allowed IP adddresses :
+                  * `192.168.151.200`
+                  * `192.168.1.10`
+              type: string
+            port:
+              description: |
+                Port of the gateway. Here is the allowed ports :
+                  * `1146`
+                  * `1156`
+                  * `1246`
+                  * `1256`
+                  * `3386`
+              type: integer
+              format: int32
+            sslEnabled:
+              description: Allows to define whether the gateway use TLS/SSL (true) or not
+                (false)
+              type: boolean
+            sslProfile:
+              description: Allows to define the SSL profile to use.
+              type: string
+            terminalBase:
+              description: Idicatte the connectivity of the POS when it's docked on its base.
+              type: string
+              enum:
+                - SIM
+                - RTC
+            simApn:
+              description: APN of the SIM card used to contact the gateway
+              type: string
+            simLogin:
+              description: Login of the SIM card used to contact the gateway
+              type: string
+            simPassword:
+              description: password of the SIM card used to contact the gateway
+              type: string
+    MainConnectivityOrderParametersIPAdsl:
+      allOf:
+        - $ref: "#/components/schemas/MainConnectivityOrderParameters"
+        - type: object
+          properties:
+            provider:
+              type: string
+              description: >
+                Provider allows to easily define Lyra gateways 
+                  * `IP_TLS_LYRA` Join TMS using ADSL/IP network, It's equivalent to :
+                    * ipAddress : 194.50.38.45
+                    * Port : 1146
+                    * gateway : 43 (RFC1086+ SSL)
+                    * sslEnabled : true
+                    * sslProfile : LYRASSL2
+
+                  * `IP_BDX_LYRA` Join TMS using RTC network, It's equivalent to :
+                    * ipAddress : 194.50.38.173
+                    * Port : 1146
+                    * gateway : 43 (RFC1086+ SSL)
+                    * sslEnabled : true
+                    * sslProfile : LYRASSL2            
+              enum:
+                - IP_TLS_LYRA
+                - IP_BDX_LYRA
+            gateway:
+              description: |
+                Gateway protocol.
+                  * `32` PAD X28
+                  * `33` PAD X28 SSL
+                  * `40` RFC1086
+                  * `41` RFC1086 SSL
+                  * `42` RFC1086+
+                  * `43` RFC1086+ SSL
+                  * `64` GIPX25 V2
+                  * `65` GIPX25 V2 SSL
+                  * `66` GIPX25 V1
+                  * `67` GIPX25 V1 SSL
+              type: integer
+              format: int32
+              enum:
+                - 32
+                - 33
+                - 40
+                - 41
+                - 42
+                - 43
+                - 64
+                - 65
+                - 66
+                - 67
+            ipAddress:
+              description: |
+                IP adress of the gateway. Here is the allowed IP adddresses :
+                  * `194.50.38.6`
+                  * `194.50.38.134`
+                  * `194.50.38.45`
+                  * `194.50.38.173`
+              type: string
+            port:
+              description: |
+                Port of the gateway. Here is the allowed ports :
+                  * `1146`
+                  * `1156`
+                  * `1246`
+                  * `1256`
+              type: integer
+              format: int32
+            sslEnabled:
+              description: Allows to define whether the gateway use TLS/SSL (true) or not
+                (false)
+              type: boolean
+            sslProfile:
+              description: Allows to define the SSL profile to use.
+              type: string
+    MainConnectivityOrderParametersRTC:
+      allOf:
+        - $ref: "#/components/schemas/MainConnectivityOrderParameters"
+    FallbackConnectivityOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              $ref: "#/components/schemas/FallbackConnectivityOrderParameters"
+    FallbackConnectivityOrderParameters:
+      description: Fallback gateway connectivity order parameters
+      type: object
+      properties:
+        allowFallback:
+          description: Activate or deactivate fallback connection.
+          type: string
+          example: 'false'
+      required:
+        - allowFallback
+      discriminator:
+        propertyName: allowFallback
+        mapping:
+          'false': "#/components/schemas/FallbackConnectivityOrderParametersNotEnabled"
+          'true': "#/components/schemas/FallbackConnectivityOrderParametersEnabled"
+    FallbackConnectivityOrderParametersEnabled:
+      allOf:
+        - $ref: "#/components/schemas/FallbackConnectivityOrderParameters"
+        - type: object
+          properties:
+            connectionParameters:
+              $ref: "#/components/schemas/FallbackConnectivityOrderConnectionParameters"
+    FallbackConnectivityOrderParametersNotEnabled:
+      allOf:
+        - $ref: "#/components/schemas/FallbackConnectivityOrderParameters"
+    FallbackConnectivityOrderConnectionParameters:
+      description: Fallback gateway connectivity order parameters
+      type: object
+      properties:
+        connectionType:
+          description: |
+            Connection used to reach Main gateway:
+              * `SIM` Join backup gateway using mobile network
+              * `IP_ADSL` backup gateway using ADSL/IP network 
+              * `RTC` Join backup gateway using RTC network
+          type: string
+          enum:
+            - SIM
+            - IP_ADSL
+            - RTC
+      required:
+        - connectionType
+      discriminator:
+        propertyName: connectionType
+        mapping:
+          SIM: "#/components/schemas/FallbackConnectivityOrderConnectionParametersSim"
+          IP_ADSL: "#/components/schemas/FallbackConnectivityOrderConnectionParametersIPA\
+            dsl"
+          RTC: "#/components/schemas/FallbackConnectivityOrderConnectionParametersRTC"
+    FallbackConnectivityOrderConnectionParametersSim:
+      allOf:
+        - $ref: "#/components/schemas/FallbackConnectivityOrderConnectionParameters"
+        - type: object
+          properties:
+            provider:
+              description: >
+                Provider allows to easily define Lyra gateways settings. 
+                  * `GPRS_LYRA` Join lyra gateway using mobile network. It's equivalent to :
+                    * ipAddress : 192.168.151.200
+                    * Port : 1246
+                    * gateway : 43 (RFC1086+ SSL)
+                    * sslEnabled : true
+                    * sslProfile : SIMPLEAUTH
+              enum:
+                - GPRS_LYRA
+            gateway:
+              description: |
+                Gateway protocol.
+                  * `32` PAD X28
+                  * `33` PAD X28 SSL
+                  * `40` RFC1086
+                  * `41` RFC1086 SSL
+                  * `42` RFC1086+
+                  * `43` RFC1086+ SSL
+                  * `64` GIPX25 V2
+                  * `65` GIPX25 V2 SSL
+                  * `66` GIPX25 V1
+                  * `67` GIPX25 V1 SSL
+              type: integer
+              format: int32
+              enum:
+                - 32
+                - 33
+                - 40
+                - 41
+                - 42
+                - 43
+                - 64
+                - 65
+                - 66
+                - 67
+            ipAddress:
+              description: |
+                IP adress of the gateway. Here is the lyra IP adddresses
+                  * `192.168.151.200`
+                  * `192.168.1.10`
+              type: string
+            port:
+              description: |
+                Port of the gateway. Here is the lyra ports
+                  * `1146`
+                  * `1246`
+                  * `3386`
+              type: integer
+              format: int32
+            sslEnabled:
+              description: Allows to define whether the gateway use TLS/SSL (true) or not
+                (false)
+              type: boolean
+            sslProfile:
+              description: Allows to define the SSL profile to use.
+              type: string
+            simApn:
+              description: APN of the SIM card used to contact the gateway
+              type: string
+            simLogin:
+              description: Login of the SIM card used to contact the gateway
+              type: string
+            simPassword:
+              description: password of the SIM card used to contact the gateway
+              type: string
+    FallbackConnectivityOrderConnectionParametersIPAdsl:
+      allOf:
+        - $ref: "#/components/schemas/FallbackConnectivityOrderConnectionParameters"
+        - type: object
+          properties:
+            allowFallback:
+              description: Activate (true) the fallback connectivity or Deactivate it (false)
+              type: string
+            provider:
+              type: string
+              description: >
+                Provider allows to easily define Lyra gateways 
+                  * `IP_TLS_LYRA` Join TMS using ADSL/IP network, It's equivalent to :
+                    * ipAddress : 194.50.38.45
+                    * Port : 1146
+                    * gateway : 43 (RFC1086+ SSL)
+                    * sslEnabled : true
+                    * sslProfile : LYRASSL2
+
+                  * `IP_BDX_LYRA` Join TMS using RTC network, It's equivalent to :
+                    * ipAddress : 194.50.38.173
+                    * Port : 1146
+                    * gateway : 43 (RFC1086+ SSL)
+                    * sslEnabled : true
+                    * sslProfile : LYRASSL2            
+              enum:
+                - IP_TLS_LYRA
+                - IP_BDX_LYRA
+            gateway:
+              description: |
+                Gateway protocol.
+                  * `32` PAD X28
+                  * `33` PAD X28 SSL
+                  * `40` RFC1086
+                  * `41` RFC1086 SSL
+                  * `42` RFC1086+
+                  * `43` RFC1086+ SSL
+                  * `64` GIPX25 V2
+                  * `65` GIPX25 V2 SSL
+                  * `66` GIPX25 V1
+                  * `67` GIPX25 V1 SSL
+              type: integer
+              format: int32
+              enum:
+                - 32
+                - 33
+                - 40
+                - 41
+                - 42
+                - 43
+                - 64
+                - 65
+                - 66
+                - 67
+            ipAddress:
+              description: |
+                IP adress of the gateway. Here is the lyra adddresses :
+                  * `194.50.38.6`
+                  * `194.50.38.134`
+                  * `194.50.38.45`
+                  * `194.50.38.173`
+              type: string
+            port:
+              description: |
+                Port of the gateway. Here is the lyra port :
+                  * `1146`
+                  * `1246`
+              type: integer
+              format: int32
+            sslEnabled:
+              description: Allows to define whether the gateway use TLS/SSL (true) or not
+                (false)
+              type: boolean
+            sslProfile:
+              description: Allows to define the SSL profile to use.
+              type: string
+    FallbackConnectivityOrderConnectionParametersRTC:
+      allOf:
+        - $ref: "#/components/schemas/FallbackConnectivityOrderConnectionParameters"
+    TmsConnectivityOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              $ref: "#/components/schemas/TmsConnectivityOrderParameters"
+    TmsConnectivityOrderParameters:
+      description: TMS connectivity order parameters
+      type: object
+      properties:
+        connectionType:
+          type: string
+          description: |
+            Connection used to reach TMS:
+             * `SIM` Join TMS using mobile network
+             * `IP_ADSL` TMS using ADSL/IP network 
+             * `RTC` Join TMS using RTC network
+          enum:
+            - SIM
+            - IP_ADSL
+            - RTC
+        identifier:
+          description: The TMS/TEM identifier or the MMS TGI (if Veirone POS is registered
+            on a MMS TGI i's no use to provide it)
+          type: string
+        downloadProtection:
+          description: Set this parameter to true if you want to activate protection using
+            TMS PIN code. Set it to false otherwise.
+          type: boolean
+        downloadProtectionCode:
+          description: PIN code to set when download portection is activated
+          type: string
+      required:
+        - connectionType
+        - identifier
+        - downloadProtection
+      discriminator:
+        propertyName: connectionType
+        mapping:
+          SIM: "#/components/schemas/TmsConnectivityOrderParametersSim"
+          IP_ADSL: "#/components/schemas/TmsConnectivityOrderParametersIPAdsl"
+          RTC: "#/components/schemas/TmsConnectivityOrderParametersRTC"
+    TmsConnectivityOrderParametersSim:
+      allOf:
+        - $ref: "#/components/schemas/TmsConnectivityOrderParameters"
+        - type: object
+          properties:
+            simApn:
+              description: APN of the SIM card used for the connection
+              type: string
+            simLogin:
+              description: Login of the SIM card used for the connection
+              type: string
+            simPassword:
+              description: password of the SIM card used for the connection
+              type: string
+            tmsPlatformAuto:
+              type: string
+              description: >
+                TMS plateform used to make a TMS download. It's a kind of
+                shotcut to allow you to choose a TMS platform more conveniently.
+                  * `TEM` Ingenico TEM
+                  * `MYTMS` Ingenico MYTMS
+              title: Auto
+              enum:
+                - TEM
+                - MYTMS
+            tmsPlatformManual:
+              type: object
+              description: Manual configuration
+              title: Manual
+              properties:
+                ipAddress:
+                  description: Custom IP adress of a TMS server
+                  type: string
+                port:
+                  description: Custom port of a TMS server
+                  type: integer
+                  format: int32
+                sslEnabled:
+                  description: Allows to define whether the TMS server use TLS/SSL (true) or not
+                    (false)
+                  type: boolean
+                sslProfile:
+                  description: If sslEnabled is true, Allows to define the SSL profile to use in
+                    the TMS transaction
+                  type: string
+          required:
+            - simApn
+            - simLogin
+            - simPassword
+    TmsConnectivityOrderParametersIPAdsl:
+      allOf:
+        - $ref: "#/components/schemas/TmsConnectivityOrderParameters"
+        - type: object
+          properties:
+            tmsPlatformAuto:
+              type: string
+              description: >
+                TMS plateform used to make a TMS download. It's a kind of
+                shotcut to allow you to choose a TMS platform more conveniently.
+                  * `TEM` Ingenico TEM
+                  * `MYTMS` Ingenico MYTMS
+              title: Auto
+              enum:
+                - TEM
+                - MYTMS
+            tmsPlatformManual:
+              type: object
+              description: >
+                Manual configuration used when you whan to override TMS
+                connection settings or if you want to use a custom
+                configiration. I you use it with tmsPlatformAuto parram the
+                value defined in tmsPlatformManual will overide tmsPlatformAuto
+                subparrams
+              title: Manual
+              properties:
+                ipAddress:
+                  description: Custom IP adress of a TMS server
+                  type: string
+                port:
+                  description: Custom port of a TMS server
+                  type: integer
+                  format: int32
+                sslEnabled:
+                  description: Allows to define whether the TMS server use TLS/SSL (true) or not
+                    (false)
+                  type: boolean
+                sslProfile:
+                  description: If sslEnabled is true, Allows to define the SSL profile to use in
+                    the TMS transaction
+                  type: string
+    TmsConnectivityOrderParametersRTC:
+      allOf:
+        - $ref: "#/components/schemas/TmsConnectivityOrderParameters"
+    LaunchRemoteDownloadOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: TMS/MMS download order parameters
+              type: object
+              properties:
+                networkType:
+                  type: string
+                  description: |
+                    Connection used to reach TMS:
+                      * `SIM` Join TMS using mobile network
+                      * `IP_ADSL` Join TMS using ADSL/IP network 
+                      * `RTC` Join TMS using RTC network
+                  enum:
+                    - SIM
+                    - IP_ADSL
+                    - RTC
+                contractNumber:
+                  description: The TMS/TEM identifier or the MMS TGI (if Veirone POS is registered
+                    on a MMS TGI i's no use to provide it)
+                  type: string
+                softwareNumber:
+                  description: The TMS/TEM software number or familly of a TEM/TMS package or a
+                    scenario number of the MMS
+                  type: string
+                launchRemoteCollection:
+                  description: When this parrameter is defined to "true" the luma will ask all
+                    application to make a remotecollection before download
+                  type: boolean
+                tmsPlatformAuto:
+                  type: string
+                  description: >
+                    TMS plateform used to make the download. It's a kind of
+                    shotcut to allow you to choose a TMS platform more
+                    conveniently.
+                      * `TEM` Ingenico TEM
+                      * `MYTMS` Ingenico MYTMS
+                      * `MMS` Verifone MMS
+                  title: Auto
+                  enum:
+                    - TEM
+                    - MYTMS
+                    - MMS
+                tmsPlatformManual:
+                  type: object
+                  description: >
+                    Manual configuration used when you whan to override TMS
+                    connection settings or if you want to use a custom
+                    configiration. I you use it with tmsPlatformAuto parram the
+                    value defined in tmsPlatformManual will overide
+                    tmsPlatformAuto subparrams
+                  title: Manual
+                  properties:
+                    ipAddress:
+                      description: Custom IP adress of a TMS server
+                      type: string
+                    port:
+                      description: Custom port of a TMS server
+                      type: integer
+                      format: int32
+                    sslEnabled:
+                      description: Allows to define whether the TMS server use TLS/SSL (true) or not
+                        (false)
+                      type: boolean
+                    sslProfile:
+                      description: If sslEnabled is true, Allows to define the SSL profile to use in
+                        the TMS transaction
+                      type: string
+    SetupAppOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              $ref: "#/components/schemas/SetupAppOrderParameters"
+    SetupAppOrderConnectivity:
+      description: Gateway connectivity for remote collection ...
+      type: object
+      properties:
+        type:
+          description: |
+            Connection with the gateway :
+              * `FULL_IP` Direct full IP connection
+              * `X25` X25 conection 
+          type: string
+          enum:
+            - FULL_IP
+            - X25
+        centerNumber:
+          description: required for `X25` connectivity
+          type: string
+        ipAddress:
+          description: Ethernet IP adress of the remote collection center (required for
+            `FULL_IP` connectivity)
+          type: string
+        portNumber:
+          description: Ethernet Port of the remote collection center (required for
+            `FULL_IP` connectivity)
+          type: integer
+          format: int32
+        sslProfile:
+          description: SSL profile for the remote collection center connection (required
+            for `FULL_IP` connectivity)
+          type: string
+        doubleAuthentication:
+          description: Double authentication for Verifone Engage POS (required for
+            `FULL_IP` connectivity, **Verifone only**)
+          type: boolean
+          default: false
+      required:
+        - type
+    SetupAppOrderParameters:
+      description: Application initilization order parameters
+      type: object
+      properties:
+        applicationType:
+          description: |
+            The application you want to initialize :
+              * `CB_CONTACT` CB contact application
+              * `CB_CLESS` CB contactless application
+              * `AMEX` American Express contact application
+              * `AMEX_QP` American Express contacless application
+              * `PLBS` PLBS application 
+              * `VAD` VAD application 
+              * `NXS` NXS application 
+              * `IZICAP` Izicap/LoyalT application 
+          type: string
+          enum:
+            - CB_CONTACT
+            - CB_CLESS
+            - AMEX
+            - AMEX_QP
+            - PLBS
+            - VAD
+            - NXS
+            - IZICAP
+      required:
+        - applicationType
+      discriminator:
+        propertyName: applicationType
+        mapping:
+          CB_CONTACT: "#/components/schemas/SetupAppOrderParametersCBContact"
+          CB_CLESS: "#/components/schemas/SetupAppOrderParametersCBCless"
+          AMEX: "#/components/schemas/SetupAppOrderParametersAmex"
+          AMEX_QP: "#/components/schemas/SetupAppOrderParametersAmexQp"
+          PLBS: "#/components/schemas/SetupAppOrderParametersPlbs"
+          VAD: "#/components/schemas/SetupAppOrderParametersVad"
+          NXS: "#/components/schemas/SetupAppOrderParametersNxs"
+          IZICAP: "#/components/schemas/SetupAppOrderParametersIzicap"
+    SetupAppOrderParametersCBContact:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            version:
+              description: >
+                the version of the application you want to initialize :
+                  * `B13` CB 5.2 B13
+                  * `5.5` CB 5.5
+                  * `Auto` LUMA try to dertermine the apropriate version of the CB application
+              type: string
+              enum:
+                - B13
+                - "5.5"
+                - Auto
+            merchantNumber:
+              description: Merchant Id. This the customer identifier of a banking contract.
+              type: string
+            bankCode:
+              description: Identifier of the contract-issuing bank
+              type: string
+            applicationCode:
+              description: Name (label) of the contract in the POS application
+              type: string
+            logicalNumber:
+              description: Instance number of the POS in the POS application
+              type: string
+            fctCapacity:
+              description: Maximum transaction capacity (**Ingenico only**)
+              type: integer
+              format: int32
+              enum:
+                - 200
+                - 500
+            printTnaTicket:
+              description: Allow to set if you want to print a failure ticket (true) or not
+                (false)
+              type: boolean
+              default: true
+            connectivity:
+              $ref: "#/components/schemas/SetupAppOrderConnectivity"
+          required:
+            - applicationCode
+            - merchantNumber
+            - logicalNumber
+            - bankCode
+            - connectivity
+    SetupAppOrderParametersCBCless:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            version:
+              description: >
+                the version of the application you want to initialize :
+                  * `B13` CB CLESS 5.2 B13
+                  * `5.5` CB CLESS 5.5
+                  * `Auto` LUMA try to dertermine the apropriate version of the CB CLESS application
+              type: string
+              enum:
+                - B13
+                - "5.5"
+                - Auto
+            merchantNumber:
+              description: Merchant Id. This the customer identifier of a banking contract.
+              type: string
+            bankCode:
+              description: Identifier of the contract-issuing bank
+              type: string
+            applicationCode:
+              description: Name (label) of the contract in the POS application
+              type: string
+            logicalNumber:
+              description: Instance number of the POS in the POS application
+              type: string
+            printTnaTicket:
+              description: Allow to set if you want to print a failure ticket (true) or not
+                (false)
+              type: boolean
+              default: true
+            connectivity:
+              $ref: "#/components/schemas/SetupAppOrderConnectivity"
+          required:
+            - applicationCode
+            - merchantNumber
+            - logicalNumber
+            - bankCode
+            - connectivity
+    SetupAppOrderParametersAmex:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            merchantNumber:
+              description: Merchant Id. This the customer identifier of a banking contract.
+              type: string
+            bankCode:
+              description: Identifier of the contract-issuing bank
+              type: string
+            applicationCode:
+              description: Name (label) of the contract in the POS application
+              type: string
+            logicalNumber:
+              description: Instance number of the POS in the POS application
+              type: string
+            printTnaTicket:
+              description: Allow to set if you want to print a failure ticket (true) or not
+                (false)
+              type: boolean
+              default: true
+            amexComCredit:
+              description: Only used for Ingenico Pos
+              type: boolean
+            amexComCancel:
+              description: Only used for Ingenico Pos
+              type: boolean
+            amexDelayedCall:
+              description: Only used for Ingenico Pos
+              type: boolean
+            vadActivation:
+              description: Only used for Verifone Pos
+              type: boolean
+            connectivity:
+              $ref: "#/components/schemas/SetupAppOrderConnectivity"
+          required:
+            - applicationCode
+            - merchantNumber
+            - logicalNumber
+            - bankCode
+            - connectivity
+    SetupAppOrderParametersAmexQp:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            merchantNumber:
+              description: Merchant Id. This the customer identifier of a banking contract.
+              type: string
+            bankCode:
+              description: Identifier of the contract-issuing bank
+              type: string
+            applicationCode:
+              description: Name (label) of the contract in the POS application
+              type: string
+            logicalNumber:
+              description: Instance number of the POS in the POS application
+              type: string
+            printTnaTicket:
+              description: Allow to set if you want to print a failure ticket (true) or not
+                (false)
+              type: boolean
+              default: true
+            connectivity:
+              $ref: "#/components/schemas/SetupAppOrderConnectivity"
+          required:
+            - applicationCode
+            - merchantNumber
+            - logicalNumber
+            - bankCode
+            - connectivity
+    SetupAppOrderParametersVad:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            version:
+              description: >
+                the version of the application you want to initialize :
+                  * `B13` CB 5.2 B13
+                  * `5.5` CB 5.5
+                  * `Auto` LUMA try to dertermine the apropriate version of the VAD application
+              type: string
+              enum:
+                - B13
+                - 5.5
+                - Auto
+            merchantNumber:
+              description: Merchant Id. This the customer identifier of a banking contract.
+              type: string
+            bankCode:
+              description: Identifier of the contract-issuing bank
+              type: string
+            applicationCode:
+              description: Name (label) of the contract in the POS application
+              type: string
+            logicalNumber:
+              description: Instance number of the POS in the POS application
+              type: string
+            fctCapacity:
+              description: Maximum transaction capacity (**Ingenico only**)
+              type: integer
+              format: int32
+              enum:
+                - 200
+                - 500
+            printTnaTicket:
+              description: Allow to set if you want to print a failure ticket (true) or not
+                (false)
+              type: boolean
+              default: true
+            connectivity:
+              $ref: "#/components/schemas/SetupAppOrderConnectivity"
+          required:
+            - applicationCode
+            - merchantNumber
+            - logicalNumber
+            - bankCode
+            - connectivity
+    SetupAppOrderParametersPlbs:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            version:
+              description: >
+                the version of the application you want to initialize :
+                  * `5.5` CB 5.5
+                  * `Auto` LUMA try to dertermine the apropriate version of the PLBS application
+              type: string
+              enum:
+                - 5.5
+                - Auto
+            merchantNumber:
+              description: Merchant Id. This the customer identifier of a banking contract.
+              type: string
+            bankCode:
+              description: Identifier of the contract-issuing bank
+              type: string
+            applicationCode:
+              description: Name (label) of the contract in the POS application
+              type: string
+            logicalNumber:
+              description: Instance number of the POS in the POS application
+              type: string
+            fctMode:
+              description: Connectivity usage (**Ingenico only**)
+              type: string
+              enum:
+                - B8
+                - Classic
+            fctCapacity:
+              description: Maximum transaction capacity (**Ingenico only**)
+              type: integer
+              format: int32
+              enum:
+                - 200
+                - 500
+            printTnaTicket:
+              description: Allow to set if you want to print a failure ticket (true) or not
+                (false)
+              type: boolean
+              default: true
+            printClientTicket:
+              description: Print client receipt (**Verifone only**)
+              type: boolean
+            autoEraseFolder:
+              description: Automatic Folder erasing on POS  (**Verifone only**)
+              type: boolean
+            autoManageFolder:
+              description: Automatic Folder reference generation (**Verifone only**)
+              type: boolean
+            folderValidity:
+              description: Max delay Folder available on POS (2 digits **Verifone only**)
+              type: integer
+              format: int32
+            alphanumericFolder:
+              description: Accept alphanumeric Folder reference on POS (**Verifone only**)
+              type: boolean
+            connectivity:
+              $ref: "#/components/schemas/SetupAppOrderConnectivity"
+          required:
+            - applicationCode
+            - merchantNumber
+            - logicalNumber
+            - bankCode
+            - connectivity
+    SetupAppOrderParametersIzicap:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            rankNumber:
+              description: Izicap terminal rank
+              minLength: 3
+              maxLength: 3
+              type: string
+            merchantNumber:
+              description: Izicap merchant identifer (ID IZICAP)
+              type: string
+            merchantCode:
+              description: Izicap merchant code
+              type: string
+          required:
+            - rankNumber
+            - merchantNumber
+            - merchantCode
+    SetupAppOrderParametersNxs:
+      allOf:
+        - $ref: "#/components/schemas/SetupAppOrderParameters"
+        - type: object
+          properties:
+            merchantNumber:
+              description: Merchant Id. This the customer identifier of a banking contract.
+              type: string
+            bankCode:
+              description: Identifier of the contract-issuing bank
+              type: string
+            applicationCode:
+              description: Name (label) of the contract in the POS application
+              type: string
+            logicalNumber:
+              description: Instance number of the POS in the POS application
+              type: string
+            printTnaTicket:
+              description: Allow to set if you want to print a failure ticket (true) or not
+                (false) (**Verifone only**)
+              type: boolean
+              default: true
+            connectivity:
+              description: Gateway connectivity for remote collection ...
+              type: object
+              properties:
+                type:
+                  description: |
+                    Connection with the gateway :
+                      * `FULL_IP` Direct full IP connection
+                      * `X25` X25 conection 
+                  type: string
+                  enum:
+                    - FULL_IP
+                    - X25
+                centerNumber:
+                  description: required for `X25` connectivity
+                  type: string
+                ipAddress:
+                  description: Ethernet IP adress of the remote collection center (required for
+                    `FULL_IP` connectivity)
+                  type: string
+                portNumber:
+                  description: Ethernet Port of the remote collection center (required for
+                    `FULL_IP` connectivity)
+                  type: integer
+                  format: int32
+                doubleAuthentication:
+                  description: Double authentication for Verifone Engage POS (required for
+                    `FULL_IP` connectivity, **Verifone only**)
+                  type: boolean
+                  default: false
+              required:
+                - type
+          required:
+            - applicationCode
+            - merchantNumber
+            - logicalNumber
+            - bankCode
+            - connectivity
+    InitLyraSSL2Order:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: InitSSL - LYRASSL2 creation order parameters
+              type: object
+              properties:
+                pki:
+                  description: PKI from the POS gateway
+                  type: string
+                overrideProfile:
+                  description: Override the profile with the same name ?
+                  type: boolean
+                  default: false
+              required:
+                - pki
+    ClessActivationOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: Cobntact less activation / deactivation order parameters
+              type: object
+              properties:
+                activate:
+                  description: Allow to indicate if you want to activate (true) or not (false) the
+                    contactless feature on POS
+                  type: boolean
+                interface:
+                  description: >
+                    Allow to indicate the interface you want to use ofr
+                    Contactless feature
+                      * `INTERNAL` Force the use of internal contactless module of the POS
+                      * `USB` Force to use a device plugged on POS USB port as contactless module (Pinpad for example)
+                      * `COM` Force to use a device plugged on POS COM port as contactless module (Telium Path)
+                      * `AUTO` LUMA try to choose the best connectivity as follow
+                        * USB pinpad if a USB pinpad is connected
+                        * Internal module if POS have it
+                        * Do nopthing otherwise
+                  type: string
+                  enum:
+                    - INTERNAL
+                    - USB
+                    - COM
+                    - AUTO
+              required:
+                - activate
+          required:
+            - parameters
+    TimeZoneOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: Message sending order parameters
+              type: object
+              properties:
+                region:
+                  description: Timezone Region you want to set on POS
+                  type: string
+                  enum:
+                    - FRANCE_MAINLAND
+                    - FRANCE_REUNION
+                    - FRANCE_MARTINIQUE
+                    - FRANCE_GUADELOUPE
+                    - FRANCE_GUYANE
+                    - HAWAII
+                    - ALASKA
+                    - ARIZONA
+                    - MEXICO_CITY
+                    - BOGOTA
+                    - SANTIAGO
+                    - BUENOS_AIRES
+                    - GREENLAND
+                    - BRASILIA
+                    - DUBLIN
+                    - LISBON
+                    - CASABLANCA
+                    - LONDON
+                    - WARSAW
+                    - COPENHAGEN
+                    - MADRID
+                    - BERN
+                    - BERLIN
+                    - PRAGUE
+                    - ROME
+                    - VIENNA
+                    - BRUSSELS
+                    - AMSTERDAM
+                    - STOCKHOLM
+                    - ATHENS
+                    - HELSINKI
+                    - MINSK
+                    - MOSCOW
+                    - BANGKOK
+                    - SINGAPORE
+                    - HONG_KONG
+                    - TOKYO
+                    - SEOUL
+                    - MELBOURNE
+                    - SYDNEY
+                    - NEW_CALEDONIA
+    DiagnosticsOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+    GprsStca2Order:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+    IpStca2Order:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+    SetupDisplayOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: This order can only be launched from LUMA back office
+              type: object
+              properties:
+                resetAll:
+                  description: If set to "true" POS colors an screen will be reset.
+                  type: boolean
+                screenImage:
+                  description: Image file name used as screen saver
+                  default: false
+                backgroundColor:
+                  description: Color of the background in hexadecimal format (only available for
+                    Telium 2 POS)
+                  type: string
+                textColor:
+                  description: Color of the text in hexadecimal format (only available for Telium
+                    2 POS)
+                  type: string
+    AdvancedSetupManagerOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: Advanced setup manager order parameters
+              type: object
+              properties:
+                parameters:
+                  description: This properties is is dedicated to LUMA support.
+                  type: boolean
+    LumaUpdateOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+          properties:
+            parameters:
+              description: Update LUMA order parameters
+              type: object
+              properties:
+                version:
+                  description: This properties is is dedicated to LUMA support. It allows to roll
+                    back to an old version of luma
+                  type: string
+    LumaCertificateUpdateOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+    OtherCertificateUpdateOrder:
+      allOf:
+        - $ref: "#/components/schemas/Order"
+        - type: object
+    PreSubscription:
+      description: It can be user to presubscribe POS on LUMA Front office. When a POS
+        is presubscribed on a fleet, at its first synchronisation it will
+        autommatically join the fleet where it was presubscribed.
+      type: object
+      properties:
+        clientCode:
+          description: Code of the fleet where you want to register a/some POS
+          type: string
+          example: 1234567
+        devices:
+          description: >
+            An array of all POS you want to presubscribe. To pre-register a POS
+            you can use :
+              * A combination of a POS **type** (TELIUM, TETRA, ENGAGE), and **Serial number** according POS type
+                  * Presubscribing INGENICO TELIUM POS
+                    *  ``` {"type":"TELIUM", "serial":"12345WL12345678"} ``` : Type **TELIUM** and **full serial nunmber**
+                    *  ``` {"type":"TELIUM", "serial":"WL12345678"} ``` : Type **TELIUM** and **short serial nunmber**
+                  * Presubscribing INGENICO TETRA POS
+                    *  ``` {"type":"TETRA", "serial":"172487333191009912345678"} ``` : Type **TETRA** and **full serial nunmber**
+                    *  ``` {"type":"TETRA", "serial":"3191009912345678"} ``` : Type **TETRA** and **short serial nunmber**
+                    *  ``` {"type":"TETRA", "serial":"WL12345678"} ``` : Type **TETRA** and **short serial from remote collection** (WL for a MOVE 5000, CT for a DESK 5000)
+                  * Presubscribing VERIFONE ENGAGE POS
+                    *  ``` {"type":"ENGAGE", "serial":"VERIFONE:V200:123456789"} ``` : Type **ENGAGE** and **the 9 digit serial number** 
+                    *  ``` {"type":"ENGAGE", "serial":"V200:123456789"} ``` : Type **ENGAGE** and **the 9 digit serial number** 
+                    *  ``` {"type":"ENGAGE", "serial":"V200123456789"} ``` : Type **ENGAGE** and **the 9 digit serial number** 
+                    *  ``` {"type":"ENGAGE", "serial":"123456789"} ``` : Type **ENGAGE** and **the 9 digit serial number** 
+                  * Presubscribing without POS Type
+                    *  ``` { "serial":"00001234**12345678**"} ``` : presubscribe **TELIUM** POS with product code + short serial number without letters
+                    *  ``` { "serial":"3191009912345678"} ``` : presubscribe **TETRA** POS with TETRA short serial nunmbe
+                    *  ``` { "serial":"VERIFONE:V200:123456789"} ``` :  presubscribe Verifone **ENGAGE** POS  
+              * The mobileNetwork ids of a POS (IMEI, SIM number)
+                   * Presubscribing using IMEI
+                      *  ```{mobileNetwork:{"imei":"0001234123456123"}} ``` 
+                   * Presubscribing using ICCID
+                      *  ``` {mobileNetwork:{"iccid":"89330126436012345678"}} ```
+          type: array
+          items:
+            $ref: "#/components/schemas/DevicePreSubscription"
+    MID:
+      type: object
+      description: Contract informations (from remote collection)
+      properties:
+        date:
+          type: string
+          format: date-time
+          description: Date of the last remote collection
+          example: 2020-12-11T16:19:22
+        type:
+          type: string
+          example: TLC
+          description: Source of the MID (TLC = remote collection)
+        application:
+          type: string
+          example: CB_EMV
+          description: Type of application wich made the the last remote collection
+        applicationDescription:
+          type: string
+          example: CB Contanct
+          description: Application familly of the application which made the last remote
+            collection
+        mid:
+          type: string
+          example: 392094901
+          description: Merchant ID of the banking countract
+        bankCode:
+          type: string
+          example: 30003
+          description: Bank code of the banking contract
+        siret:
+          type: string
+          example: 50537904000015
+          description: SIRET number / Company registration number
+        sourceApplication:
+          type: string
+          description: Application which made the last remote collection
+          example: CB Sans Contact 5.5
+        itp:
+          type: string
+          example: 117551310152
+          description: ITP of the application which made the last remote collection
+        bankName:
+          type: string
+          example: Banque GIE CB
+          description: Bank code where the banking contract comes from
+        idsa:
+          type: string
+          example: 20C7D1B2
+          description: IDSA of the application which made the last remote collection
+        tasa:
+          type: string
+          example: B0'-EMV 5.50 TLP
+          description: TASA of the application which made the last remote collection
+    Application:
+      type: object
+      properties:
+        comment:
+          type: string
+          example: CB sans contact
+          description: Comment concerning this application
+        domain:
+          type: string
+          example: Bancaire
+          description: Domain of this application
+        version:
+          type: string
+          example: "33870541"
+          description: Version of this application (binary number for Ingenico application)
+        publisher:
+          type: string
+          enum:
+            - INGENICO
+            - SAGEM
+            - VERIFONE
+            - LYRA NETWORK
+          example: INGENICO
+          description: Publisher of this application
+        subDomain:
+          type: string
+          example: Sans Contact
+          description: Sub domain of this application
+        name:
+          type: string
+          example: CB Sans Contact 5.5
+          description: Name of this application
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ed456a456b45g
+          description: POS technical id.
+          readOnly: true
+        manufacturer:
+          type: string
+          example: ingenico
+          description: The POS manufacturer. for example Sagem, Ingenico, Verifone.
+          readOnly: true
+        type:
+          type: string
+          description: POS type. for example TELIUM, TETRA, ENGAGE.
+          enum:
+            - TELIUM
+            - ENGAGE
+            - TETRA
+        model:
+          type: string
+          example: IWL250
+          description: POS model. for example IWL250, ICT250, MOVE 5000, DESK 5000.
+          readOnly: true
+        serial:
+          type: string
+          example: 12345WL12345678
+          description: POS Serial Number
+        mobileNetwork:
+          type: object
+          description: Mobile network data
+          properties:
+            iccId:
+              type: string
+              example: "8934079517039221234"
+              description: SIM number ICCID ( Integrated Circuit Card IDentifier) numnber.
+                This is the identifier of the actual SIM card in the POS.
+            imei:
+              type: string
+              example: "490154203237518"
+              description: POS IMEI (International Mobile Equipment Identity) is a number,
+                usually unique to identify mobile devices such as mobile phones
+                or POS.
+        luma:
+          type: object
+          readOnly: true
+          description: LUMA data
+          properties:
+            registrationCode:
+              type: string
+              example: "12345689"
+              description: Code of the fleet where the POS is registered in.
+        links:
+          readOnly: true
+          $ref: "#/components/schemas/Link"
+    DeviceDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ed456a456b45g
+          description: Technical id of the POS.
+          readOnly: true
+        manufacturer:
+          type: string
+          example: Ingenico
+          description: The POS manufacturer. for example Sagem, Ingenico, Verifone.
+          readOnly: true
+        type:
+          type: string
+          example: TELIUM
+          description: POS type. for example TELIUM, TETRA, ENGAGE.
+          enum:
+            - TELIUM
+            - ENGAGE
+            - TETRA
+        model:
+          type: string
+          example: IWL250 G
+          description: POS model. for example IWL250, ICT250, MOVE 5000, DESK 5000.
+          readOnly: true
+        serial:
+          type: string
+          example: 12345WL12345678
+          description: POS Serial Number. For example 12345WL12345678 (Telium),
+            182397303201112203012345 (Tetra), 346002333 (Engage)
+        posPortalSerial:
+          type: string
+          example: WL12345678
+          description: Short serial number from POS. This is the serial from the POS
+            SERVICES PORTAL. For example WL12345678, CT1234568 (Telium, Tetra),
+            346123456 (Engage).
+        productId:
+          type: string
+          example: "00001637"
+          description: The product identifier. For example 00001637
+        onBase:
+          type: boolean
+          example: false
+          description: Define if the POS is docked on his base.
+        label:
+          type: string
+          example: Boucherie sanzos
+          description: Label of the POS. It comes from the POS SERVICES PORTAL
+        managerVersion:
+          type: string
+          example: "8447788718"
+          description: Version of the telium manager
+        osVersion:
+          type: string
+          example: "37775420"
+          description: Version of the operating system
+        sdkVersion:
+          type: string
+          example: 9.32.3+PatchW
+          description: Version of the software development kit
+        productCode:
+          type: string
+          example: M44
+          description: Product code of the POS, for example M44 for an IWL250 G, M71 for a
+            MOVE 5000 (Ingenico POS only)
+        manufacturingDate:
+          type: string
+          example: 2012-12-19T23:00:00.000+0000
+          description: Manufacturing date of the POS (Ingenico POS only)
+          format: date-time
+        totalRam:
+          type: integer
+          example: 33554432
+          description: Total RAM (Ramdom Acces Memory) of the POS
+          format: int32
+        freeRam:
+          type: integer
+          example: 21495808
+          description: Free RAM (Ramdom Acces Memory) Available on the POS
+          format: int32
+        totalFlash:
+          type: integer
+          example: 132907008
+          description: Total Flash memory of the POS
+          format: int32
+        freeFlash:
+          type: integer
+          example: 26343424
+          description: Free Flash memory Available on the POS
+          format: int32
+        fullProductReference:
+          type: string
+          description: Complete product reference. For example IWL251-01T1637A
+          example: IWL251-01T1637A
+        pciValue:
+          type: string
+          example: PCI_PTS_V2
+          description: PCI PTS value of the POS
+        functionalReference:
+          type: string
+          example: "251163720000"
+          description: function reference of the POS
+        displayType:
+          type: string
+          example: COLOR
+          description: Type of display screen COLOR or
+          enum:
+            - MONOCHROME
+            - COLOR
+            - OTHER
+        displaySize:
+          type: string
+          example: S_320_240
+          description: Size of the POS screen
+          enum:
+            - NONE
+            - S_128_128
+            - S_128_64
+            - S_240_320
+            - S_320_240
+            - S_320_480
+            - S_480_272
+            - S_640_480
+            - S_720_1280
+            - S_800_480
+            - S_854_480
+            - S_1280_800
+            - OTHER
+        isUsingPinpad:
+          type: boolean
+          example: true
+          description: The value of isUsingPinpad is true it the POS is connected to a
+            pinpad. Otherwise, the value is false
+        pinpadType:
+          type: string
+          description: Type of pinpad
+          example: IPP280
+          enum:
+            - PP30
+            - PPC30
+            - PPR30
+            - P30
+            - PP30S
+            - IPP220
+            - IPP250
+            - IPP280
+            - IPP320
+            - IPP350
+            - IPP285
+            - IPP310
+            - NONE
+            - P200
+            - P400
+            - OTHER
+        pkiValue:
+          type: string
+          description: Pinpad PKI value (available only if a pinpad is connected to POS)
+          example: INGETRUST_TYPE_PKIv3
+          enum:
+            - INGETRUST_TYPE_PKIv1
+            - INGETRUST_TYPE_PKIv3
+            - INGETRUST_TYPE_NONE
+        pinpadPn:
+          type: string
+          description: Part number of the pinpad (available only if a pinpad is connected
+            to POS)
+          example: "00001341"
+        pinpadSn:
+          type: string
+          description: Serial number of the pinpad (available only if a pinpad is
+            connected to POS)
+          example: "81391234"
+        clessCapable:
+          type: boolean
+          example: false
+          description: Allows to know is the POS is able to make contactless payments by
+            itselt
+        clessActive:
+          type: boolean
+          example: false
+          description: Allows to know is the contactless payments is activated on the POS
+            (on the internal module)
+        clessTeliumPass:
+          type: boolean
+          example: false
+          description: Allows to know is the POS is connected to a Telium Pass module in
+            order to managed contactless payments
+        pinpadClessCapable:
+          type: boolean
+          example: true
+          description: Allows to know if the pinpad connected to the POS is able to make
+            contactless payments
+        pinpadClessActive:
+          type: boolean
+          example: true
+          description: Allows to know if the contactless payments is activated on the
+            pinpad connected to the POS
+        teliumPassConnectionType:
+          type: string
+          enum:
+            - COM0
+            - USB
+            - INTERNAL
+            - OTHER
+          description: Connection type used by Telium Pass module
+        region:
+          type: string
+          example: FRANCE_MAINLAND
+          enum:
+            - FRANCE_MAINLAND
+            - FRANCE_REUNION
+            - FRANCE_MARTINIQUE
+            - FRANCE_GUADELOUPE
+            - FRANCE_GUYANE
+            - HAWAII
+            - ALASKA
+            - ARIZONA
+            - MEXICO_CITY
+            - BOGOTA
+            - SANTIAGO
+            - BUENOS_AIRES
+            - GREENLAND
+            - BRASILIA
+            - DUBLIN
+            - LISBON
+            - CASABLANCA
+            - LONDON
+            - WARSAW
+            - COPENHAGEN
+            - MADRID
+            - BERN
+            - BERLIN
+            - PRAGUE
+            - ROME
+            - VIENNA
+            - BRUSSELS
+            - AMSTERDAM
+            - STOCKHOLM
+            - ATHENS
+            - HELSINKI
+            - MINSK
+            - MOSCOW
+            - BANGKOK
+            - SINGAPORE
+            - HONG_KONG
+            - TOKYO
+            - SEOUL
+            - MELBOURNE
+            - SYDNEY
+            - NEW_CALEDONIA
+          description: Region for the time zone used by Luma on POS
+        language:
+          type: string
+          example: FRENCH
+          enum:
+            - ENGLISH
+            - FRENCH
+          description: Language used on POS
+        mobileNetwork:
+          type: object
+          description: Describe the mobile network configuration of the POS
+          properties:
+            simNumber:
+              type: string
+              example: "9517039221234"
+              description: Iccid whithout SIM provider identifier
+            moduleName:
+              type: string
+              example: Hilo3G_900
+              description: Nom du module GPRS/3G/4G
+            networkName:
+              type: string
+              example: BOUYGTEL
+              description: Mobile network where where the POS is connected
+            softwareVersion:
+              type: string
+              example: Hi3GC,A.001.40
+              description: Firmware version of the mobile network module
+            apn:
+              type: string
+              example: gprsnac.com
+              description: Current APN configured on POS
+            simProvider:
+              type: string
+              example: Bouygues+Telecom
+              description: Provider of the SIM card
+            areaCode:
+              type: integer
+              format: int32
+              example: 20091
+              description: Area code
+            cellId:
+              type: integer
+              format: int32
+              example: 194
+              description: Cell ID
+            csq:
+              type: integer
+              format: int32
+              example: 20
+              description: Signal quality
+            radio:
+              type: string
+              description: TODO
+              example: "5"
+            plmn:
+              type: object
+              description: Current PLMN (Public Land Mobile Network) where the POS is
+                connected
+              properties:
+                country:
+                  type: string
+                  example: France
+                  description: Crountry where the SIM card comes from.
+                operator:
+                  type: string
+                  example: Bouygues Telecom
+                  description: Operotor of the current network
+                mccMnc:
+                  type: integer
+                  format: int32
+                  example: 20820
+                  description: Mobile Country Code (3 digits) / Mobile Network Code (2 digits)
+                countryCode:
+                  type: integer
+                  format: int32
+                  example: 33
+                  description: TODO
+            iccId:
+              type: string
+              description: SIM number ICCID ( Integrated Circuit Card IDentifier) numnber.
+                This is the identifier of the actual SIM card in the POS.
+              example: "8934079517039221234"
+            imei:
+              type: string
+              description: POS IMEI (International Mobile Equipment Identity) is a number,
+                usually unique to identify mobile devices such as mobile phones
+                or POS
+              example: "490154203237518"
+        luma:
+          type: object
+          description: Describes the LUMA properties and configuration
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+              example: 2019-04-03T13:48:49.226+0000
+              description: Creation date of the POS (Presubscription date or registration
+                date)
+            updatedAt:
+              type: string
+              format: date-time
+              example: 2031-04-03T00:49:56.226+0000
+              description: Last upadate date of POS information
+            lastCallDate:
+              type: string
+              format: date-time
+              example: 2031-04-03T00:49:56.226+0000
+              description: Last LUMA call date from POS
+            callTime:
+              type: string
+              example: 00:49:47"
+              description: Luma periodic call time
+            presubscribed:
+              type: boolean
+              example: false
+              description: Indicate whether the POS is presubsibed (true) or registered on a
+                fleet
+            maxPeriodicRequestDelay:
+              type: integer
+              format: int32
+              description: Maximal delay between two call
+            applicationMode:
+              type: string
+              example: TODO
+              enum:
+                - OPTINET_ONLY
+                - LUMA_ONLY
+                - LUMA_AND_OPTINET
+              description: Indicate Luma application Mode. Modes are LUMA only, Optniet Only
+                or both LUMA and Optinet.
+            hasGenericApiKey:
+              type: boolean
+              example: false
+              description: Indicate whether the POS have a genric API key or not. It has a
+                generic API key it is not able to executer orders
+            version:
+              example: 1.51.FRANCE
+              description: Indicate whether the POS is presubsibed (true) or registered on a
+                fleet
+              type: string
+            connectionType:
+              type: object
+              description: Connection means used by LUMA on POS
+              properties:
+                interface:
+                  type: string
+                  example: SIM
+                  description: Connection interface used by LUMA on POS
+                  enum:
+                    - SIM
+                    - IP_ADSL
+                    - RTC
+                protocol:
+                  type: string
+                  description: Connection protocol used by LUMA on POS
+                  enum:
+                    - LINK_LAYER
+                    - ETHERNET
+            language:
+              type: string
+              enum:
+                - ENGLISH
+                - FRENCH
+              example: FRENCH
+              description: LUMA language on POS
+            active:
+              type: boolean
+              example: true
+              description: Indicate whether the POS is active (true) or not (false) is fals
+                it's considered as deleted ant it's not visible from LUMA
+                backoffice
+            registrationCode:
+              type: string
+              description: Fleet where the POS is registered
+              example: 12345690
+        gateways:
+          type: object
+          properties:
+            main:
+              $ref: "#/components/schemas/DeviceDetailMainGateway"
+            backup:
+              $ref: "#/components/schemas/DeviceDetailBackupGateway"
+        tms:
+          $ref: "#/components/schemas/DeviceDetailTms"
+        sslProfiles:
+          type: array
+          description: List of SSL profiles available on the POS. Usable for Gateways
+            configuration and application connections
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the SSL profile
+                example: SIMPLEAUTH
+              stca2:
+                type: boolean
+                description: Indicate whether the Profile contains an STCA2 certificate (true)
+                  or not (false). If it's unoknown the field "stca2" is not
+                  present.
+                example: true
+        networkDiagnostic:
+          type: object
+          description: Gateways and TMS Diagnostic results
+          properties:
+            date:
+              type: string
+              format: date-time
+              description: Diagnostics execution date
+            gateways:
+              type: array
+              description: Gateways Diagnostics results
+              items:
+                $ref: "#/components/schemas/DeviceDetailDiagnosticConfig"
+            tms:
+              type: array
+              description: TMS Diagnostics results
+              items:
+                $ref: "#/components/schemas/DeviceDetailDiagnosticConfig"
+        links:
+          readOnly: true
+          $ref: "#/components/schemas/Link"
+    DevicePreSubscription:
+      type: object
+      properties:
+        type:
+          type: string
+          description: POS type. for example TELIUM, TETRA, ENGAGE.
+          enum:
+            - TELIUM
+            - ENGAGE
+            - TETRA
+        registrationStatus:
+          type: string
+          description: Result of the presubscription, MOVED when the device has been moved
+            in another fleet, UNCHANGED when the device is already in the fleet,
+            then PRE_REGISTERED when preregistered
+          enum:
+            - PRE_REGISTERED
+            - MOVED
+            - UNCHANGED
+        serial:
+          type: string
+          example: 12345WL12345678 or WL12345678
+          description: POS Serial Number
+        mobileNetwork:
+          type: object
+          description: Mobile network data
+          properties:
+            iccId:
+              type: string
+              example: "8934079517039221234"
+              description: SIM number ICCID ( Integrated Circuit Card IDentifier) numnber.
+                This is the identifier of the actual SIM card in the POS.
+            imei:
+              type: string
+              example: "490154203237518"
+              description: POS IMEI (International Mobile Equipment Identity) is a number,
+                usually unique to identify mobile devices such as mobile phones
+                or POS.
+        links:
+          readOnly: true
+          $ref: "#/components/schemas/Link"
+    DeviceDetailDiagnosticConfig:
+      type: object
+      description: Result of a diagnostic
+      properties:
+        diagIp:
+          type: string
+          example: 192.168.151.200
+          description: Tested IP adress
+        diagPort:
+          type: integer
+          format: int32
+          example: 1246
+          description: Tested port
+        diagSslProfile:
+          type: string
+          example: SIMPLEAUTH
+          description: Tested SSL profile
+        status:
+          type: string
+          description: >
+            Diagnoctic results:
+             * `DEFAULT` Diagnostic is not launched yet
+             * `ERROR` Impossible to contact the server (Gateway/TMS)
+             * `AVAILABLE` Server was reached succesfully 
+             * `AVAILABLE_NO_SSL` Server was reached succesfully but SSL connection failed
+             * `OTHER` TODO ? 
+          example: AVAILABLE
+          enum:
+            - DEFAULT
+            - ERROR
+            - AVAILABLE_NO_SSL
+            - AVAILABLE
+            - OTHER
+    DeviceDetailMainGateway:
+      type: object
+      properties:
+        connectionType:
+          description: Connection means defined for the gateway network configuration
+          example: SIM
+          type: string
+          enum:
+            - SIM
+            - IP_ADSL
+            - RTC
+        gateway:
+          type: integer
+          format: int32
+          example: 43
+          description: Gateway protocol
+        ipAddress:
+          type: string
+          example: 192.168.151.200
+          description: IP adress used for the gateway network configuration
+        port:
+          type: integer
+          format: int32
+          example: 1246
+          description: port used for the gateway network configuration
+        sslEnabled:
+          type: boolean
+          example: true
+          description: Indicate whether SSL is activated (true) on gateway network
+            configuration or not
+        sslProfile:
+          type: string
+          example: SIMPLEAUTH
+          description: SSL profile used for SSL connection
+        provider:
+          type: string
+          example: LYRA
+          description: Indicate whether backup gateway provider is LYRA or OTHER
+          enum:
+            - LYRA
+            - OTHER
+        useBackup:
+          type: boolean
+      required:
+        - connectionType
+      discriminator:
+        propertyName: connectionType
+        mapping:
+          SIM: "#/components/schemas/DeviceDetailMainGatewayParametersSim"
+          IP_ADSL: "#/components/schemas/DeviceDetailMainGatewayParametersIPAdsl"
+          RTC: "#/components/schemas/DeviceDetailMainGatewayParametersRTC"
+    DeviceDetailBackupGateway:
+      type: object
+      properties:
+        connectionType:
+          type: string
+          enum:
+            - SIM
+            - IP_ADSL
+            - RTC
+        id:
+          type: string
+        networkType:
+          type: string
+        communicationType:
+          type: string
+        gateway:
+          type: integer
+          format: int32
+        ipAddress:
+          type: string
+        port:
+          type: integer
+          format: int32
+        sslEnabled:
+          type: boolean
+        sslProfile:
+          type: string
+        provider:
+          type: string
+          example: LYRA
+          description: Indicate whether backup gateway provider is LYRA or OTHER
+          enum:
+            - LYRA
+            - OTHER
+      required:
+        - connectionType
+      discriminator:
+        propertyName: connectionType
+        mapping:
+          SIM: "#/components/schemas/DeviceDetailBackupGatewayParametersSim"
+          IP_ADSL: "#/components/schemas/DeviceDetailBackupGatewayParametersIPAdsl"
+          RTC: "#/components/schemas/DeviceDetailBackupGatewayParametersRTC"
+    DeviceDetailMainGatewayParametersSim:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailMainGateway"
+        - type: object
+          properties:
+            apn:
+              type: string
+              example: gprsnac.com
+              description: SIM card APN used for the gateway
+            login:
+              type: string
+              example: lyra
+              description: SIM card login used for the gateway
+            password:
+              type: string
+              example: "*******"
+              description: SIM card password used for the gateway
+    DeviceDetailMainGatewayParametersIPAdsl:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailMainGateway"
+        - type: object
+    DeviceDetailMainGatewayParametersRTC:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailMainGateway"
+        - type: object
+    DeviceDetailBackupGatewayParametersSim:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailBackupGateway"
+        - type: object
+          properties:
+            apn:
+              type: string
+              example: gprsnac.com
+              description: SIM card APN used for the gateway
+            login:
+              type: string
+              example: lyra
+              description: SIM card login used for the gateway
+            password:
+              type: string
+              example: "*******"
+              description: SIM card password used for the gateway
+    DeviceDetailBackupGatewayParametersIPAdsl:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailBackupGateway"
+        - type: object
+    DeviceDetailBackupGatewayParametersRTC:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailBackupGateway"
+        - type: object
+    DeviceDetailTms:
+      type: object
+      description: TMS / MMS configuration
+      properties:
+        connectionType:
+          description: Connection means defined for the TMS / MMS network configuration
+          example: SIM
+          type: string
+          enum:
+            - SIM
+            - IP_ADSL
+            - RTC
+        ispPhoneNumber:
+          type: string
+        destinationHost:
+          type: string
+          description: TODO
+        identifier:
+          type: string
+          description: TMS identifier / MMS TGI
+          example: 12345678
+        downloadProtection:
+          type: boolean
+          example: true
+          description: Indicate whether SSL is activated (true) on TMS / MMS network
+            configuration or not
+        downloadProtectionCode:
+          type: string
+        tmsSerialLink:
+          type: string
+        registeredOnMms:
+          type: boolean
+          example: true
+          description: Indicate if the POS is registered on MMS or not
+      required:
+        - connectionType
+      discriminator:
+        propertyName: connectionType
+        mapping:
+          SIM: "#/components/schemas/DeviceDetailTmsParametersSim"
+          IP_ADSL: "#/components/schemas/DeviceDetailTmsParametersIPAdsl"
+          RTC: "#/components/schemas/DeviceDetailTmsParametersRTC"
+    DeviceDetailTmsParametersRTC:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailTms"
+        - type: object
+          properties:
+            padNumber:
+              type: object
+              description: TODO
+            centerNumber:
+              type: object
+              description: TODO
+            x25Address:
+              type: string
+    DeviceDetailTmsParametersIPAdsl:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailTms"
+        - type: object
+          properties:
+            ipAddress:
+              type: string
+              example: 192.168.1.10
+              description: IP adress used for the TMS / MMS network configuration
+            port:
+              type: integer
+              format: int32
+              example: 7002
+              description: port used for the TMS / MMS network configuration
+            sslEnabled:
+              type: boolean
+              example: true
+              description: Indicate whether SSL is activated (true) on TMS / MMS network
+                configuration or not
+            sslProfileName:
+              type: string
+              example: SIMPLEAUTH
+              description: SSL profile used for SSL connection
+    DeviceDetailTmsParametersSim:
+      allOf:
+        - $ref: "#/components/schemas/DeviceDetailTms"
+        - type: object
+          properties:
+            ipAddress:
+              type: string
+              example: 192.168.1.10
+              description: IP adress used for the TMS / MMS network configuration
+            port:
+              type: integer
+              format: int32
+              example: 7002
+              description: port used for the TMS / MMS network configuration
+            sslEnabled:
+              type: boolean
+              example: true
+              description: Indicate whether SSL is activated (true) on TMS / MMS network
+                configuration or not
+            sslProfileName:
+              type: string
+              example: SIMPLEAUTH
+              description: SSL profile used for SSL connection
+            apn:
+              type: string
+              description: TODO
+            login:
+              type: string
+              description: TODO
+            password:
+              type: string
+              description: TODO
+    DeviceCriteria:
+      type: object
+      properties:
+        serial:
+          type: string
+          example: WL12345678
+          description: POS Serial Number
+        mobileNetwork:
+          type: object
+          description: Mobile network data
+          properties:
+            imei:
+              type: string
+              example: "490154203237518"
+              description: POS IMEI (International Mobile Equipment Identity) is a number,
+                usually unique to identify mobile devices such as mobile phones
+                or POS.
+            iccId:
+              type: string
+              example: "891004234814455936"
+              description: SIM number ICCID ( Integrated Circuit Card IDentifier) numnber.
+                This is the identifier of the actual SIM card in the POS.
+        mid:
+          type: string
+          example: 456782
+          description: Merchant Id. The customer identifier of a banking contract.
+        bankCode:
+          type: string
+          example: 30007
+          description: Identifier of the bank
+        strict:
+          description: Indicates if queries parameters will be used in strict equal or
+            not.<br/> For example if strict=false the query **?serial=345678**
+            will **match** a serial WL12345678.<br/>If  strict=true the query
+            **?serial=345678** will **not match** the WL12345678.
+          type: boolean
+          example: true
+          default: true
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: >
+        This API is secured by using an access token provided by our OpenID
+        Connect server.
+
+
+        To get it, you can execute the following curl command after providing your client id and your client secret (Please contact Lyra support to get it):
+
+        ```
+
+        curl --location \
+
+        --request POST ' https://pos.account.lyra.com/auth/realms/monetique/protocol/openid-connect/token' \
+
+        --header 'Content-Type: application/x-www-form-urlencoded' \
+
+        --data-raw 'grant_type=client_credentials&client_id=<client_id>&client_secret=<client_secret>'
+
+        ```
+      scheme: bearer
+security:
+  - bearerAuth: []
+servers:
+  - url: https://api.luma.lyra.com/
+    description: PROD
+tags:
+  - name: Device
+    description: >
+      This part of the API provides the ability to find a POS and get its
+      information.
+
+      The main process to get a POS detail from a serial number (for example) is described as  :
+
+      1.  Find a POS by sending a GET request on the \"Find devices\" resource using serial as criteria.
+
+      ```
+
+      <base_url>/v1/devices?serial=wl1234568
+
+      ```
+
+      1.  Get the technical id of the POS from the returned response content **result.content[0].id** => ed456a456b45g .
+
+      ```json
+
+      {
+            "content":[
+              {
+                "id":"ed456a456b45g",
+                "manufacturer":"ingenico",
+                "type":"TELIUM",
+                "model":"IWL250",
+                "serial":"12345WL12345678",
+                "mobileNetwork":{
+                  "iccId":"8934079517039221234",
+                  "imei":"490154203237518"
+                },
+                "luma":{
+                  "registrationCode":"12345689"
+                },
+                "links":{
+                  "frontDetailPage":{
+                    "href":"string"
+                  }
+                }
+              }
+            ]  
+      }
+
+      ```
+
+      <div style="color: red; font-weight: bold">NB : POS id will never change, so it's recommended to store it to avoid too many search requests</div>
+
+
+
+      1.  Get a POS detail by sending a GET request on the  \"Get details of one device\" resources using technical id as URL parameter".
+
+      ```
+
+      <base_url>/v1/devices/ed456a456b45g/detail
+
+      ```
+  - name: Application
+    description: >
+      This part of the API provides the ability to get the list applications
+      installed on the POS.
+
+      The main process to get the applications installed on the POS defined by its serial number (for example) is described as bellow:
+
+      1.  Find the POS technical id using the process described in the Device section
+
+      1.  Get the POS applications by sending a GET request on the \"Device's applications\" resource using technical id as URL parameter".
+
+      ```
+
+      GET <base_url>/v1/devices/ed456a456b45g/applications
+
+      ```
+
+      <div style="color: red; font-weight: bold">NB : If you want to have information about contracts (MID) configured on an application, you can match the `applicationDescription` field of a contract MID resource and the `name` field of an application resource.  
+
+      **Example:** If `mid.applicationDescription` is equal to "CB Contact 5.5"  and `application.name` is equal to "CB Contact 5.5" as well, you can be sure the `mid` is the contract used by the `application`. 
+
+      </div>
+  - name: MID
+    description: >
+      This part of the API provides the ability to get MID (Merchant ids /
+      banking contract) from a POS.
+
+      The main process to get MIDs from a serial number (for example) is described as bellow:
+
+      1.  Find the POS technical id using the process described in the Device section
+
+      1.  Get the POS MIDs using the \"Device's mids\" resource using technical id as URL parameter".
+
+      ```
+
+      GET <base_url>/v1/devices/ed456a456b45g/mids
+
+      ```
+
+      <div style="color: red; font-weight: bold">NB : If you want to have information about the Application that use a specific contract (MID), you can match the `name` field of an application resource and the `applicationDescription` field of a contract MID resource. 
+
+      **Example :**If `application.name` is equal to "CB Contact 5.5" and `mid.applicationDescription` is equal to "CB Contact 5.5" as well, you can be sure the `mid` is the contract used by the `application`. 
+
+      </div>
+  - name: Order
+    description: >
+      This part of the API provides the ability to get the orders that has been
+      sent to the POS orders or send a new one.
+
+
+      The main process to get the orders from a serial number (for example) is described as bellow:
+
+      1.  Find the POS technical id using the process described in the Device section
+
+      1.  Get the POS orders by sending a GET request on the \"orders\" resource using technical id as URL parameter".
+
+      ```
+
+      GET <base_url>/v1/devices/ed456a456b45g/orders
+
+      ```
+
+
+      <br/>The main process to send a new order from a serial number (for example) is described as bellow:
+
+      1.  Find the POS technical id using the process described in the Device section
+
+      1.  Send a new order by sending a POST request on the \"orders\" resource using technical id as URL parameter and using parameter described as follow".
+
+      ```
+
+      POST <base_url>/v1/devices/ed456a456b45g/orders
+
+      ```
+  - name: Pre Subscription
+    description: >
+      This part of the API provides the ability to pre register a POS on a fleet.

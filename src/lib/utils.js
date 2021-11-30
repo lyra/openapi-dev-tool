@@ -41,7 +41,7 @@ export async function validateExamples(api) {
   // We clone because, api should be transform for validation
   const apiCloned = JSON.parse(JSON.stringify(api));
 
-  function transform(apiPart) {
+  function transform(apiPart, nodePath) {
     function goDeep(obj, path) {
         var parts = path.split('.'),
             rv,
@@ -57,36 +57,42 @@ export async function validateExamples(api) {
     // 2. Remove allOf of subSchema
     // 3. Add value of discriminator propertyName
     Object.keys(apiPart).forEach(function(key) {
-      if (key === 'discriminator' && apiPart[key].mapping && apiPart[key].propertyName) {
+      if (key === 'discriminator' && apiPart[key].mapping && apiPart[key].propertyName && !apiPart.oneOf) {
         let propertyName = apiPart[key].propertyName;
+
         apiPart.oneOf = [];
         Object.keys(apiPart[key].mapping).forEach(function(mapper) {
           let xpath = apiPart[key].mapping[mapper].replace(/^#\//, '').replace(/\//g, '.');
           
-          // Replace mapping by oneOf array
-          apiPart.oneOf.push({'$ref': apiPart[key].mapping[mapper]})
-          
           let subSchema = goDeep(apiCloned, xpath);
-          // Remove allOf of subSchema
-          if (subSchema.allOf) {
-            let obj = subSchema.allOf.find(item => !item.$ref);
-            if (!obj) obj = { type: 'object' };
-            if (!obj.hasOwnProperty('properties')) obj.properties = {};
 
-            // We add propertyName of discriminator
-            obj.properties[propertyName] = { type: 'string', enum: [mapper] }
-            Object.assign(subSchema, obj);
-            delete subSchema.allOf;
+          // if ref is defined
+          if (subSchema) {
+            // Replace mapping by oneOf array
+            apiPart.oneOf.push({'$ref': apiPart[key].mapping[mapper]})
+            
+            // Remove allOf of subSchema
+            if (subSchema.allOf) {
+              subSchema.allOf = subSchema.allOf.filter(item => item.$ref && !item.$ref.match(nodePath))
+              subSchema.allOf.push({ type: 'object', properties: {[propertyName]: { type: 'string', enum: [mapper] }} })
+              Object.assign(subSchema, ...subSchema.allOf);
+              delete subSchema.allOf;
+            } else {
+              if (subSchema.type === 'object') {
+                subSchema.properties = {[propertyName]: { type: 'string', enum: [mapper] }}
+              }
+            }
           }
         });
         // Remove mapping property
         delete apiPart[key].mapping;
       }
-      if (typeof apiPart[key] === 'object') transform(apiPart[key])
+      if (typeof apiPart[key] === 'object') transform(apiPart[key], nodePath + '/'+ key)
     });
   }
 
-  transform(apiCloned);
+  transform(apiCloned, "");
+
   const result = await validator.default(apiCloned);
 
   if (!result.valid) {
