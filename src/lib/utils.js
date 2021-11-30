@@ -36,7 +36,6 @@ export function getPOMContent(artifactId, version, groupId, packaging) {
 }
 
 export async function validateExamples(api) {
-  //const result = await validateFile(targetFile);
 
   // We clone because, api should be transform for validation
   const apiCloned = JSON.parse(JSON.stringify(api));
@@ -50,6 +49,33 @@ export async function validateExamples(api) {
             rv = rv[parts[index]];
         }
         return rv;
+    }
+
+    function isObject(item) {
+      return (item && typeof item === 'object' && !Array.isArray(item));
+    }
+    
+    /**
+     * Deep merge two objects.
+     * @param target
+     * @param ...sources
+     */
+    function mergeDeep(target, ...sources) {
+      if (!sources.length) return target;
+      const source = sources.shift();
+    
+      if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+          if (isObject(source[key])) {
+            if (!target[key]) Object.assign(target, { [key]: {} });
+            mergeDeep(target[key], source[key]);
+          } else {
+            Object.assign(target, { [key]: source[key] });
+          }
+        }
+      }
+    
+      return mergeDeep(target, ...sources);
     }
 
     // We have to change api to be able to validates the whole of examples (with inheritance)
@@ -73,15 +99,17 @@ export async function validateExamples(api) {
             
             // Remove allOf of subSchema
             if (subSchema.allOf) {
-              subSchema.allOf = subSchema.allOf.filter(item => item.$ref && !item.$ref.match(nodePath))
+              subSchema.allOf = subSchema.allOf.filter(item => !item.$ref || !item.$ref.match(nodePath))
               subSchema.allOf.push({ type: 'object', properties: {[propertyName]: { type: 'string', enum: [mapper] }} })
-              Object.assign(subSchema, ...subSchema.allOf);
+              mergeDeep(subSchema, ...subSchema.allOf);
               delete subSchema.allOf;
             } else {
               if (subSchema.type === 'object') {
-                subSchema.properties = {[propertyName]: { type: 'string', enum: [mapper] }}
+                if (!subSchema.properties) subSchema.properties = {};
+                subSchema.properties[propertyName] = { type: 'string', enum: [mapper] }
               }
             }
+
           }
         });
         // Remove mapping property
