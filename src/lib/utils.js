@@ -36,25 +36,24 @@ export function getPOMContent(artifactId, version, groupId, packaging) {
 }
 
 export async function validateExamples(api) {
-
   // We clone because, api should be transform for validation
   const apiCloned = JSON.parse(JSON.stringify(api));
 
   function transform(apiPart, nodePath) {
     function goDeep(obj, path) {
-        var parts = path.split('.'),
-            rv,
-            index;
-        for (rv = obj, index = 0; rv && index < parts.length; ++index) {
-            rv = rv[parts[index]];
-        }
-        return rv;
+      var parts = path.split('.'),
+        rv,
+        index;
+      for (rv = obj, index = 0; rv && index < parts.length; ++index) {
+        rv = rv[parts[index]];
+      }
+      return rv;
     }
 
     function isObject(item) {
-      return (item && typeof item === 'object' && !Array.isArray(item));
+      return item && typeof item === 'object' && !Array.isArray(item);
     }
-    
+
     /**
      * Deep merge two objects.
      * @param target
@@ -63,7 +62,7 @@ export async function validateExamples(api) {
     function mergeDeep(target, ...sources) {
       if (!sources.length) return target;
       const source = sources.shift();
-    
+
       if (isObject(target) && isObject(source)) {
         for (const key in source) {
           if (isObject(source[key])) {
@@ -74,7 +73,7 @@ export async function validateExamples(api) {
           }
         }
       }
-    
+
       return mergeDeep(target, ...sources);
     }
 
@@ -82,44 +81,61 @@ export async function validateExamples(api) {
     // 1. Replace mapping property by oneOf array
     // 2. Remove allOf of subSchema
     // 3. Add value of discriminator propertyName
-    Object.keys(apiPart).forEach(function(key) {
-      if (key === 'discriminator' && apiPart[key].mapping && apiPart[key].propertyName && !apiPart.oneOf) {
+    Object.keys(apiPart).forEach(function (key) {
+      if (
+        key === 'discriminator' &&
+        apiPart[key].mapping &&
+        apiPart[key].propertyName &&
+        !apiPart.oneOf
+      ) {
         let propertyName = apiPart[key].propertyName;
 
         apiPart.oneOf = [];
-        Object.keys(apiPart[key].mapping).forEach(function(mapper) {
-          let xpath = apiPart[key].mapping[mapper].replace(/^#\//, '').replace(/\//g, '.');
-          
+        Object.keys(apiPart[key].mapping).forEach(function (mapper) {
+          let xpath = apiPart[key].mapping[mapper]
+            .replace(/^#\//, '')
+            .replace(/\//g, '.');
+
           let subSchema = goDeep(apiCloned, xpath);
 
           // if ref is defined
           if (subSchema) {
             // Replace mapping by oneOf array
-            apiPart.oneOf.push({'$ref': apiPart[key].mapping[mapper]})
-            
+            apiPart.oneOf.push({ $ref: apiPart[key].mapping[mapper] });
+
             // Remove allOf of subSchema
             if (subSchema.allOf) {
-              subSchema.allOf = subSchema.allOf.filter(item => !item.$ref || !item.$ref.match(nodePath))
-              subSchema.allOf.push({ type: 'object', properties: {[propertyName]: { type: 'string', enum: [mapper] }} })
+              subSchema.allOf = subSchema.allOf.filter(
+                (item) => !item.$ref || !item.$ref.match(nodePath)
+              );
+              subSchema.allOf.push({
+                type: 'object',
+                properties: {
+                  [propertyName]: { type: 'string', enum: [mapper] },
+                },
+              });
               mergeDeep(subSchema, ...subSchema.allOf);
               delete subSchema.allOf;
             } else {
               if (subSchema.type === 'object') {
                 if (!subSchema.properties) subSchema.properties = {};
-                subSchema.properties[propertyName] = { type: 'string', enum: [mapper] }
+                subSchema.properties[propertyName] = {
+                  type: 'string',
+                  enum: [mapper],
+                };
               }
             }
-
           }
         });
         // Remove mapping property
         delete apiPart[key].mapping;
       }
-      if (typeof apiPart[key] === 'object') transform(apiPart[key], nodePath + '/'+ key)
+      if (typeof apiPart[key] === 'object')
+        transform(apiPart[key], nodePath + '/' + key);
     });
   }
 
-  transform(apiCloned, "");
+  transform(apiCloned, '');
 
   const result = await validator.default(apiCloned);
 

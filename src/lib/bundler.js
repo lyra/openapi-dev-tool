@@ -41,7 +41,6 @@ export async function bundleSpec(config, spec) {
     await validateExamples(api);
   }
 
-
   if (!api.info) {
     throw new Error(
       `No "info" section in OpenAPI specification: ${JSON.stringify(api)}`
