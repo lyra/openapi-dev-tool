@@ -26,7 +26,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@lyra-network/nexus-deployer": "^0.1.12",
-    "ajv": "^8.8.2",
     "archiver": "5.3.0",
     "change-case": "4.1.2",
     "chokidar": "3.5.2",
@@ -39,7 +38,6 @@
     "figlet": "1.5.2",
     "json-validator": "0.0.34",
     "mkdirp": "1.0.4",
-    "openapi-examples-validator": "4.5.0",
     "promise-settle": "0.3.0",
     "rc": "1.2.8",
     "redoc": "2.0.0-rc.58",
@@ -48,7 +46,23 @@
     "swagger-parser": "10.0.3",
     "swagger-ui-dist": "4.1.0",
     "tmp": "0.2.1",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+
+    
+
+
+    "ajv-draft-04": "^1.0.0",
+    "ajv-oai": "1.2.1",
+    "commander": "^6.2.1",
+    "errno": "^1.0.0",
+    "glob": "^7.2.0",
+    "json-pointer": "0.6.1",
+    "json-schema-ref-parser": "^9.0.9",
+    "jsonpath-plus": "^6.0.1",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.flatmap": "^4.5.0",
+    "lodash.flatten": "^4.4.0",
+    "lodash.merge": "^4.6.2"
   },
   "devDependencies": {
     "build-esm": "4.2.2",
