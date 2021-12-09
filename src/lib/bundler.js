@@ -34,10 +34,12 @@ export async function bundleSpec(config, spec) {
   let api;
   if (!config.skipValidation) {
     await SwaggerParser.validate(filePath);
-    await validateExamples(filePath);
   }
 
   api = await SwaggerParser.bundle(filePath);
+  if (!config.skipValidation) {
+    await validateExamples(api);
+  }
 
   if (!api.info) {
     throw new Error(

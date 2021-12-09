@@ -1,8 +1,7 @@
----
 openapi: 3.0.2
 info:
   title: petstore Inheritance
-  version: 1.0.7
+  version: 1.0.0
 paths:
   "/pet":
     post:
@@ -73,4 +72,3 @@ components:
       oneOf:
         - $ref: "#/components/schemas/Cat"
         - $ref: "#/components/schemas/Dog"
-            

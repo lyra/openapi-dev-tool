@@ -1,6 +1,6 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "9.2.0",
+  "version": "9.3.0",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "cmd:serve:dev": "nodemon --watch .. -e json,yaml,yml,js,ejs -r esm src/cli -- serve -v -c examples/config.json",
     "cmd:serve:prod": "node -r esm src/cli serve -v -c examples/config.json",
     "cmd:publish": "node -r esm src/cli publish -v -c examples/config.json",
-    "cmd:publish-local": "node -r esm src/cli publish-local -v -c examples/config.json",
+    "cmd:publish-local": "node -r esm src/cli publish-local -v -x -c examples/config.json",
     "cmd:merge": "node -r esm src/cli merge -c examples/config.json --output dist",
     "test": "mocha --timeout 10000 -r esm tests/**/*.spec.js",
     "coverage": "nyc npm test",
@@ -38,16 +38,31 @@
     "figlet": "1.5.2",
     "json-validator": "0.0.34",
     "mkdirp": "1.0.4",
-    "openapi-examples-validator": "4.5.0",
     "promise-settle": "0.3.0",
     "rc": "1.2.8",
-    "redoc": "2.0.0-rc.57",
+    "redoc": "2.0.0-rc.58",
     "reload": "3.2.0",
     "showdown": "1.9.1",
     "swagger-parser": "10.0.3",
     "swagger-ui-dist": "4.1.0",
     "tmp": "0.2.1",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+
+    
+
+
+    "ajv-draft-04": "^1.0.0",
+    "ajv-oai": "1.2.1",
+    "commander": "^6.2.1",
+    "errno": "^1.0.0",
+    "glob": "^7.2.0",
+    "json-pointer": "0.6.1",
+    "json-schema-ref-parser": "^9.0.9",
+    "jsonpath-plus": "^6.0.1",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.flatmap": "^4.5.0",
+    "lodash.flatten": "^4.4.0",
+    "lodash.merge": "^4.6.2"
   },
   "devDependencies": {
     "build-esm": "4.2.2",
