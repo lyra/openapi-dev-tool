@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <!-- AUTO-GENERATED-CONTENT:START (badgePlugin:src=./scripts/badge-template) -->
-[![Build Status](https://img.shields.io/travis/lyra/openapi-dev-tool/develop)](https://travis-ci.org/lyra/openapi-dev-tool)
+[![Build Status](https://img.shields.io/travis/lyra/openapi-dev-tool/develop)](https://app.travis-ci.com/github/lyra/openapi-dev-tool)
 <!-- AUTO-GENERATED-CONTENT:END -->
 [![npm package](https://img.shields.io/npm/v/@lyra-network/openapi-dev-tool/latest.svg?style=flat-square)](https://www.npmjs.com/package/@lyra-network/openapi-dev-tool)
 [![npm downloads](https://img.shields.io/npm/dt/@lyra-network/openapi-dev-tool.svg?style=flat-square)](https://www.npmjs.com/package/@lyra-network/openapi-dev-tool)
