@@ -20,10 +20,16 @@
         font-family:'ProximaNova-Regular';
       }
 
-      .mdl-card__title-text, .list-title {
+      .mdl-card__title-text, .list-title, .folder {
         font-family:'ProximaNova-Bold';
         color: #293c7a;
         font-size: 24px;
+      }
+
+      .folder {
+        background-color: aliceblue;
+        line-height: 40px;
+        color: brown;
       }
 
       .mdl-layout__content .material-icons {
@@ -152,28 +158,33 @@
                   </form>
               </div>
           </header>
-
+          
           <main class="mdl-layout__content">
               <div class="mdl-grid center-items list-display" style="display:none">
 
                 <ul class="demo-list-two mdl-list mdl-cell--6-col">
-                  <% specs.forEach(function(spec){ %>
-                  <li class="mdl-list__item mdl-list__item--two-line">
-                    <span class="mdl-list__item-primary-content">
-                      <span class="list-title"><%=spec.name%></span>
-                      <% spec.tags.forEach(function(tag){ %>
-                        <span class="mdl-chip">
-                          <span class="mdl-chip__text"><%=tag%></span>
-                        </span>
-                      <% }); %>
-                      <span class="mdl-list__item-sub-title list-version">v<%=spec.version%></span>
-                    </span>
-                    <span class="mdl-list__item-secondary-content">
-                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('./redoc?specName=<%=spec.name%>', '<%=spec.name%>')"><i class="material-icons">share</i></button>
-                      <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: goto('./redoc?specName=<%=spec.name%>')"><i class="material-icons">text_snippet</i></button>
-                    </span>
-                  </li>
-                  <% }); %>
+                  <% for (const [folder, specs] of Object.entries(folders)) { %>
+                  <div>
+                    <div class="folder"><%=folder%></div>
+                    <% specs.forEach(function(spec){ %>
+                    <li class="mdl-list__item mdl-list__item--two-line">
+                      <span class="mdl-list__item-primary-content">
+                        <span class="list-title"><%=spec.name%></span>
+                        <% spec.tags.forEach(function(tag){ %>
+                          <span class="mdl-chip">
+                            <span class="mdl-chip__text"><%=tag%></span>
+                          </span>
+                        <% }); %>
+                        <span class="mdl-list__item-sub-title list-version">v<%=spec.version%></span>
+                      </span>
+                      <span class="mdl-list__item-secondary-content">
+                        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: copy('./redoc?specName=<%=spec.name%>', '<%=spec.name%>')"><i class="material-icons">share</i></button>
+                        <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" onclick="javascript: goto('./redoc?specName=<%=spec.name%>')"><i class="material-icons">text_snippet</i></button>
+                      </span>
+                    </li>
+                    <% }); %>
+                  </div>
+                  <% }; %>
                 </ul>
               </div>
 
@@ -253,7 +264,9 @@
             return "";
           }
 
-          let asList = getCookie("displayAsList") == 'true';
+          // Default display as list
+          let asList = getCookie("displayAsList") == 'false' ? false : true;
+          
           document.querySelector('.list-display').style.display = asList?'flex':'none';
           document.querySelector('.cards-display').style.display = asList?'none':'flex';
 

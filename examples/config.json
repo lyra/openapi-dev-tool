@@ -3,6 +3,9 @@
     {
       "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
       "enabled": true,
+      "vFolders": [
+        "test", "yoda"
+      ],
       "context": {
         "public": false,
         "version": "1.0.0"
@@ -10,6 +13,7 @@
     },
     {
       "file": "./examples/specs/petstore/petstore-several-files/petstore-several-files.yaml",
+      "vFolders": "test",
       "context": {
         "public": true,
         "version": "1.0.0"
@@ -17,6 +21,7 @@
     },
     {
       "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
+      "vFolders": "test/jedi",
       "context": {
         "public": true,
         "version": "1.0.0"
@@ -25,6 +30,7 @@
     {
       "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
       "enabled": false,
+      "vFolders": "test/jedi",
       "context": {
         "public": true,
         "version": "1.0.0"
@@ -37,7 +43,6 @@
   "html-injector":[
     "<script>",
     "console.log('html-injector');",
-    "console.log('yoda');",
     "</script>"
   ]
 }

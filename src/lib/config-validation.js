@@ -34,6 +34,13 @@ function getConfigSchema(data) {
     return enabledDefaultValue;
   }
 
+  function transformVFoldersProperty(value) {
+    if (typeof value === 'string') return [value];
+    else if (Array.isArray(value) && value.every((i) => typeof i === 'string'))
+      return value;
+    else return [];
+  }
+
   return {
     specs: [
       {
@@ -61,6 +68,10 @@ function getConfigSchema(data) {
         enabled: {
           default: enabledDefaultValue,
           transform: transformEnabledProperty,
+        },
+        vFolders: {
+          default: [],
+          transform: transformVFoldersProperty,
         },
         context: {
           required: false,

@@ -45,6 +45,7 @@ export function loadSpecs(config) {
             )}/${path.basename(spec.file)}`,
         file: spec.file,
         context: spec.context,
+        vFolders: spec.vFolders,
         tags: api.info['x-tags'] || [],
       };
     });

@@ -65,8 +65,20 @@ export default function middleware(specs, config) {
     // Express middleware for Home
     home: (req, res) => {
       // Display the whole of API
+      // Organize specs by vFolders
+      const folders = { '': [] };
+      specs.forEach((spec) => {
+        if (spec.vFolders.length === 0) folders[''].push(spec);
+        else {
+          spec.vFolders.forEach((vFolder) => {
+            if (!folders[vFolder]) folders[vFolder] = [];
+            folders[vFolder].push(spec);
+          });
+        }
+      });
       res.render('apis', {
         specs,
+        folders,
         htmlInjector,
       });
     },
