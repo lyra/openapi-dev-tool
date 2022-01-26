@@ -5,23 +5,18 @@
 const { JSONPath: jsonPath } = require('jsonpath-plus'),
     JsonPointer = require('json-pointer'),
     Ajv = require('ajv-draft-04'),
-    FormatValidator = require('ajv-oai/lib/format-validator');
+    FormatValidator = require('ajv-oai/lib/format-validator'),
+    { validate: dateTimeValidator } = require('./validators/date-time'),
+    { validate: dateValidator } = require('./validators/date'),
+    { validate: emailValidator } = require('./validators/email'),
+    { validate: uriValidator } = require('./validators/uri'),
+    { validate: ipv4Validator } = require('./validators/ipv4'),
+    { validate: ipv6Validator } = require('./validators/ipv6');
 
 const PROP__ID = '$id',
     JSON_PATH__REFS = '$..\$ref',
     ID__SPEC_SCHEMA = 'https://www.npmjs.com/package/openapi-examples-validator/defs.json',
-    ID__RESPONSE_SCHEMA = 'https://www.npmjs.com/package/openapi-examples-validator/schema.json',
-    // From https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
-    // eslint-disable-next-line max-len
-    REGEX_DATE_TIME = new RegExp(
-        '^(?<date>-?(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])'
-        + '|(?:0[13-9]|1[0-2])-(?:29|30)'
-        + '|(?:0[13578]|1[02])-31)'
-        + '|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])'
-        + '|(?:[2468][048]|[13579][26])00)-02-29))(?:[Tt])'
-        + '(?<time>(?:[01]\\d|2[0-3]):[0-5]\\d:(?:[0-5]\\d|60)(?:\\.[0-9]+)?)'
-        + '(?<timezone>[Zz]|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])$'
-    );
+    ID__RESPONSE_SCHEMA = 'https://www.npmjs.com/package/openapi-examples-validator/schema.json'
 
 module.exports = {
     getValidatorFactory,
@@ -124,14 +119,27 @@ function _createReferenceSchema(specSchema) {
  * @private
  */
 function _addFormatValidators(validator) {
-    const dateTimeRegex = new RegExp(REGEX_DATE_TIME);
-
     validator.addFormat('int32', { type: 'number', validate: FormatValidator.int32 });
     validator.addFormat('int64', { type: 'string', validate: FormatValidator.int64 });
     validator.addFormat('float', { type: 'number', validate: FormatValidator.float });
     validator.addFormat('double', { type: 'number', validate: FormatValidator.double });
     validator.addFormat('byte', { type: 'string', validate: FormatValidator.byte });
     validator.addFormat('date-time', {
-        validate: (dateTimeString) => dateTimeRegex.test(dateTimeString)
+        validate: dateTimeValidator
+    });
+    validator.addFormat('date', {
+        validate: dateValidator
+    });
+    validator.addFormat('email', {
+        validate: emailValidator
+    });
+    validator.addFormat('uri', {
+        validate: uriValidator
+    });
+    validator.addFormat('ipv4', {
+        validate: ipv4Validator
+    });
+    validator.addFormat('ipv6', {
+        validate: ipv6Validator
     });
 }
