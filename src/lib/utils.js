@@ -1,3 +1,4 @@
+import SwaggerParser from 'swagger-parser';
 import path from 'path';
 import tmp from 'tmp';
 import validator from '../openapi-examples-validator/src';
@@ -136,6 +137,9 @@ export async function validateExamples(api) {
   }
 
   transform(apiCloned, '');
+
+  // Validate again to find some circular reference
+  await SwaggerParser.validate(apiCloned, {dereference:{circular: false}});
 
   const result = await validator.default(apiCloned);
 
