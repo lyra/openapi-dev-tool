@@ -64,7 +64,7 @@ paths:
         '201':
           description: Null response
         default:
-          description: unexpected error
+          description: unexpected error unexpected errorunexpected errorunexpected errorunexpected errorunexpected errorunexpected errorunexpected errorunexpected error
           content:
             application/json:
               schema:

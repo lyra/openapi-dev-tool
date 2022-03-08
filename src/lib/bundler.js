@@ -5,6 +5,9 @@ import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs';
 import { paramCase } from 'change-case';
+import { strOptions } from 'yaml/schema';
+
+strOptions.fold.lineWidth = 0;
 
 /**
  * Bundle spec and return the associated OpenAPI Document

@@ -139,7 +139,7 @@ export async function validateExamples(api) {
   transform(apiCloned, '');
 
   // Validate again to find some circular reference
-  await SwaggerParser.validate(apiCloned, {dereference:{circular: false}});
+  await SwaggerParser.validate(apiCloned, { dereference: { circular: false } });
 
   const result = await validator.default(apiCloned);
 
