@@ -16,21 +16,17 @@ export function getRepoPath() {
   return execSync(mavenLocalPathCmd).toString();
 }
 
-export function downloadArtifact(artifact, verbose) {
+export function downloadArtifact(artifact) {
   const folder = tmp.dirSync({
     prefix: 'openapi-dev-tool_',
     unsafeCleanup: true,
   });
-  const stdout = execSync(
+  execSync(
     mavenDownloadCmd
       .replace(/<ARTIFACT>/, artifact)
       .replace(/<OUTPUT>/g, folder.name),
     { cwd: folder.name }
-  ).toString();
-
-  if (verbose) {
-    console.log(stdout);
-  }
+  );
 
   return folder.name;
 }

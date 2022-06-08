@@ -18,16 +18,8 @@ import { getRepoPath, downloadArtifact, mvnExists } from './maven';
 // ######################################
 // Configuration file schema to validate
 // ######################################
-function getConfigSchema(data, verbose) {
+function getConfigSchema(data) {
   const enabledDefaultValue = true;
-  function transformFileProperty(name) {
-    const artifact = data.specs.find((spec) => spec.file == name).artifact;
-    if (artifact) {
-      const folder = downloadArtifact(artifact, verbose);
-      return folder + path.sep + name;
-    }
-    return name;
-  }
 
   function transformEnabledProperty(value) {
     if (typeof value == 'boolean') return value;
@@ -48,12 +40,43 @@ function getConfigSchema(data, verbose) {
     else return [];
   }
 
+  function validateArtifact(artifact) {
+    // Get enabled related property
+    let enabled = true;
+    if (artifact) {
+      const enabledString = data.specs.find(
+        (spec) => spec.artifact == artifact
+      ).enabled;
+      enabled = transformEnabledProperty(enabledString);
+      if (enabled) {
+        if (artifact.split(':').length !== 3) {
+          return {
+            isValid: false,
+            message: `artifact ${artifact} is incorrect, should be written like <groupId>:<artifactId>:<version>.`,
+          };
+        }
+        if (!mvnExists()) {
+          return {
+            isValid: false,
+            message: `artifact ${artifact} cannot be download, 'mvn' command does not exist.`,
+          };
+        }
+      }
+    }
+    return {
+      isValid: true,
+    };
+  }
+
   return {
     specs: [
       {
+        artifact: {
+          validate: validateArtifact,
+        },
         file: {
           required: true,
-          validate: function (name) {
+          validate: function (name, b, c) {
             // Get enabled related property
             let enabled = true;
             let artifact;
@@ -65,15 +88,35 @@ function getConfigSchema(data, verbose) {
               enabled = transformEnabledProperty(enabledString);
             }
             // Artifact, we have to download first
+
             if (artifact && enabled) {
-              if (!mvnExists()) {
-                return {
-                  isValid: false,
-                  message: `artifact ${artifact} cannot be download, 'mvn' command does not exist.`,
-                };
+              if (validateArtifact(artifact).isValid) {
+                try {
+                  const folder = downloadArtifact(artifact);
+                  // Does not need to check file if is not enabled
+                  const isValid =
+                    !name ||
+                    !enabled ||
+                    (enabled && fs.existsSync(folder + path.sep + name));
+
+                  // We update file reference to prepend temp folder of unpacked artifact
+                  data.specs.find((spec) => spec.file == name).file =
+                    folder + path.sep + name;
+                  return {
+                    isValid,
+                    message: `file ${name} doesn\'t exist in artifact ${artifact}`,
+                  };
+                } catch (error) {
+                  // Error in artifact downloading
+                  return {
+                    isValid: false,
+                    message: `artifact ${artifact} cannot be downloaded, '${error.message}'`,
+                  };
+                }
               } else {
-                const folder = downloadArtifact(artifact);
-                name = folder + path.sep + name;
+                return {
+                  isValid: true,
+                };
               }
             }
 
@@ -82,10 +125,9 @@ function getConfigSchema(data, verbose) {
               !name || !enabled || (enabled && fs.existsSync(name));
             return {
               isValid,
-              message: `File ${name} doesn\'t exist`,
+              message: `file ${name} doesn\'t exist`,
             };
           },
-          transform: transformFileProperty,
         },
         enabled: {
           default: enabledDefaultValue,
@@ -127,7 +169,7 @@ function globalValidation(options, errors) {
 
   jsonValidator.validate(
     options.config,
-    getConfigSchema(options.config, options.verbose),
+    getConfigSchema(options.config),
     (err, messages) => {
       // Validation error messages are a complex structure
       // We have to get message in deep objet!
