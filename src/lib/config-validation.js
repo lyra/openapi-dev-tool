@@ -3,8 +3,7 @@ import jsonValidator from 'json-validator';
 import YAML from 'yaml';
 import rc from 'rc';
 import fs from 'fs';
-import { execSync } from 'child_process';
-import commandExists from 'command-exists';
+import path from 'path';
 
 import { isYAMLFile } from './utils';
 import {
@@ -14,14 +13,17 @@ import {
   mergeUsage,
 } from './config-definitions';
 
-const mavenLocalPathCmd =
-  'mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout';
+import { getRepoPath, downloadArtifact, mvnExists } from './maven';
+
+const objectFromPath = (obj, path) =>
+  path.split('.').reduce((a, v) => a[v], obj);
 
 // ######################################
 // Configuration file schema to validate
 // ######################################
 function getConfigSchema(data) {
   const enabledDefaultValue = true;
+
   function transformEnabledProperty(value) {
     if (typeof value == 'boolean') return value;
     else if (typeof value == 'string') {
@@ -41,27 +43,103 @@ function getConfigSchema(data) {
     else return [];
   }
 
+  function validateArtifact(artifact, fieldPath) {
+    // Get enabled related property
+    let enabled = true;
+    if (artifact) {
+      const currentSpec = objectFromPath(
+        data,
+        fieldPath.replace(/\.artifact$/, '')
+      );
+
+      const enabledString = currentSpec.enabled;
+      enabled = transformEnabledProperty(enabledString);
+      if (enabled) {
+        if (artifact.split(':').length !== 3) {
+          return {
+            isValid: false,
+            message: `artifact ${artifact} is incorrect, should be written like <groupId>:<artifactId>:<version>.`,
+          };
+        }
+        if (!mvnExists()) {
+          return {
+            isValid: false,
+            message: `artifact ${artifact} cannot be download, 'mvn' command does not exist.`,
+          };
+        }
+      }
+    }
+    return {
+      isValid: true,
+    };
+  }
+
   return {
     specs: [
       {
+        artifact: {
+          validate: validateArtifact,
+        },
         file: {
           required: true,
-          validate: function (name) {
+          validate: function (name, fieldPath) {
+            // Valid if not defined (rejected after because of required field)
+            if (!name) {
+              return {
+                isValid: true,
+              };
+            }
             // Get enabled related property
             let enabled = true;
-            if (name) {
-              const enabledString = data.specs.find(
-                (spec) => spec.file == name
-              ).enabled;
-              enabled = transformEnabledProperty(enabledString);
+            let artifact;
+            // Get related spec from path (without field "file")
+            const currentSpec = objectFromPath(
+              data,
+              fieldPath.replace(/\.file$/, '')
+            );
+            const enabledString = currentSpec.enabled;
+            artifact = currentSpec.artifact;
+            enabled = transformEnabledProperty(enabledString);
+            // Artifact, we have to download first (if valid)
+            if (artifact && enabled) {
+              if (
+                validateArtifact(
+                  artifact,
+                  fieldPath.replace(/\.file$/, '.artifact')
+                ).isValid
+              ) {
+                try {
+                  const folder = downloadArtifact(artifact);
+                  // Does not need to check file if is not enabled
+                  const isValid =
+                    !enabled ||
+                    (enabled && fs.existsSync(folder + path.sep + name));
+
+                  // We update file reference to prepend temp folder of unpacked artifact
+                  currentSpec.file = folder + path.sep + name;
+                  return {
+                    isValid,
+                    message: `file ${name} doesn\'t exist in artifact ${artifact}`,
+                  };
+                } catch (error) {
+                  // Error in artifact downloading
+                  return {
+                    isValid: false,
+                    message: `artifact ${artifact} cannot be downloaded, '${error.message}'`,
+                  };
+                }
+              } else {
+                return {
+                  isValid: true,
+                };
+              }
             }
 
             // Does not need to check file if is not enabled
-            const isValid =
-              !name || !enabled || (enabled && fs.existsSync(name));
+            const isValid = !enabled || (enabled && fs.existsSync(name));
             return {
               isValid,
-              message: `File ${name} doesn\'t exist`,
+              message: `file ${name} doesn\'t exist`,
             };
           },
         },
@@ -270,12 +348,12 @@ export function publishLocalValidation(options) {
     typeof options.repoPath === 'string' &&
     options.repoPath === 'auto'
   ) {
-    if (!commandExists.sync('mvn')) {
+    if (!mvnExists()) {
       errors.push(
         `'mvn' command does not exist. Impossible to determinate local repo path.`
       );
     } else {
-      options.repoPath = execSync(mavenLocalPathCmd).toString();
+      options.repoPath = getRepoPath();
       if (!fs.existsSync(options.repoPath)) {
         errors.push(`repoPath '${options.repoPath}' does not exist`);
       }

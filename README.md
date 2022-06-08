@@ -1,9 +1,13 @@
 # OpenAPI Dev Tool
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 <!-- AUTO-GENERATED-CONTENT:START (badgePlugin:src=./scripts/badge-template) -->
+
 [![Build Status](https://img.shields.io/travis/lyra/openapi-dev-tool/develop)](https://app.travis-ci.com/github/lyra/openapi-dev-tool)
+
 <!-- AUTO-GENERATED-CONTENT:END -->
+
 [![npm package](https://img.shields.io/npm/v/@lyra-network/openapi-dev-tool/latest.svg?style=flat-square)](https://www.npmjs.com/package/@lyra-network/openapi-dev-tool)
 [![npm downloads](https://img.shields.io/npm/dt/@lyra-network/openapi-dev-tool.svg?style=flat-square)](https://www.npmjs.com/package/@lyra-network/openapi-dev-tool)
 
@@ -77,7 +81,7 @@ For example, declare a private and a public specifications:
 - **Validate** your specifications and your examples automatically
 - **Static files** can be exposed in addition of your openapi documentation
 - **Context uses**: it is possible to serve a same specification in [several contexts](#context-usage) (internal, public, etc.)
-- **Viewers up-to-date** you can use the latest releases of viewers directly by declaring it from your `package.json` ([swagger-ui-dist](https://www.npmjs.com/package/swagger-ui-dist) & [redoc](https://www.npmjs.com/package/redoc)).  `openapi-dev-tool` will automatically use the viewers defined in your app.
+- **Viewers up-to-date** you can use the latest releases of viewers directly by declaring it from your `package.json` ([swagger-ui-dist](https://www.npmjs.com/package/swagger-ui-dist) & [redoc](https://www.npmjs.com/package/redoc)). `openapi-dev-tool` will automatically use the viewers defined in your app.
 
 #### Usage
 
@@ -161,8 +165,6 @@ Global Options
   -v, --verbose         Verbose mode, default is false
 ```
 
-
-
 ### Publishing Locally
 
 #### Usage
@@ -232,21 +234,22 @@ It also describes additional parameters used by specific commands (as described 
 
 ```yaml
 {
-    "specs": [                         // Array of specifications (several specifications can be exposed)
-        {                              // First specification file
-            "file": "./petstore.yaml", // Relative path of the specification main file. It has to be an OpenAPI file in YAML or JSON.
-            "vFolders": "myFolder",    // Virtual folders to organize specs documentation into several folder. vFolders can be a string or an array of strings
-            "enabled": true,           // Enable or not specification file to avoid to serve / publish / merge some specification file (default is true) --> can be an environment variable
-            "context": {               // Object used for template generation (see Template usage chapter below)
+    "specs": [                                       // Array of specifications (several specifications can be exposed)
+        {                                            // First specification file
+            "file": "./petstore.yaml",               // Relative path of the specification main file (or from artifact archive). It has to be an OpenAPI file in YAML or JSON.
+            "artifact": "groupId:artifactId:version" // Artifact of spec downloaded rather to be referenced locally
+            "vFolders": "myFolder",                  // Virtual folders to organize specs documentation into several folder. vFolders can be a string or an array of strings
+            "enabled": true,                         // Enable or not specification file to avoid to serve / publish / merge some specification file (default is true) --> can be an environment variable
+            "context": {                             // Object used for template generation (see Template usage chapter below)
               ...
             }
         },
-        {                              // Second specification file
+        {                                            // Second specification file
             "file": "./petstore2.yaml",
             ...
         }
     ],
-    "html-injector": []                // To change render of pages of serve command you can provide your own template files but you can also use this HTML injector where each lines will be injected into HTML
+    "html-injector": []                              // To change render of pages of serve command you can provide your own template files but you can also use this HTML injector where each lines will be injected into HTML
 }
 ```
 

@@ -8,11 +8,11 @@ const assert = chai.assert;
 
 // We override function to catch messages
 let messages = [];
-console.log = message => {
+console.log = (message) => {
   messages.push(message);
 };
 let exitCode = 0;
-process.exit = code => {
+process.exit = (code) => {
   exitCode = code;
 };
 
@@ -132,7 +132,7 @@ describe('config.js file', function () {
       require('../../src/lib/config');
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], 'viewsFolder \'toto\' does not exist');
+      assert.include(messages[1], "viewsFolder 'toto' does not exist");
       assert.equal(1, exitCode);
     });
 
@@ -145,7 +145,10 @@ describe('config.js file', function () {
       require('../../src/lib/config');
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], `viewsFolder \'${__dirname}/../assets/config_ok.json\' does not exist`);
+      assert.include(
+        messages[1],
+        `viewsFolder \'${__dirname}/../assets/config_ok.json\' does not exist`
+      );
       assert.equal(1, exitCode);
     });
 
@@ -158,7 +161,7 @@ describe('config.js file', function () {
       require('../../src/lib/config');
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], 'staticFolders \'/toto\' incorrect syntax');
+      assert.include(messages[1], "staticFolders '/toto' incorrect syntax");
       assert.equal(1, exitCode);
     });
 
@@ -184,7 +187,7 @@ describe('config.js file', function () {
       require('../../src/lib/config');
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], 'staticFolders \'/redoc\' cannot be used');
+      assert.include(messages[1], "staticFolders '/redoc' cannot be used");
       assert.equal(1, exitCode);
     });
 
@@ -197,10 +200,9 @@ describe('config.js file', function () {
       require('../../src/lib/config');
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], 'staticFolders \'fake\' does not exist');
+      assert.include(messages[1], "staticFolders 'fake' does not exist");
       assert.equal(1, exitCode);
     });
-
 
     it("should return error when config file doesn't exist in serve command", async function () {
       process.argv[2] = 'serve';
@@ -278,7 +280,7 @@ describe('config.js file', function () {
       require('../../src/lib/config');
       assert.equal(3, messages.length);
       assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], 'repoPath \'fake\' folder does not exist');
+      assert.include(messages[1], "repoPath 'fake' folder does not exist");
       assert.equal(1, exitCode);
     });
 
@@ -452,7 +454,21 @@ describe('config.js file', function () {
       assert.include(messages[0], 'Syntax error!');
       assert.include(
         messages[1],
-        `\t- In config file: File toto/tata doesn't exist`
+        `\t- In config file: file toto/tata doesn't exist`
+      );
+      assert.equal(1, exitCode);
+    });
+
+    it('should return error when config file references wrong artifact syntax', async function () {
+      process.argv[2] = 'serve';
+      process.argv[3] = '--config';
+      process.argv[4] = `${__dirname}/../assets/config_artifact.yaml`;
+      require('../../src/lib/config');
+      assert.equal(3, messages.length);
+      assert.include(messages[0], 'Syntax error!');
+      assert.include(
+        messages[1],
+        `\t- In config file: artifact fake is incorrect, should be written like <groupId>:<artifactId>:<version>.`
       );
       assert.equal(1, exitCode);
     });
