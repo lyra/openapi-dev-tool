@@ -1,6 +1,10 @@
 {
   "specs": [
     {
+      "artifact": "com.lyra.monetique.openapi:luma-api:1.6.0",
+      "file": "./specs.yaml"
+    },
+    {
       "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
       "enabled": true,
       "vFolders": [

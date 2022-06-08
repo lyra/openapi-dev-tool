@@ -3,7 +3,7 @@ import jsonValidator from 'json-validator';
 import YAML from 'yaml';
 import rc from 'rc';
 import fs from 'fs';
-import { execSync } from 'child_process';
+import path from 'path';
 import commandExists from 'command-exists';
 
 import { isYAMLFile } from './utils';
@@ -14,8 +14,7 @@ import {
   mergeUsage,
 } from './config-definitions';
 
-const mavenLocalPathCmd =
-  'mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout';
+import { getRepoPath, downloadArtifact } from './maven';
 
 // ######################################
 // Configuration file schema to validate
@@ -49,11 +48,26 @@ function getConfigSchema(data) {
           validate: function (name) {
             // Get enabled related property
             let enabled = true;
+            let artifact;
             if (name) {
               const enabledString = data.specs.find(
                 (spec) => spec.file == name
               ).enabled;
+              artifact = data.specs.find((spec) => spec.file == name).artifact;
               enabled = transformEnabledProperty(enabledString);
+            }
+            // Artifact, we have to download first
+            if (artifact) {
+              if (!commandExists.sync('mvn')) {
+                errors.push(
+                  `'mvn' command does not exist. Impossible to get artifact.`
+                );
+              } else {
+                const folder = downloadArtifact(artifact);
+                name = folder + path.sep + name;
+                data.specs.find((spec) => spec.artifact == artifact).name =
+                  name;
+              }
             }
 
             // Does not need to check file if is not enabled
@@ -275,7 +289,7 @@ export function publishLocalValidation(options) {
         `'mvn' command does not exist. Impossible to determinate local repo path.`
       );
     } else {
-      options.repoPath = execSync(mavenLocalPathCmd).toString();
+      options.repoPath = getRepoPath();
       if (!fs.existsSync(options.repoPath)) {
         errors.push(`repoPath '${options.repoPath}' does not exist`);
       }
