@@ -234,22 +234,22 @@ It also describes additional parameters used by specific commands (as described 
 
 ```yaml
 {
-    "specs": [                         // Array of specifications (several specifications can be exposed)
-        {                              // First specification file
-            "file": "./petstore.yaml", // Relative path of the specification main file. It has to be an OpenAPI file in YAML or JSON.
-            "artifact": "groupId:artifactId:version" // Artifact of spec download rather to be referenced locally
-            "vFolders": "myFolder",    // Virtual folders to organize specs documentation into several folder. vFolders can be a string or an array of strings
-            "enabled": true,           // Enable or not specification file to avoid to serve / publish / merge some specification file (default is true) --> can be an environment variable
-            "context": {               // Object used for template generation (see Template usage chapter below)
+    "specs": [                                       // Array of specifications (several specifications can be exposed)
+        {                                            // First specification file
+            "file": "./petstore.yaml",               // Relative path of the specification main file (or from artifact archive). It has to be an OpenAPI file in YAML or JSON.
+            "artifact": "groupId:artifactId:version" // Artifact of spec downloaded rather to be referenced locally
+            "vFolders": "myFolder",                  // Virtual folders to organize specs documentation into several folder. vFolders can be a string or an array of strings
+            "enabled": true,                         // Enable or not specification file to avoid to serve / publish / merge some specification file (default is true) --> can be an environment variable
+            "context": {                             // Object used for template generation (see Template usage chapter below)
               ...
             }
         },
-        {                              // Second specification file
+        {                                            // Second specification file
             "file": "./petstore2.yaml",
             ...
         }
     ],
-    "html-injector": []                // To change render of pages of serve command you can provide your own template files but you can also use this HTML injector where each lines will be injected into HTML
+    "html-injector": []                              // To change render of pages of serve command you can provide your own template files but you can also use this HTML injector where each lines will be injected into HTML
 }
 ```
 

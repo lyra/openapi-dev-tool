@@ -15,6 +15,9 @@ import {
 
 import { getRepoPath, downloadArtifact, mvnExists } from './maven';
 
+const objectFromPath = (obj, path) =>
+  path.split('.').reduce((a, v) => a[v], obj);
+
 // ######################################
 // Configuration file schema to validate
 // ######################################
@@ -40,13 +43,13 @@ function getConfigSchema(data) {
     else return [];
   }
 
-  function validateArtifact(artifact) {
+  function validateArtifact(artifact, path) {
     // Get enabled related property
     let enabled = true;
     if (artifact) {
-      const enabledString = data.specs.find(
-        (spec) => spec.artifact == artifact
-      ).enabled;
+      const currentSpec = objectFromPath(data, path.replace(/\.artifact$/, ''));
+
+      const enabledString = currentSpec.enabled;
       enabled = transformEnabledProperty(enabledString);
       if (enabled) {
         if (artifact.split(':').length !== 3) {
@@ -76,21 +79,24 @@ function getConfigSchema(data) {
         },
         file: {
           required: true,
-          validate: function (name, b, c) {
+          validate: function (name, path) {
             // Get enabled related property
             let enabled = true;
             let artifact;
-            if (name) {
-              const enabledString = data.specs.find(
-                (spec) => spec.file == name
-              ).enabled;
-              artifact = data.specs.find((spec) => spec.file == name).artifact;
-              enabled = transformEnabledProperty(enabledString);
-            }
-            // Artifact, we have to download first
-
+            // Get related spec from path (without field "file")
+            const currentSpec = objectFromPath(
+              data,
+              path.replace(/\.file$/, '')
+            );
+            const enabledString = currentSpec.enabled;
+            artifact = currentSpec.artifact;
+            enabled = transformEnabledProperty(enabledString);
+            // Artifact, we have to download first (if valid)
             if (artifact && enabled) {
-              if (validateArtifact(artifact).isValid) {
+              if (
+                validateArtifact(artifact, path.replace(/\.file$/, '.artifact'))
+                  .isValid
+              ) {
                 try {
                   const folder = downloadArtifact(artifact);
                   // Does not need to check file if is not enabled
@@ -100,8 +106,7 @@ function getConfigSchema(data) {
                     (enabled && fs.existsSync(folder + path.sep + name));
 
                   // We update file reference to prepend temp folder of unpacked artifact
-                  data.specs.find((spec) => spec.file == name).file =
-                    folder + path.sep + name;
+                  currentSpec.file = folder + path.sep + name;
                   return {
                     isValid,
                     message: `file ${name} doesn\'t exist in artifact ${artifact}`,
