@@ -5,7 +5,7 @@ const mavenLocalPathCmd =
   'mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout';
 
 const mavenDownloadCmd =
-  'mvn dependency:unpack -Dartifact=<ARTIFACT>:zip -DoutputDirectory=<OUTPUT>';
+  'mvn dependency:unpack -Dartifact=<ARTIFACT>:zip -DoutputDirectory=.';
 
 export function getRepoPath() {
   return execSync(mavenLocalPathCmd).toString();
@@ -16,17 +16,11 @@ export function downloadArtifact(artifact) {
     prefix: 'openapi-dev-tool_',
     unsafeCleanup: true,
   });
-  console.log(
+  execSync(
     mavenDownloadCmd
       .replace(/<ARTIFACT>/, artifact)
-      .replace(/<OUTPUT>/, folder.name)
-  );
-  console.log(
-    execSync(
-      mavenDownloadCmd
-        .replace(/<ARTIFACT>/, artifact)
-        .replace(/<OUTPUT>/, folder.name)
-    ).toString()
+      .replace(/<OUTPUT>/g, folder.name),
+    { cwd: folder.name }
   );
 
   return folder.name;

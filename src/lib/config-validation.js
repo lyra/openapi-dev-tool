@@ -21,6 +21,15 @@ import { getRepoPath, downloadArtifact } from './maven';
 // ######################################
 function getConfigSchema(data) {
   const enabledDefaultValue = true;
+  function transformFileProperty(name) {
+    const artifact = data.specs.find((spec) => spec.file == name).artifact;
+    if (artifact) {
+      const folder = downloadArtifact(artifact);
+      return folder + path.sep + name;
+    }
+    return name;
+  }
+
   function transformEnabledProperty(value) {
     if (typeof value == 'boolean') return value;
     else if (typeof value == 'string') {
@@ -78,6 +87,7 @@ function getConfigSchema(data) {
               message: `File ${name} doesn\'t exist`,
             };
           },
+          transform: transformFileProperty,
         },
         enabled: {
           default: enabledDefaultValue,
