@@ -43,11 +43,14 @@ function getConfigSchema(data) {
     else return [];
   }
 
-  function validateArtifact(artifact, path) {
+  function validateArtifact(artifact, fieldPath) {
     // Get enabled related property
     let enabled = true;
     if (artifact) {
-      const currentSpec = objectFromPath(data, path.replace(/\.artifact$/, ''));
+      const currentSpec = objectFromPath(
+        data,
+        fieldPath.replace(/\.artifact$/, '')
+      );
 
       const enabledString = currentSpec.enabled;
       enabled = transformEnabledProperty(enabledString);
@@ -79,14 +82,20 @@ function getConfigSchema(data) {
         },
         file: {
           required: true,
-          validate: function (name, path) {
+          validate: function (name, fieldPath) {
+            // Valid if not defined (rejected after because of required field)
+            if (!name) {
+              return {
+                isValid: true,
+              };
+            }
             // Get enabled related property
             let enabled = true;
             let artifact;
             // Get related spec from path (without field "file")
             const currentSpec = objectFromPath(
               data,
-              path.replace(/\.file$/, '')
+              fieldPath.replace(/\.file$/, '')
             );
             const enabledString = currentSpec.enabled;
             artifact = currentSpec.artifact;
@@ -94,14 +103,15 @@ function getConfigSchema(data) {
             // Artifact, we have to download first (if valid)
             if (artifact && enabled) {
               if (
-                validateArtifact(artifact, path.replace(/\.file$/, '.artifact'))
-                  .isValid
+                validateArtifact(
+                  artifact,
+                  fieldPath.replace(/\.file$/, '.artifact')
+                ).isValid
               ) {
                 try {
                   const folder = downloadArtifact(artifact);
                   // Does not need to check file if is not enabled
                   const isValid =
-                    !name ||
                     !enabled ||
                     (enabled && fs.existsSync(folder + path.sep + name));
 
@@ -126,8 +136,7 @@ function getConfigSchema(data) {
             }
 
             // Does not need to check file if is not enabled
-            const isValid =
-              !name || !enabled || (enabled && fs.existsSync(name));
+            const isValid = !enabled || (enabled && fs.existsSync(name));
             return {
               isValid,
               message: `file ${name} doesn\'t exist`,
