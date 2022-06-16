@@ -13,7 +13,12 @@ import {
   mergeUsage,
 } from './config-definitions';
 
-import { getRepoPath, downloadArtifact, mvnExists } from './maven';
+import {
+  getRepoPath,
+  downloadArtifact,
+  mvnExists,
+  mavenCommand,
+} from './maven';
 
 const objectFromPath = (obj, path) =>
   path.split('.').reduce((a, v) => a[v], obj);
@@ -21,7 +26,7 @@ const objectFromPath = (obj, path) =>
 // ######################################
 // Configuration file schema to validate
 // ######################################
-function getConfigSchema(data) {
+function getConfigSchema(data, verbose) {
   const enabledDefaultValue = true;
 
   function transformEnabledProperty(value) {
@@ -59,12 +64,6 @@ function getConfigSchema(data) {
           return {
             isValid: false,
             message: `artifact ${artifact} is incorrect, should be written like <groupId>:<artifactId>:<version>.`,
-          };
-        }
-        if (!mvnExists()) {
-          return {
-            isValid: false,
-            message: `artifact ${artifact} cannot be download, 'mvn' command does not exist.`,
           };
         }
       }
@@ -109,7 +108,7 @@ function getConfigSchema(data) {
                 ).isValid
               ) {
                 try {
-                  const folder = downloadArtifact(artifact);
+                  const folder = downloadArtifact(artifact, verbose);
                   // Does not need to check file if is not enabled
                   const isValid =
                     !enabled ||
@@ -125,7 +124,7 @@ function getConfigSchema(data) {
                   // Error in artifact downloading
                   return {
                     isValid: false,
-                    message: `artifact ${artifact} cannot be downloaded, '${error.message}'`,
+                    message: `artifact ${artifact} cannot be downloaded, ${error.message}`,
                   };
                 }
               } else {
@@ -183,7 +182,7 @@ function globalValidation(options, errors) {
 
   jsonValidator.validate(
     options.config,
-    getConfigSchema(options.config),
+    getConfigSchema(options.config, options.verbose),
     (err, messages) => {
       // Validation error messages are a complex structure
       // We have to get message in deep objet!
@@ -350,7 +349,7 @@ export function publishLocalValidation(options) {
   ) {
     if (!mvnExists()) {
       errors.push(
-        `'mvn' command does not exist. Impossible to determinate local repo path.`
+        `'${mavenCommand}' command does not exist. Impossible to determinate local repo path.`
       );
     } else {
       options.repoPath = getRepoPath();
