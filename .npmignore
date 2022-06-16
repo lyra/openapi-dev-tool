@@ -1,10 +1,8 @@
-specs
-config.yaml
-config.json
-*.spec.js
 README.md
 .nyc_output
 .nycrc
 tests
 .prettierrc
-pres.stg
+.prettierignore
+.specs
+.travis.yml
