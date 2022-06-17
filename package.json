@@ -1,16 +1,16 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "9.5.1",
+  "version": "9.6.0",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
-    "build": "rimraf dist && npm run lint-prettier && npm test && build-esm",
+    "build": "rimraf dist && rimraf .specs && npm run lint-prettier && npm test && build-esm",
     "cmd:serve:dev": "nodemon --watch .. -e json,yaml,yml,js,ejs -r esm src/cli -- serve -v -c examples/config.json",
     "cmd:serve:prod": "node -r esm src/cli serve -v -c examples/config.json",
     "cmd:publish": "node -r esm src/cli publish -v -c examples/config.json",
     "cmd:publish-local": "node -r esm src/cli publish-local -v -x -c examples/config.json",
     "cmd:merge": "node -r esm src/cli merge -c examples/config.json --output dist",
-    "test": "mocha --timeout 10000 -r esm tests/**/*.spec.js",
+    "test": "mocha --timeout 15000 -r esm tests/**/*.spec.js",
     "coverage": "nyc npm test",
     "prettier": "prettier --write \"src/**/*.js\"",
     "lint-prettier": "prettier --check \"src/**/*.js\""
@@ -47,8 +47,9 @@
     "swagger-ui-dist": "4.12.0",
     "tmp": "0.2.1",
     "yaml": "1.10.2",
-
-    
+    "adm-zip": "0.5.9",
+    "unzipper": "0.10.11",
+    "rimraf": "3.0.2",
 
     "ajv": "^8.8.2",
     "ajv-draft-04": "^1.0.0",

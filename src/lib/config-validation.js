@@ -26,7 +26,7 @@ const objectFromPath = (obj, path) =>
 // ######################################
 // Configuration file schema to validate
 // ######################################
-function getConfigSchema(data, verbose) {
+function getConfigSchema(data, urlDownloadTemplate, verbose) {
   const enabledDefaultValue = true;
 
   function transformEnabledProperty(value) {
@@ -63,7 +63,7 @@ function getConfigSchema(data, verbose) {
         if (artifact.split(':').length !== 3) {
           return {
             isValid: false,
-            message: `artifact ${artifact} is incorrect, should be written like <groupId>:<artifactId>:<version>.`,
+            message: `artifact '${artifact}' is incorrect, should be written like <groupId>:<artifactId>:<version>.`,
           };
         }
       }
@@ -81,12 +81,10 @@ function getConfigSchema(data, verbose) {
         },
         file: {
           required: true,
-          validate: function (name, fieldPath) {
+          asyncValidate: function (name, fieldPath, cb) {
             // Valid if not defined (rejected after because of required field)
             if (!name) {
-              return {
-                isValid: true,
-              };
+              cb(null, null);
             }
             // Get enabled related property
             let enabled = true;
@@ -107,39 +105,37 @@ function getConfigSchema(data, verbose) {
                   fieldPath.replace(/\.file$/, '.artifact')
                 ).isValid
               ) {
-                try {
-                  const folder = downloadArtifact(artifact, verbose);
-                  // Does not need to check file if is not enabled
-                  const isValid =
-                    !enabled ||
-                    (enabled && fs.existsSync(folder + path.sep + name));
+                downloadArtifact(artifact, urlDownloadTemplate, verbose)
+                  .then((folder) => {
+                    // Does not need to check file if is not enabled
+                    const isValid =
+                      !enabled ||
+                      (enabled && fs.existsSync(folder + path.sep + name));
 
-                  // We update file reference to prepend temp folder of unpacked artifact
-                  currentSpec.file = folder + path.sep + name;
-                  return {
-                    isValid,
-                    message: `file ${name} doesn\'t exist in artifact ${artifact}`,
-                  };
-                } catch (error) {
-                  // Error in artifact downloading
-                  return {
-                    isValid: false,
-                    message: `artifact ${artifact} cannot be downloaded, ${error.message}`,
-                  };
-                }
+                    // We update file reference to prepend temp folder of unpacked artifact
+                    currentSpec.file = folder + path.sep + name;
+                    if (isValid) cb(null, null);
+                    else
+                      cb(
+                        null,
+                        `file '${name}' doesn\'t exist in artifact '${artifact}'`
+                      );
+                  })
+                  .catch((err) => {
+                    cb(
+                      null,
+                      `artifact '${artifact}' cannot be downloaded, ${err.message}`
+                    );
+                  });
               } else {
-                return {
-                  isValid: true,
-                };
+                cb(null, null);
               }
+            } else {
+              // Does not need to check file if is not enabled
+              const isValid = !enabled || (enabled && fs.existsSync(name));
+              if (isValid) cb(null, null);
+              else cb(null, `file '${name}' doesn\'t exist`);
             }
-
-            // Does not need to check file if is not enabled
-            const isValid = !enabled || (enabled && fs.existsSync(name));
-            return {
-              isValid,
-              message: `file ${name} doesn\'t exist`,
-            };
           },
         },
         enabled: {
@@ -159,55 +155,69 @@ function getConfigSchema(data, verbose) {
 }
 
 function globalValidation(options, errors) {
-  // Detect unknown parameters
-  if (options._unknown && options._unknown.length > 0) {
-    errors.push(`Option '${options._unknown[0]}' unknow`);
-    return;
-  }
+  return new Promise((resolve) => {
+    // Detect unknown parameters
+    if (options._unknown && options._unknown.length > 0) {
+      errors.push(`Option '${options._unknown[0]}' unknow`);
+      resolve();
+      return;
+    }
 
-  if (!fs.existsSync(options.config)) {
-    errors.push(`File '${options.config}' does not exit`);
-    return;
-  }
-  // Reading config file
-  let configRaw = fs.readFileSync(options.config, 'utf-8');
-  if (isYAMLFile(options.config)) {
-    options.config = YAML.parse(configRaw);
-  } else {
-    options.config = JSON.parse(configRaw);
-  }
-  if (!options.config) {
-    options.config = {};
-  }
+    if (!fs.existsSync(options.config)) {
+      errors.push(`File '${options.config}' does not exit`);
+      resolve();
+      return;
+    }
 
-  jsonValidator.validate(
-    options.config,
-    getConfigSchema(options.config, options.verbose),
-    (err, messages) => {
-      // Validation error messages are a complex structure
-      // We have to get message in deep objet!
-      function extractMessages(messages) {
-        if (Array.isArray(messages)) {
-          messages.forEach((message) => {
-            extractMessages(message);
-          });
-        } else if (typeof messages === 'object') {
-          Object.keys(messages).forEach((attr) => {
-            extractMessages(messages[attr]);
-          });
-        } else {
-          if (typeof messages === 'string' || messages instanceof String) {
-            errors.push(`In config file: ${messages}`);
+    // Reading config file
+    let configRaw = fs.readFileSync(options.config, 'utf-8');
+    if (isYAMLFile(options.config)) {
+      options.config = YAML.parse(configRaw);
+    } else {
+      try {
+        options.config = JSON.parse(configRaw);
+      } catch {
+        options.config = {};
+      }
+    }
+    if (!options.config) {
+      options.config = {};
+    }
+
+    jsonValidator.validate(
+      options.config,
+      getConfigSchema(
+        options.config,
+        options.urlDownloadTemplate,
+        options.verbose
+      ),
+      (err, messages) => {
+        // Validation error messages are a complex structure
+        // We have to get message in deep objet!
+        function extractMessages(messages) {
+          if (Array.isArray(messages)) {
+            messages.forEach((message) => {
+              extractMessages(message);
+            });
+          } else if (typeof messages === 'object') {
+            Object.keys(messages).forEach((attr) => {
+              extractMessages(messages[attr]);
+            });
+          } else {
+            if (typeof messages === 'string' || messages instanceof String) {
+              errors.push(`In config file: ${messages}`);
+            }
           }
         }
-      }
 
-      extractMessages(messages);
-    }
-  );
+        extractMessages(messages);
+        resolve();
+      }
+    );
+  });
 }
 
-export function mergeValidation(options) {
+export async function mergeValidation(options) {
   if (!options) {
     return {};
   }
@@ -221,7 +231,7 @@ export function mergeValidation(options) {
     errors.push(`config is mandatory`);
   }
 
-  globalValidation(options, errors);
+  await globalValidation(options, errors);
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));
@@ -235,7 +245,7 @@ export function mergeValidation(options) {
   return options;
 }
 
-export function publishValidation(options) {
+export async function publishValidation(options) {
   if (!options) {
     return {};
   }
@@ -290,7 +300,7 @@ export function publishValidation(options) {
     errors.push(`repoPassword is mandatory`);
   }
 
-  globalValidation(options, errors);
+  await globalValidation(options, errors);
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));
@@ -304,7 +314,7 @@ export function publishValidation(options) {
   return options;
 }
 
-export function publishLocalValidation(options) {
+export async function publishLocalValidation(options) {
   if (!options) {
     return {};
   }
@@ -359,7 +369,7 @@ export function publishLocalValidation(options) {
     }
   }
 
-  globalValidation(options, errors);
+  await globalValidation(options, errors);
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));
@@ -373,7 +383,7 @@ export function publishLocalValidation(options) {
   return options;
 }
 
-export function serveValidation(options) {
+export async function serveValidation(options) {
   if (!options) {
     return {};
   }
@@ -447,7 +457,7 @@ export function serveValidation(options) {
     });
   }
 
-  globalValidation(options, errors);
+  await globalValidation(options, errors);
 
   if (errors.length != 0) {
     console.log(colors.red('Syntax error!'));

@@ -115,8 +115,13 @@ Command Options
 
 Global Options
 
-  -c, --config string   Configuration file in JSON or YAML format where specifications are defined, default is config.json
-  -v, --verbose         Verbose mode, default is false
+  -c, --config string                Configuration file in JSON or YAML format where specifications are defined,
+                                     default is config.json
+  -v, --verbose                      Verbose mode, default is false
+  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using
+                                     'artifact' config property) which will be downloaded by using this url. From
+                                     this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
+                                     replaced.
 ```
 
 ### Publishing
@@ -161,8 +166,13 @@ Command Options
 
 Global Options
 
-  -c, --config string   Configuration file in JSON or YAML format where specifications are defined, default is config.json
-  -v, --verbose         Verbose mode, default is false
+  -c, --config string                Configuration file in JSON or YAML format where specifications are defined,
+                                     default is config.json
+  -v, --verbose                      Verbose mode, default is false
+  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using
+                                     'artifact' config property) which will be downloaded by using this url. From
+                                     this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
+                                     replaced.
 ```
 
 ### Publishing Locally
@@ -189,8 +199,13 @@ Command Options
 
 Global Options
 
-  -c, --config string   Configuration file in JSON or YAML format where specifications are defined, default is config.json
-  -v, --verbose         Verbose mode, default is false
+  -c, --config string                Configuration file in JSON or YAML format where specifications are defined,
+                                     default is config.json
+  -v, --verbose                      Verbose mode, default is false
+  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using
+                                     'artifact' config property) which will be downloaded by using this url. From
+                                     this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
+                                     replaced.
 ```
 
 > **Warning**
@@ -223,8 +238,13 @@ Command Options
 
 Global Options
 
-  -c, --config string   Configuration file in JSON or YAML format where specifications are defined, default is config.json
-  -v, --verbose         Verbose mode, default is false
+  -c, --config string                Configuration file in JSON or YAML format where specifications are defined,
+                                     default is config.json
+  -v, --verbose                      Verbose mode, default is false
+  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using
+                                     'artifact' config property) which will be downloaded by using this url. From
+                                     this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
+                                     replaced.
 ```
 
 ## Configuration file

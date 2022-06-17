@@ -49,6 +49,13 @@ const globalOptionsDefinitions = [
     defaultValue: false,
     description: 'Verbose mode, default is false',
   },
+  {
+    name: 'urlDownloadTemplate',
+    alias: 'a',
+    type: String,
+    description:
+      "Rather to use specs from local FS, you can specify remote specs (using 'artifact' config property) which will be downloaded by using this url. From this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be replaced.",
+  },
 ];
 
 const serveOptionsDefinitions = [

@@ -1,0 +1,3 @@
+specs:
+  - artifact: group:artifact:version
+    file: toto/tata

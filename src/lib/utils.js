@@ -1,6 +1,8 @@
 import SwaggerParser from 'swagger-parser';
 import path from 'path';
 import tmp from 'tmp';
+import https from 'https';
+import fs from 'fs';
 import validator from '../openapi-examples-validator/src';
 
 // ##################################################################
@@ -21,6 +23,39 @@ export function isJSONFile(filename) {
 
 export function getTempDir() {
   return tmp.dirSync({ prefix: 'openapi-dev-tool_', unsafeCleanup: true });
+}
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+export function downloadFile(url, targetFile) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (response) => {
+        const code = response.statusCode;
+
+        if (code >= 400) {
+          return reject(new Error(response.statusMessage));
+        }
+
+        // handle redirects
+        if (code > 300 && code < 400 && !!response.headers.location) {
+          return downloadFile(response.headers.location, targetFile).then(
+            resolve
+          );
+        }
+
+        // save the file to disk
+        const fileWriter = fs.createWriteStream(targetFile).on('finish', () => {
+          fileWriter.close();
+          resolve();
+        });
+
+        response.pipe(fileWriter);
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  });
 }
 
 export function getPOMContent(artifactId, version, groupId, packaging) {
