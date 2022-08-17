@@ -29,13 +29,25 @@ config.config.then((configResolved) => {
       });
     } else if (config.command === 'publish') {
       // Publish
-      publish(configResolved).catch(() => {});
+      publish(configResolved).then((result) => {
+        // Check if at least one specs was rejected
+        const rejected = result.find((item) => item.isRejected());
+        if (rejected) process.exit(1);
+      });
     } else if (config.command === 'publish-local') {
       // Publish local
-      publishLocal(configResolved).catch(() => {});
+      publishLocal(configResolved).then((result) => {
+        // Check if at least one specs was rejected
+        const rejected = result.find((item) => item.isRejected());
+        if (rejected) process.exit(1);
+      });
     } else if (config.command === 'merge') {
       // merge specs into one single file
-      merge(configResolved).catch(() => {});
+      merge(configResolved).then((result) => {
+        // Check if at least one specs was rejected
+        const rejected = result.find((item) => item.isRejected());
+        if (rejected) process.exit(1);
+      });
     }
   });
 });
