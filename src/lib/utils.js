@@ -1,4 +1,4 @@
-import SwaggerParser from 'swagger-parser';
+import SwaggerParser from '@apidevtools/swagger-parser';
 import path from 'path';
 import tmp from 'tmp';
 import https from 'https';

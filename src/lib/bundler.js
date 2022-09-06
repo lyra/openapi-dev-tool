@@ -1,5 +1,5 @@
 import { parseFolder } from './templater';
-import SwaggerParser from 'swagger-parser';
+import SwaggerParser from '@apidevtools/swagger-parser';
 import { isJSONFile, validateExamples } from './utils';
 import path from 'path';
 import YAML from 'yaml';
@@ -38,7 +38,6 @@ export async function bundleSpec(config, spec) {
   if (!config.skipValidation) {
     await SwaggerParser.validate(filePath);
   }
-
   api = await SwaggerParser.bundle(filePath);
   if (!config.skipValidation) {
     await validateExamples(api);

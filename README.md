@@ -44,6 +44,14 @@ From `openapi-dev-tool` command-line interface, you can:
 
 ![presentation](doc-assets/pres.gif)
 
+## Standard support
+
+OpenAPI Dev Tool supports this following standards version:
+
+- [Swagger 2.0](https://swagger.io/specification/v2/)
+- [Openapi 3.0.x](https://swagger.io/specification/)
+- [Openapi 3.1.0](https://spec.openapis.org/oas/v3.1.0)
+
 ## Installation
 
 1. Install `Node.JS` (https://nodejs.org/)

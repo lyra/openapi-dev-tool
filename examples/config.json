@@ -1,6 +1,26 @@
 {
   "specs": [
     {
+      "file": "./examples/specs/petstore/openapi3.1.0/specs.yaml",
+      "enabled": true,
+      "vFolders": [
+        "test"
+      ],
+      "context": {
+        "public": false,
+        "version": "1.0.0"
+      }
+    },{
+      "file": "./examples/specs/petstore/swagger2/specs.yaml",
+      "enabled": true,
+      "vFolders": [
+        "test"
+      ],
+      "context": {
+        "public": false,
+        "version": "1.0.0"
+      }
+    },{
       "file": "./examples/specs/petstore/petstore-one-file/petstore-one-file.yaml",
       "enabled": true,
       "vFolders": [
