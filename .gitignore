@@ -4,3 +4,4 @@ node_modules/
 .openapi-dev-toolrc
 doc-assets/*.stg
 .specs
+.idea

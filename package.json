@@ -1,6 +1,6 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "9.7.0",
+  "version": "9.8.0",
   "description": "OpenAPI Development tool",
   "main": "dist/src/lib.js",
   "scripts": {
@@ -52,6 +52,7 @@
     "lodash.flatmap": "^4.5.0",
     "lodash.flatten": "^4.4.0",
     "lodash.merge": "^4.6.2",
+    "maven": "^5.0.0",
     "mkdirp": "1.0.4",
     "promise-settle": "0.3.0",
     "rc": "1.2.8",
