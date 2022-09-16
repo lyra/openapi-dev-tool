@@ -323,55 +323,31 @@ export async function publishLocalValidation(options) {
   const optionsBack = options;
   options = { ...options, ...rc('openapi-dev-tool'), config: options.config };
 
-  // User and password can be overriden from command line
-  if (optionsBack.repoPath && optionsBack.repoPath !== 'auto')
-    options.repoPath = optionsBack.repoPath;
-
   let errors = [];
 
   if (!options.config || typeof options.config !== 'string') {
     errors.push(`config is mandatory`);
   }
 
-  if (!options.repoPath || typeof options.repoPath !== 'string') {
-    errors.push(`repoPath is mandatory`);
-  }
-
   if (!options.groupId || typeof options.groupId !== 'string') {
     errors.push(`groupId is mandatory`);
   }
 
-  // If repoPath is not auto then directory has to exist
-  if (
-    options.repoPath &&
-    typeof options.repoPath === 'string' &&
-    options.repoPath !== 'auto' &&
-    !fs.existsSync(options.repoPath)
-  ) {
-    errors.push(`repoPath '${options.repoPath}' folder does not exist`);
-  }
-
-  // If repoPath is auto then trying to determinate by using mvn command
-  if (
-    options.repoPath &&
-    typeof options.repoPath === 'string' &&
-    options.repoPath === 'auto'
-  ) {
-    if (!mvnExists()) {
-      errors.push(
-        `'${mavenCommand}' command does not exist. Impossible to determinate local repo path.`
-      );
-    } else {
-      options.repoPath = getRepoPath();
-      if (!fs.existsSync(options.repoPath)) {
-        errors.push(`repoPath '${options.repoPath}' does not exist`);
-      }
+  // Check local repository path by using mvn command
+  if (!mvnExists()) {
+    errors.push(
+      `'${mavenCommand}' command does not exist. Impossible to determinate local repository path.`
+    );
+  } else {
+    const repoPath = getRepoPath();
+    if (!fs.existsSync(repoPath)) {
+      errors.push(`Local repository '${repoPath}' does not exist`);
     }
   }
 
   await globalValidation(options, errors);
 
-  if (errors.length != 0) {
+  if (errors.length !== 0) {
     console.log(colors.red('Syntax error!'));
     errors.forEach((error) => {
       console.log(`\t- ${error}`);

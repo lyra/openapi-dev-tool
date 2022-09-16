@@ -172,14 +172,6 @@ const publishLocalOptionsDefinitions = [
     description: 'GroupId used in repo server, default is com.openapi',
   },
   {
-    name: 'repoPath',
-    alias: 'd',
-    type: String,
-    defaultValue: 'auto',
-    description:
-      "Path of Maven local repository, default is 'auto': determinated automatically by using 'mvn' command (if available)",
-  },
-  {
     name: 'skipValidation',
     alias: 'x',
     type: Boolean,

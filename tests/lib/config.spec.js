@@ -259,31 +259,6 @@ describe('config.js file', function () {
       assert.equal(exitCode, 1);
     });
 
-    it('should return error when repoPath is not sent in publish-local command', async function () {
-      process.argv[2] = 'publish-local';
-      process.argv[3] = '--config';
-      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
-      process.argv[5] = '--repoPath';
-      await require('../../src/lib/config');
-      assert.equal(messages.length, 3);
-      assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], 'repoPath is mandatory');
-      assert.equal(exitCode, 1);
-    });
-
-    it('should return error when repoPath is invalid in publish-local command', async function () {
-      process.argv[2] = 'publish-local';
-      process.argv[3] = '--config';
-      process.argv[4] = `${__dirname}/../assets/config_ok.json`;
-      process.argv[5] = '--repoPath';
-      process.argv[6] = 'fake';
-      await require('../../src/lib/config');
-      assert.equal(messages.length, 3);
-      assert.include(messages[0], 'Syntax error!');
-      assert.include(messages[1], "repoPath 'fake' folder does not exist");
-      assert.equal(exitCode, 1);
-    });
-
     it('should return error when repoServer is incorrect in publish command', async function () {
       process.argv[2] = 'publish';
       process.argv[3] = '--config';

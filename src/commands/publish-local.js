@@ -5,8 +5,9 @@ import settle from 'promise-settle';
 import fs from 'fs';
 
 import { generateSpecsArchive } from '../lib/archiver';
-import { getPOMContent, getTempDir } from '../lib/utils';
+import { getTempDir, getPOMContent } from '../lib/utils';
 import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
+import { getRepoPath, installToLocalRepository } from '../lib/maven';
 
 // ##################################################################
 // The aim of this file is manage the publish command
@@ -17,7 +18,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
 
   const artifactIds = [];
 
-  console.log('\tPublishing into: %s\n', config.repoPath);
+  console.log('\tPublishing into: %s\n', getRepoPath());
 
   // Publish for each spec
   // We filter to work only on enabled specs
@@ -91,11 +92,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
             fs.writeFileSync(pomFile, pomContent);
 
             // Install with maven plugin
-            const mvn = require('maven').create({ quiet: true });
-            await mvn.execute(['install:install-file'], {
-              file: archive,
-              pomFile: pomFile,
-            });
+            await installToLocalRepository(archive, pomFile);
           } catch (err) {
             console.error(
               colors.red(

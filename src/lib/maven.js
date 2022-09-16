@@ -6,6 +6,8 @@ import commandExists from 'command-exists';
 import AdmZip from 'adm-zip';
 import { downloadFile } from './utils';
 
+import maven from 'maven';
+
 export const mavenCommand = 'mvn';
 
 const mavenLocalPathCmd = `${mavenCommand} help:evaluate -Dexpression=settings.localRepository -q -DforceStdout`;
@@ -77,5 +79,13 @@ export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
         if (fs.existsSync(`${folder}`)) rimraf.sync(`${folder}`);
         reject(err);
       });
+  });
+}
+
+export async function installToLocalRepository(archive, pomFile) {
+  const mvnInstance = maven.create({ quiet: true });
+  await mvnInstance.execute(['install:install-file'], {
+    file: archive,
+    pomFile: pomFile,
   });
 }
