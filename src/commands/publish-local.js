@@ -2,12 +2,12 @@ import colors from 'colors';
 import path from 'path';
 import { paramCase } from 'change-case';
 import settle from 'promise-settle';
-import mkdirp from 'mkdirp';
 import fs from 'fs';
 
 import { generateSpecsArchive } from '../lib/archiver';
 import { getTempDir, getPOMContent } from '../lib/utils';
 import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
+import { getRepoPath, installToLocalRepository } from '../lib/maven';
 
 // ##################################################################
 // The aim of this file is manage the publish command
@@ -18,7 +18,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
 
   const artifactIds = [];
 
-  console.log('\tPublishing into: %s\n', config.repoPath);
+  console.log('\tPublishing into: %s\n', getRepoPath());
 
   // Publish for each spec
   // We filter to work only on enabled specs
@@ -43,7 +43,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
             archive = await generateSpecsArchive(api, fileToArchive);
 
             // Find doublon
-            if (artifactIds.indexOf(paramCase(api.info.title)) != -1) {
+            if (artifactIds.indexOf(paramCase(api.info.title)) !== -1) {
               throw new Error(
                 `Spec "${api.info.title}" has an artifactId "${paramCase(
                   api.info.title
@@ -78,21 +78,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
 
             artifactIds.push(paramCase(api.info.title));
 
-            // Publish!!
-            // copy archive file into config.repoPath / config.groupId / paramCase(api.info.title) / api.info.version
-            const target = `${config.repoPath}/${config.groupId.replace(
-              /\./g,
-              '/'
-            )}/${paramCase(api.info.title)}/${api.info.version}`;
-            if (!fs.existsSync(target) || !fs.lstatSync(target).isDirectory()) {
-              mkdirp.sync(target);
-            }
-
-            // Copy zip
-            const artifactName = path.parse(archive).name;
-            fs.copyFileSync(archive, `${target}/${artifactName}.zip`);
-
-            // Copy POM
+            // Write temporary pom file
             const pomContent = getPOMContent(
               paramCase(api.info.title),
               api.info.version,
@@ -100,7 +86,13 @@ export function publishLocal(config = { config: { specs: [] } }) {
               'zip'
             );
 
-            fs.writeFileSync(`${target}/${artifactName}.pom`, pomContent);
+            const pomFile = `${getTempDir().name}/${
+              path.parse(archive).name
+            }.pom`;
+            fs.writeFileSync(pomFile, pomContent);
+
+            // Install with maven plugin
+            await installToLocalRepository(archive, pomFile);
           } catch (err) {
             console.error(
               colors.red(

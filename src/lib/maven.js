@@ -2,8 +2,9 @@ import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import fs from 'fs';
 import commandExists from 'command-exists';
-
 import AdmZip from 'adm-zip';
+import maven from 'maven';
+
 import { downloadFile } from './utils';
 
 export const mavenCommand = 'mvn';
@@ -77,5 +78,13 @@ export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
         if (fs.existsSync(`${folder}`)) rimraf.sync(`${folder}`);
         reject(err);
       });
+  });
+}
+
+export async function installToLocalRepository(archive, pomFile) {
+  const mvnInstance = maven.create({ quiet: true });
+  await mvnInstance.execute(['install:install-file'], {
+    file: archive,
+    pomFile: pomFile,
   });
 }
