@@ -2,11 +2,10 @@ import { execSync } from 'child_process';
 import rimraf from 'rimraf';
 import fs from 'fs';
 import commandExists from 'command-exists';
-
 import AdmZip from 'adm-zip';
-import { downloadFile } from './utils';
-
 import maven from 'maven';
+
+import { downloadFile } from './utils';
 
 export const mavenCommand = 'mvn';
 
