@@ -2,7 +2,7 @@ import fs from 'fs';
 import ejs from 'ejs';
 import mkdirp from 'mkdirp';
 
-import { isJSONFile, isYAMLFile, getTempDir } from './utils';
+import { isJSONFile, isYAMLFile, getTempDir } from './utils.js';
 
 // ##################################################################
 // This file allows to apply EJS template engine on folder or a file

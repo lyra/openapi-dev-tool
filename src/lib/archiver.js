@@ -3,7 +3,7 @@ import archiver from 'archiver';
 import path from 'path';
 import { paramCase } from 'change-case';
 
-import { getTempDir } from './utils';
+import { getTempDir } from './utils.js';
 
 // ##################################################################
 // The aim of this file is to generate an archive file that

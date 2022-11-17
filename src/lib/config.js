@@ -11,14 +11,14 @@ import {
   publishUsage,
   publishLocalUsage,
   mergeUsage,
-} from './config-definitions';
+} from './config-definitions.js';
 
 import {
   serveValidation,
   mergeValidation,
   publishValidation,
   publishLocalValidation,
-} from './config-validation';
+} from './config-validation.js';
 
 // ##################################################################
 // This file manage the command line options

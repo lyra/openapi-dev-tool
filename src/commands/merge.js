@@ -4,7 +4,7 @@ import { paramCase } from 'change-case';
 import settle from 'promise-settle';
 import fs from 'fs';
 
-import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
+import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler.js';
 
 // ##################################################################
 // The aim of this file is manage the merge command

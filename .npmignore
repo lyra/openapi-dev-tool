@@ -6,3 +6,4 @@ tests
 .prettierignore
 .specs
 .travis.yml
+src/openapi-examples-validator/node_modules/

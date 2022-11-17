@@ -8,10 +8,10 @@ import fs from 'fs';
 import chokidar from 'chokidar';
 import colors from 'colors';
 
-import { loadSpecs } from '../lib/specs';
-import exposer from '../lib/exposer';
-import viewers from '../lib/viewers';
-import { viewersPath } from '../lib/viewers';
+import { loadSpecs } from '../lib/specs.js';
+import exposer from '../lib/exposer.js';
+import viewers from '../lib/viewers.js';
+import { viewersPath } from '../lib/viewers.js';
 
 // ##################################################################
 // The aim of this file is manage the serve command

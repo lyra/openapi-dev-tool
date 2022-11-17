@@ -3,12 +3,12 @@
 import figlet from 'figlet';
 import colors from 'colors';
 
-import config from './lib/config';
-import { serve } from './commands/serve';
-import { publish } from './commands/publish';
-import { publishLocal } from './commands/publish-local';
-import { merge } from './commands/merge';
-import app from '../package.json';
+import config from './lib/config.js';
+import { serve } from './commands/serve.js';
+import { publish } from './commands/publish.js';
+import { publishLocal } from './commands/publish-local.js';
+import { merge } from './commands/merge.js';
+import app from '../package.json' assert { type: 'json' };
 
 config.config.then((configResolved) => {
   // Welcome to openapi dev tool

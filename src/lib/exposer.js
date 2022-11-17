@@ -3,9 +3,9 @@ import fs from 'fs';
 import colors from 'colors';
 import YAML from 'yaml';
 
-import { parseFolder } from './templater';
-import { isJSONFile } from './utils';
-import { bundleSpec } from './bundler';
+import { parseFolder } from './templater.js';
+import { isJSONFile } from './utils.js';
+import { bundleSpec } from './bundler.js';
 
 // ##################################################################
 // This file has to expose API files:
@@ -55,7 +55,10 @@ export default function middleware(config, specs) {
             if (isJSONFile(spec.file)) {
               bundle = api;
             } else {
-              bundle = YAML.stringify(api, { schema: 'yaml-1.1' });
+              bundle = YAML.stringify(api, {
+                schema: 'yaml-1.1',
+                lineWidth: 0,
+              });
             }
 
             // Complete cache

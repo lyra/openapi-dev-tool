@@ -4,10 +4,10 @@ import { paramCase } from 'change-case';
 import settle from 'promise-settle';
 import fs from 'fs';
 
-import { generateSpecsArchive } from '../lib/archiver';
-import { getTempDir, getPOMContent } from '../lib/utils';
-import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
-import { getRepoPath, installToLocalRepository } from '../lib/maven';
+import { generateSpecsArchive } from '../lib/archiver.js';
+import { getTempDir, getPOMContent } from '../lib/utils.js';
+import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler.js';
+import { getRepoPath, installToLocalRepository } from '../lib/maven.js';
 
 // ##################################################################
 // The aim of this file is manage the publish command

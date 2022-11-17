@@ -4,9 +4,9 @@ import path from 'path';
 import { paramCase } from 'change-case';
 import settle from 'promise-settle';
 
-import { generateSpecsArchive } from '../lib/archiver';
-import { getTempDir } from '../lib/utils';
-import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler';
+import { generateSpecsArchive } from '../lib/archiver.js';
+import { getTempDir } from '../lib/utils.js';
+import { bundleSpec, writeOpenApiDocumentToFile } from '../lib/bundler.js';
 
 // ##################################################################
 // The aim of this file is manage the publish command
