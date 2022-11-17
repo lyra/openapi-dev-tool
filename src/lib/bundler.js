@@ -1,13 +1,11 @@
-import { parseFolder } from './templater';
 import SwaggerParser from '@apidevtools/swagger-parser';
-import { isJSONFile, validateExamples } from './utils';
 import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs';
 import { paramCase } from 'change-case';
-import { strOptions } from 'yaml/schema';
 
-strOptions.fold.lineWidth = 0;
+import { isJSONFile, validateExamples } from './utils.js';
+import { parseFolder } from './templater.js';
 
 /**
  * Bundle spec and return the associated OpenAPI Document
@@ -89,7 +87,10 @@ export function writeOpenApiDocumentToFile(
   if (isJSONFile(originalSpecFilename)) {
     fs.writeFileSync(targetFile, JSON.stringify(api, null, 2));
   } else {
-    fs.writeFileSync(targetFile, YAML.stringify(api, { schema: 'yaml-1.1' }));
+    fs.writeFileSync(
+      targetFile,
+      YAML.stringify(api, { schema: 'yaml-1.1', lineWidth: 0 })
+    );
   }
   return targetFile;
 }

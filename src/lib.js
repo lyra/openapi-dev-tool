@@ -1,5 +1,5 @@
-import { serve } from './commands/serve';
-import { publish } from './commands/publish';
-import { merge } from './commands/merge';
+import { serve } from './commands/serve.js';
+import { publish } from './commands/publish.js';
+import { merge } from './commands/merge.js';
 
 export { serve, publish, merge };

@@ -1,17 +1,23 @@
 import chai from 'chai';
 import chaiString from 'chai-string';
-import { loadSpecs } from '../../src/lib/specs';
+import { loadSpecs } from '../../src/lib/specs.js';
 
 chai.use(chaiString);
 
 const assert = chai.assert;
 
-describe('specs.js file', function() {
-  describe('loadSpecs function', function() {
-    it('should return a correct object', async function() {
+describe('specs.js file', function () {
+  describe('loadSpecs function', function () {
+    it('should return a correct object', async function () {
       const specs = await loadSpecs({
         config: {
-          specs: [{ file: `${__dirname}/../assets/specs.yaml`, context: { label: 'value' }, enabled: true }],
+          specs: [
+            {
+              file: `./tests/assets/specs.yaml`,
+              context: { label: 'value' },
+              enabled: true,
+            },
+          ],
         },
       });
       assert.equal(1, specs.length);
@@ -22,17 +28,21 @@ describe('specs.js file', function() {
       assert.equal('1.0.0', specs[0].version);
       assert.equal('1.0.0', specs[0].version);
       assert.include(specs[0].file, 'specs.yaml');
-      
     });
 
-    it('should return an empty array if specs is not enabled', async function() {
+    it('should return an empty array if specs is not enabled', async function () {
       const specs = await loadSpecs({
         config: {
-          specs: [{ file: `${__dirname}/../assets/specs.yaml`, context: { label: 'value' }, enabled: false }],
+          specs: [
+            {
+              file: `./tests/assets/specs.yaml`,
+              context: { label: 'value' },
+              enabled: false,
+            },
+          ],
         },
       });
       assert.equal(0, specs.length);
-      
     });
   });
 });

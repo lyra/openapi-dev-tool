@@ -5,7 +5,7 @@ import commandExists from 'command-exists';
 import AdmZip from 'adm-zip';
 import maven from 'maven';
 
-import { downloadFile } from './utils';
+import { downloadFile } from './utils.js';
 
 export const mavenCommand = 'mvn';
 

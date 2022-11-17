@@ -5,20 +5,20 @@ import rc from 'rc';
 import fs from 'fs';
 import path from 'path';
 
-import { isYAMLFile } from './utils';
+import { isYAMLFile } from './utils.js';
 import {
   serveUsage,
   publishUsage,
   publishLocalUsage,
   mergeUsage,
-} from './config-definitions';
+} from './config-definitions.js';
 
 import {
   getRepoPath,
   downloadArtifact,
   mvnExists,
   mavenCommand,
-} from './maven';
+} from './maven.js';
 
 const objectFromPath = (obj, path) =>
   path.split('.').reduce((a, v) => a[v], obj);

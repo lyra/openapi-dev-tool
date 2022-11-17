@@ -2,8 +2,8 @@ import showdown from 'showdown';
 import YAML from 'yaml';
 import path from 'path';
 
-import { parseFile } from './templater';
-import { isJSONFile } from './utils';
+import { parseFile } from './templater.js';
+import { isJSONFile } from './utils.js';
 
 // ##################################################################
 // This file construct specs objects with:

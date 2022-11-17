@@ -1,6 +1,6 @@
 import commandLineUsage from 'command-line-usage';
 
-import app from '../../package.json';
+import app from '../../package.json' assert { type: 'json' };
 
 // ######################################
 // Command line options definitions
