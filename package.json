@@ -1,8 +1,8 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "9.7.1",
+  "version": "9.7.2",
   "description": "OpenAPI Development tool",
-  "main": "dist/src/lib.js",
+  "main": "src/lib.js",
   "scripts": {
     "build": "rimraf dist && rimraf .specs && npm run lint-prettier && npm test",
     "cmd:serve:dev": "nodemon --watch .. -e json,yaml,yml,js,ejs -r esm src/cli -- serve -v -c examples/config.json",
@@ -17,7 +17,7 @@
   },
   "type": "module",
   "bin": {
-    "openapi-dev-tool": "./dist/src/cli.js"
+    "openapi-dev-tool": "./src/cli.js"
   },
   "repository": {
     "type": "git",
