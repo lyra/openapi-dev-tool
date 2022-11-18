@@ -7,11 +7,16 @@ import path from 'path';
 import fs from 'fs';
 import chokidar from 'chokidar';
 import colors from 'colors';
+import * as url from 'url';
+import { createRequire } from 'module';
 
 import { loadSpecs } from '../lib/specs.js';
 import exposer from '../lib/exposer.js';
 import viewers from '../lib/viewers.js';
 import { viewersPath } from '../lib/viewers.js';
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const require = createRequire(import.meta.url);
 
 // ##################################################################
 // The aim of this file is manage the serve command
@@ -57,6 +62,7 @@ export function serve(config = { config: { specs: [] } }) {
       ) {
         viewsFolder.push(config.viewsFolder);
       }
+
       viewsFolder.push(__dirname + '/../views');
       app.set('views', viewsFolder);
 
