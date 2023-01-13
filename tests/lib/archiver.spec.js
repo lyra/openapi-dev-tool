@@ -1,16 +1,10 @@
 import path from 'path';
 
-import chai from 'chai';
-import chaiString from 'chai-string';
 import { generateSpecsArchive } from '../../src/lib/archiver.js';
 
-chai.use(chaiString);
-
-const assert = chai.assert;
-
-describe('archiver.js file', function () {
-  describe('generateSpecsArchive function', function () {
-    it('should return a archive file when the input is correct', async function () {
+describe('archiver.js file', () => {
+  describe('generateSpecsArchive function', () => {
+    it('should return a archive file when the input is correct', async () => {
       const api = {
         info: {
           version: '1.0.0',
@@ -18,10 +12,10 @@ describe('archiver.js file', function () {
         },
       };
       const res = await generateSpecsArchive(api, '/dir/file.yaml');
-      assert.equal(`title-1.0.0.zip`, path.basename(res));
+      expect(path.basename(res)).toBe('title-1.0.0.zip');
     });
 
-    it('should return a archive file when the title seems incorrect', async function () {
+    it('should return a archive file when the title seems incorrect', async () => {
       const api = {
         info: {
           version: '1.0.0',
@@ -29,7 +23,7 @@ describe('archiver.js file', function () {
         },
       };
       const res = await generateSpecsArchive(api, '/dir/file.yaml');
-      assert.equal(`my-title-1.0.0.zip`, path.basename(res));
+      expect(path.basename(res)).toBe('my-title-1.0.0.zip');
     });
   });
 });

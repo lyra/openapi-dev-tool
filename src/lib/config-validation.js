@@ -158,7 +158,7 @@ function globalValidation(options, errors) {
   return new Promise((resolve) => {
     // Detect unknown parameters
     if (options._unknown && options._unknown.length > 0) {
-      errors.push(`Option '${options._unknown[0]}' unknow`);
+      errors.push(`Option '${options._unknown[0]}' unknown`);
       resolve();
       return;
     }

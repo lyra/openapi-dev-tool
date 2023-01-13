@@ -5,3 +5,4 @@ dist
 doc-assets/*.stg
 .specs
 .idea
+coverage

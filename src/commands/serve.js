@@ -36,13 +36,11 @@ function checkDoublon(specs) {
 
 export function serve(config = { config: { specs: [] } }) {
   const app = express();
-
   return new Promise((resolve, reject) => {
     // Load specs
     let specs;
     loadSpecs(config).then(function (specsResult) {
       specs = specsResult;
-
       // Find doublon
       try {
         checkDoublon(specs);
@@ -79,6 +77,7 @@ export function serve(config = { config: { specs: [] } }) {
 
       // Middleware to expose viewers (SwaggerUI & Redoc)
       const viewersMiddleware = viewers(specs, config);
+
       app.get(`${config.contextPath}swagger-ui`, viewersMiddleware.swaggerUI);
       app.get(`${config.contextPath}redoc`, viewersMiddleware.redoc);
       app.get(config.contextPath, viewersMiddleware.home);
@@ -123,45 +122,6 @@ export function serve(config = { config: { specs: [] } }) {
         express.static(path.dirname(require.resolve('redoc')))
       );
 
-      // Reloader
-      reload(app, {
-        verbose: config.verbose,
-        route: `${config.contextPath}reload`,
-      }).then((reloadReturned) => {
-        // Specs folders are watched
-        // ...new Set but remove items duplicated
-        chokidar
-          .watch(
-            [
-              ...new Set(
-                config.config.specs.map((spec) => path.dirname(spec.file))
-              ),
-            ],
-            {
-              awaitWriteFinish: {
-                stabilityThreshold: 500,
-              },
-            }
-          )
-          .on('all', (event, path) => {
-            // Fire server-side reload event
-            loadSpecs(config).then((specsResult) => {
-              // Find doublon
-              try {
-                checkDoublon(specsResult);
-              } catch (err) {
-                process.exit(1);
-              }
-
-              // Update middlewares with new specs
-              exposerMiddleware.updateSpecs(specsResult);
-              viewersMiddleware.updateSpecs(specsResult);
-
-              reloadReturned.reload();
-            });
-          });
-      });
-
       // Start listening
       if (!config.port) {
         console.error(colors.red('Port is undefined'));
@@ -169,19 +129,63 @@ export function serve(config = { config: { specs: [] } }) {
         return;
       }
 
-      const server = app.listen(config.port, function () {
-        console.log(`OpenAPI dev server listening on port ${config.port}!`);
-        console.log(
-          `You can now open your browser on ${colors.underline(
-            `http://localhost:${config.port}`
-          )}!`
-        );
-        resolve({
-          close: () => {
-            server.close();
-          },
+      if (process.env.NODE_ENV !== 'test') {
+        // Reloader
+        reload(app, {
+          verbose: config.verbose,
+          route: `${config.contextPath}reload`,
+        }).then((reloadReturned) => {
+          // Specs folders are watched
+          // ...new Set but remove items duplicated
+          chokidar
+            .watch(
+              [
+                ...new Set(
+                  config.config.specs.map((spec) => path.dirname(spec.file))
+                ),
+              ],
+              {
+                awaitWriteFinish: {
+                  stabilityThreshold: 500,
+                },
+              }
+            )
+            .on('all', (event, path) => {
+              // Fire server-side reload event
+              loadSpecs(config).then((specsResult) => {
+                // Find doublon
+                try {
+                  checkDoublon(specsResult);
+                } catch (err) {
+                  process.exit(1);
+                }
+
+                // Update middlewares with new specs
+                exposerMiddleware.updateSpecs(specsResult);
+                viewersMiddleware.updateSpecs(specsResult);
+
+                reloadReturned.reload();
+              });
+            });
         });
-      });
+
+        const server = app.listen(config.port, function () {
+          console.log(`OpenAPI dev server listening on port ${config.port}!`);
+          console.log(
+            `You can now open your browser on ${colors.underline(
+              `http://localhost:${config.port}`
+            )}!`
+          );
+          resolve({
+            close: () => {
+              server.close();
+            },
+            app,
+          });
+        });
+      } else {
+        resolve(app);
+      }
     });
   });
 }

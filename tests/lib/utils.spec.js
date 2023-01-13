@@ -1,7 +1,5 @@
 import path from 'path';
 
-import chai from 'chai';
-import chaiString from 'chai-string';
 import {
   isYAMLFile,
   isJSONFile,
@@ -9,44 +7,42 @@ import {
   getPOMContent,
 } from '../../src/lib/utils.js';
 
-chai.use(chaiString);
-
-const assert = chai.assert;
-
-describe('utils.js file', function () {
-  describe('isYAMLFile function', function () {
-    it('should return true when the input ends with .yaml', function () {
-      assert.isTrue(isYAMLFile('file.yaml'));
+describe('utils.js file', () => {
+  describe('isYAMLFile function', () => {
+    it('should return true when the input ends with .yaml', () => {
+      expect(isYAMLFile('file.yaml')).toBe(true);
     });
 
-    it('should return true when the input ends with .yml', function () {
-      assert.isTrue(isYAMLFile('file.yml'));
+    it('should return true when the input ends with .yml', () => {
+      expect(isYAMLFile('file.yaml')).toBe(true);
     });
 
-    it('should return fase when the input ends with .json', function () {
-      assert.isFalse(isYAMLFile('file.json'));
+    it('should return fase when the input ends with .json', () => {
+      expect(isYAMLFile('file.json')).toBe(false);
     });
   });
 
-  describe('isJSONFile function', function () {
-    it('should return true when the input ends with .json', function () {
-      assert.isTrue(isJSONFile('file.json'));
+  describe('isJSONFile function', () => {
+    it('should return true when the input ends with .json', () => {
+      expect(isJSONFile('file.json')).toBe(true);
     });
 
-    it('should return false when the input ends with .yaml', function () {
-      assert.isFalse(isJSONFile('file.yaml'));
+    it('should return false when the input ends with .yaml', () => {
+      expect(isJSONFile('file.yaml')).toBe(false);
     });
   });
 
-  describe('getTempDir function', function () {
-    it("should start with 'openapi-dev-tool_'", function () {
+  describe('getTempDir function', () => {
+    it("should start with 'openapi-dev-tool_'", () => {
       const tmp = getTempDir();
-      assert.startsWith(path.basename(tmp.name), 'openapi-dev-tool_');
+      expect(path.basename(tmp.name).startsWith('openapi-dev-tool_')).toBe(
+        true
+      );
     });
   });
 
-  describe('getPOMContent function', function () {
-    it('should return xml with artifact data', function () {
+  describe('getPOMContent function', () => {
+    it('should return xml with artifact data', () => {
       const content = getPOMContent(
         'artifactId',
         'version',
@@ -63,7 +59,7 @@ describe('utils.js file', function () {
       expected += `\t<packaging>packaging</packaging>\n`;
       expected += '</project>';
 
-      assert.equal(content, expected);
+      expect(content).toEqual(expected);
     });
   });
 });

@@ -1,14 +1,8 @@
-import chai from 'chai';
-import chaiString from 'chai-string';
 import { loadSpecs } from '../../src/lib/specs.js';
 
-chai.use(chaiString);
-
-const assert = chai.assert;
-
-describe('specs.js file', function () {
-  describe('loadSpecs function', function () {
-    it('should return a correct object', async function () {
+describe('specs.js file', () => {
+  describe('loadSpecs function', () => {
+    it('should return a correct object', async () => {
       const specs = await loadSpecs({
         config: {
           specs: [
@@ -20,17 +14,16 @@ describe('specs.js file', function () {
           ],
         },
       });
-      assert.equal(1, specs.length);
-      assert.deepEqual({ label: 'value' }, specs[0].context);
-      assert.deepEqual(['toto', 'tata'], specs[0].tags);
-      assert.equal('petstore', specs[0].name);
-      assert.equal('<p>description</p>', specs[0].description);
-      assert.equal('1.0.0', specs[0].version);
-      assert.equal('1.0.0', specs[0].version);
-      assert.include(specs[0].file, 'specs.yaml');
+      expect(specs.length).toBe(1);
+      expect(specs[0].context).toEqual({ label: 'value' });
+      expect(specs[0].tags).toEqual(['toto', 'tata']);
+      expect(specs[0].name).toBe('petstore');
+      expect(specs[0].description).toBe('<p>description</p>');
+      expect(specs[0].version).toBe('1.0.0');
+      expect(specs[0].file).toEqual(expect.stringContaining('specs.yaml'));
     });
 
-    it('should return an empty array if specs is not enabled', async function () {
+    it('should return an empty array if specs is not enabled', async () => {
       const specs = await loadSpecs({
         config: {
           specs: [
@@ -42,7 +35,7 @@ describe('specs.js file', function () {
           ],
         },
       });
-      assert.equal(0, specs.length);
+      expect(specs.length).toBe(0);
     });
   });
 });

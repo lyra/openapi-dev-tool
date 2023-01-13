@@ -1,34 +1,28 @@
 import fs from 'fs';
 
-import chai from 'chai';
-import chaiString from 'chai-string';
 import { parseFile, parseFolder } from '../../src/lib/templater.js';
 
-chai.use(chaiString);
-
-const assert = chai.assert;
-
-describe('templater.js file', function () {
-  describe('parseFile function', function () {
-    it('should return a correct content', async function () {
+describe('templater.js file', () => {
+  describe('parseFile function', () => {
+    it('should return a correct content', async () => {
       const content = parseFile('./tests/assets/test.yaml', {
         label: 'value',
       });
-      assert.equal('value', content);
+      expect(content).toBe('value');
     });
   });
 
-  describe('parseFolder function', function () {
-    it('should return a correct content', async function () {
+  describe('parseFolder function', () => {
+    it('should return a correct content', async () => {
       const folder = parseFolder('./tests/assets', {
         label: 'value',
       });
 
       let content = fs.readFileSync(`${folder.name}/test.yaml`, 'UTF-8');
-      assert.equal('value', content);
+      expect(content).toBe('value');
 
       content = fs.readFileSync(`${folder.name}/sub-assets/test.yaml`, 'UTF-8');
-      assert.equal('value', content);
+      expect(content).toBe('value');
     });
   });
 });

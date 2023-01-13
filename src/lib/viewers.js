@@ -68,14 +68,17 @@ export default function middleware(specs, config) {
       // Organize specs by vFolders
       const folders = { '': [] };
       specs.forEach((spec) => {
-        if (spec.vFolders.length === 0) folders[''].push(spec);
-        else {
-          spec.vFolders.forEach((vFolder) => {
-            if (!folders[vFolder]) folders[vFolder] = [];
-            folders[vFolder].push(spec);
-          });
+        if (spec.vFolders) {
+          if (spec.vFolders.length === 0) folders[''].push(spec);
+          else {
+            spec.vFolders.forEach((vFolder) => {
+              if (!folders[vFolder]) folders[vFolder] = [];
+              folders[vFolder].push(spec);
+            });
+          }
         }
       });
+
       res.render('apis', {
         specs,
         folders,

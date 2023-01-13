@@ -58,6 +58,9 @@
     },
     {
       "file": "./examples/specs/petstore/petstore-inheritance/petstore-inheritance.yaml"
+    },
+    {
+      "file": "./examples/specs/petstore/json/specs.json"
     }
   ],
   "html-injector":[

@@ -83,6 +83,7 @@ export default function middleware(config, specs) {
       });
       if (spec) {
         const specsFolder = path.dirname(`${spec.file}`);
+        const filename = path.basename(`${spec.file}`);
         const specsFolderTemplated = parseFolder(specsFolder, spec.context);
         if (config.verbose) {
           console.log(
@@ -90,7 +91,7 @@ export default function middleware(config, specs) {
           );
         }
         const content = fs.readFileSync(
-          `${specsFolderTemplated.name}/${req.params[0]}`,
+          `${specsFolderTemplated.name}/${filename}`,
           'utf-8'
         );
         send(spec, content, res);
