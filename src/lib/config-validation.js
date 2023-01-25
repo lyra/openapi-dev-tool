@@ -1,9 +1,10 @@
 import colors from 'colors';
-import jsonValidator from 'json-validator';
 import YAML from 'yaml';
 import rc from 'rc';
 import fs from 'fs';
 import path from 'path';
+
+import jsonValidator from '../json-validator/app.cjs';
 
 import { isYAMLFile } from './utils.js';
 import {

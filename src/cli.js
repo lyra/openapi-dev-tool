@@ -8,7 +8,7 @@ import { serve } from './commands/serve.js';
 import { publish } from './commands/publish.js';
 import { publishLocal } from './commands/publish-local.js';
 import { merge } from './commands/merge.js';
-import app from '../package.json' assert { type: 'json' };
+import { getAppVersion } from './lib/utils.js';
 
 config.config.then((configResolved) => {
   // Welcome to openapi dev tool
@@ -20,7 +20,7 @@ config.config.then((configResolved) => {
     }
 
     console.log(colors.cyan(data));
-    console.log(`v${app.version}`);
+    console.log(`v${getAppVersion()}`);
     console.log('\nExecuting ' + colors.cyan(config.command) + ' command...\n');
     if (config.command === 'serve') {
       // Serve

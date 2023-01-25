@@ -27,6 +27,12 @@ export function getTempDir() {
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+export function getAppVersion() {
+  return JSON.parse(
+    fs.readFileSync(new URL('../../package.json', import.meta.url))
+  ).version;
+}
+
 export function downloadFile(url, targetFile) {
   return new Promise((resolve, reject) => {
     https

@@ -1,6 +1,5 @@
 import commandLineUsage from 'command-line-usage';
-
-import app from '../../package.json' assert { type: 'json' };
+import { getAppVersion } from './utils.js';
 
 // ######################################
 // Command line options definitions
@@ -195,7 +194,7 @@ const mergeOptionsDefinitions = [
 const globalUsage = commandLineUsage([
   {
     header: 'OpenAPI Dev Tool',
-    content: `v${app.version}\nA simple way to develop your OpenAPI specification files\n\nUsage: \`openapi-dev-tool <command> [options ...]\``,
+    content: `v${getAppVersion()}\nA simple way to develop your OpenAPI specification files\n\nUsage: \`openapi-dev-tool <command> [options ...]\``,
   },
   {
     header: 'Available Commands',
