@@ -19,6 +19,9 @@
   "bin": {
     "openapi-dev-tool": "./src/cli.js"
   },
+   "engines" : {
+    "node" : ">=14.14.0"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:lyra/openapi-dev-tool.git"
