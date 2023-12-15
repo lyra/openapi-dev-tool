@@ -296,13 +296,13 @@ export async function publishValidation(options) {
     errors.push(`repoSnapshotsServer is not a valid url`);
   }
 
-  if (typeof options.groupId !== 'string') {
-    errors.push(`groupId is mandatory`);
-  }
-
   if (!options.groupId) {
     if (options.repoType === 'maven') options.groupId = 'com.openapi';
     else options.groupId = '@myCompany';
+  }
+
+  if (typeof options.groupId !== 'string') {
+    errors.push(`groupId is mandatory`);
   }
 
   if (
