@@ -40,7 +40,7 @@ export function publishLocal(config = { config: { specs: [] } }) {
                 api
               );
             }
-            archive = await generateSpecsArchive(api, fileToArchive);
+            archive = await generateSpecsArchive(api, fileToArchive, 'maven');
 
             // Find doublon
             if (artifactIds.indexOf(paramCase(api.info.title)) !== -1) {
