@@ -15,8 +15,10 @@ export function generateSpecsArchive(api, apiFilename, repoType) {
     const workDir = getTempDir();
     const fileResult =
       repoType === 'maven'
-        ? `${workDir}/${paramCase(api.info.title)}-${api.info.version}.zip`
-        : `${workDir}/${paramCase(api.info.title)}-${api.info.version}.tar`;
+        ? `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
+        : `${workDir.name}/${paramCase(api.info.title)}-${
+            api.info.version
+          }.tar`;
     const zipOutput = createWriteStream(fileResult);
     const zip =
       repoType === 'maven' ? archiver('zip') : archiver('tar', { gzip: true });
