@@ -30,7 +30,7 @@ export function generateSpecsArchive(api, files, repoType) {
       files.forEach((element) => {
         zip.file(element, {
           name:
-            repoType === 'maven' ? '/' : 'package/' + path.basename(element),
+            (repoType === 'maven' ? '/' : 'package/') + path.basename(element),
         });
       });
     }
