@@ -163,8 +163,7 @@ Command Options
   -g, --groupId string           GroupId used in repo server, default is com.openapi for maven repo and @myCompany for npm repo
   -s, --repoServer string        Repository server url to store OpenAPI specification files
   --repoSnapshotsServer string   Repository server url to store OpenAPI snapshots specification files. If specified,
-                                 --repoServer will be used to store OpenAPI releases specification files.
-                                 For maven repo only
+                                 --repoServer will be used to store OpenAPI releases specification files
   -u, --repoUser string          Repository server username. Authentication by using user/password
   -p, --repoPassword string      Repository server password. Authentication by using user/password
   --repoToken string             Repository server token. Authentication by using token. For npm repo only

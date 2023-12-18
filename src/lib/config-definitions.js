@@ -139,7 +139,7 @@ const publishOptionsDefinitions = [
     name: 'repoSnapshotsServer',
     type: String,
     description:
-      'Repository server url to store OpenAPI snapshots specification files. If specified, --repoServer will be used to store OpenAPI releases specification files. For maven repo only',
+      'Repository server url to store OpenAPI snapshots specification files. If specified, --repoServer will be used to store OpenAPI releases specification files',
   },
   {
     name: 'repoUser',

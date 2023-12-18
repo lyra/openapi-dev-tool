@@ -99,8 +99,7 @@ export function publish(config = { config: { specs: [] } }) {
 
             if (
               config.repoSnapshotsServer &&
-              api.info.version.match(/-snapshot/i) &&
-              config.repoType === 'maven'
+              api.info.version.match(/-snapshot/i)
             ) {
               server = config.repoSnapshotsServer;
             }
@@ -147,7 +146,7 @@ export function publish(config = { config: { specs: [] } }) {
                 };
               }
               npmPublish(packageNpm, fs.readFileSync(archive), {
-                registry: config.repoServer,
+                registry: server,
                 forceAuth: { ...auth },
                 strictSSL: false,
               })
