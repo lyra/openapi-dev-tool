@@ -10,9 +10,11 @@ import { getTempDir } from './utils.js';
 // contains the whole of OpenAPI files
 // ##################################################################
 
-export function generateSpecsArchive(api, apiFilename, repoType) {
+export function generateSpecsArchive(api, files, repoType) {
   return new Promise((resolve) => {
     const workDir = getTempDir();
+    // For maven, we generate a zip file
+    // For npm, we generate a tar file
     const fileResult =
       repoType === 'maven'
         ? `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
@@ -24,10 +26,14 @@ export function generateSpecsArchive(api, apiFilename, repoType) {
       repoType === 'maven' ? archiver('zip') : archiver('tar', { gzip: true });
 
     zip.pipe(zipOutput);
-    zip.directory(
-      path.dirname(apiFilename),
-      repoType === 'maven' ? '/' : 'package'
-    );
+    if (files && files.length > 0) {
+      files.forEach((element) => {
+        zip.file(element, {
+          name:
+            repoType === 'maven' ? '/' : 'package/' + path.basename(element),
+        });
+      });
+    }
 
     zip.finalize();
 

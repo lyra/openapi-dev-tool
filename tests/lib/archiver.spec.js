@@ -11,7 +11,7 @@ describe('archiver.js file', () => {
           title: 'title',
         },
       };
-      const res = await generateSpecsArchive(api, '/dir/file.yaml', 'maven');
+      const res = await generateSpecsArchive(api, ['/dir/file.yaml'], 'maven');
       expect(path.basename(res)).toBe('title-1.0.0.zip');
     });
 
@@ -22,7 +22,7 @@ describe('archiver.js file', () => {
           title: 'title',
         },
       };
-      const res = await generateSpecsArchive(api, '/dir/file.yaml', 'npm');
+      const res = await generateSpecsArchive(api, ['/dir/file.yaml'], 'npm');
       expect(path.basename(res)).toBe('title-1.0.0.tar');
     });
 
@@ -33,7 +33,7 @@ describe('archiver.js file', () => {
           title: 'My title',
         },
       };
-      const res = await generateSpecsArchive(api, '/dir/file.yaml', 'maven');
+      const res = await generateSpecsArchive(api, ['/dir/file.yaml'], 'maven');
       expect(path.basename(res)).toBe('my-title-1.0.0.zip');
     });
   });

@@ -28,22 +28,35 @@ export function publish(config = { config: { specs: [] } }) {
         new Promise(async (resolve, reject) => {
           try {
             const api = await bundleSpec(config, spec);
+            const tempDir = getTempDir();
 
             let fileToArchive = spec.file;
             let archive;
             if (!config.skipBundle) {
               fileToArchive = writeOpenApiDocumentToFile(
-                getTempDir().name,
+                tempDir.name,
                 path.basename(spec.file),
                 spec.file,
                 api
               );
             }
-            archive = await generateSpecsArchive(
-              api,
-              fileToArchive,
-              config.repoType
-            );
+            const files = [fileToArchive];
+            // If npm, we have to add a package.json file
+            const packageNpm = {
+              name: `${config.groupId}/${paramCase(api.info.title)}`,
+              version: api.info.version,
+              main: path.basename(spec.file),
+            };
+            if (config.repoType === 'npm') {
+              var packageNpmJson = JSON.stringify(packageNpm, null, 2);
+              fs.writeFileSync(
+                `${tempDir.name}/package.json`,
+                packageNpmJson,
+                'utf8'
+              );
+              files.push(`${tempDir.name}/package.json`);
+            }
+            archive = await generateSpecsArchive(api, files, config.repoType);
 
             // Find doublon
             if (artifactIds.indexOf(paramCase(api.info.title)) != -1) {
@@ -133,18 +146,11 @@ export function publish(config = { config: { specs: [] } }) {
                   ).toString('base64'),
                 };
               }
-              npmPublish(
-                {
-                  name: `${config.groupId}/${paramCase(api.info.title)}`,
-                  version: api.info.version,
-                },
-                fs.readFileSync(archive),
-                {
-                  registry: config.repoServer,
-                  forceAuth: { ...auth },
-                  strictSSL: false,
-                }
-              )
+              npmPublish(packageNpm, fs.readFileSync(archive), {
+                registry: config.repoServer,
+                forceAuth: { ...auth },
+                strictSSL: false,
+              })
                 .then(() => {
                   resolve();
                 })
