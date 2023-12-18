@@ -141,14 +141,9 @@ Global Options
 
 - **Publish one or several OpenAPI files** specified in [configuration file](#configuration-file) and written in YAML or JSON
 - **Bundle OpenAPI files** to merge all the files before publishing. By using (OpenAPI remote reference)[https://swagger.io/docs/specification/using-ref/], you can work on several files. It improves the maintainability and avoid having a large OpenAPI file!
-- **Context uses**: it is possible to serve a same specification in [several contexts](#context-usage) (internal, public, etc.)
+- **Context uses**: it is possible to publish a same specification in [several contexts](#context-usage) (internal, public, etc.)
 
 #### Usage
-
-> **Warning**
->
-> To publish your OpenAPI files, the `curl` command must be available on the host where `openapi-dev-tool` is executed.
-> `curl` is available under UNIX systems and Windows 10. For Windows < 10, you can download it from https://curl.haxx.se/windows/.
 
 Usage can be displayed by typing the command
 
@@ -158,18 +153,21 @@ Usage can be displayed by typing the command
 openapi-dev-tool publish
 
   Publish into a software repository server (like Sonatype Nexus) one or serveral OpenAPI specifications
-  files
+  files. The repo can be a Maven repository or a npm repository.
 
 Command Options
 
   -b, --skipBundle               Skips bundle openapi files into one before serving or publishing, default is
                                  false
-  -g, --groupId string           GroupId used in repo server, default is com.openapi
+  -t, --repoType string          Repository server type. maven or npm are possible, default is maven
+  -g, --groupId string           GroupId used in repo server, default is com.openapi for maven repo and @myCompany for npm repo
   -s, --repoServer string        Repository server url to store OpenAPI specification files
   --repoSnapshotsServer string   Repository server url to store OpenAPI snapshots specification files. If specified,
                                  --repoServer will be used to store OpenAPI releases specification files.
-  -u, --repoUser string          Repository server username
-  -p, --repoPassword string      Repository server password
+                                 For maven repo only
+  -u, --repoUser string          Repository server username. Authentication by using user/password
+  -p, --repoPassword string      Repository server password. Authentication by using user/password
+  --repoToken string             Repository server token. Authentication by using token. For npm repo only
   -x, --skipValidation           Skips OpenAPI validation process, default is false
 
 Global Options
@@ -186,6 +184,10 @@ Global Options
 ### Publishing Locally
 
 #### Usage
+
+> **Warning**
+>
+> Publishing locally is only possible to publish in local Maven repository and it uses the `mvn` command from PATH.
 
 Usage can be displayed by typing the command
 

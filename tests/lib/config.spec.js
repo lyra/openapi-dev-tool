@@ -366,7 +366,7 @@ describe('config.js file', () => {
       expect(messages.length).toBe(3);
       expect(messages[0]).toEqual(expect.stringContaining('Syntax error!'));
       expect(messages[1]).toEqual(
-        expect.stringContaining('repoUser is mandatory')
+        expect.stringContaining('repoUser or repoToken is mandatory')
       );
       expect(exitCode).toBe(1);
     });
@@ -388,6 +388,27 @@ describe('config.js file', () => {
       );
       expect(exitCode).toBe(1);
     });
+  });
+
+  it('should return error when repoUser and repoToken are not sent in publish command', async () => {
+    process.argv[2] = 'publish';
+    process.argv[3] = '--config';
+    process.argv[4] = `./tests/assets/config_ok.json`;
+    process.argv[5] = '--repoUser';
+    process.argv[6] = 'test';
+    process.argv[7] = '--repoToken';
+    process.argv[8] = 'test';
+    process.argv[9] = '--repoServer';
+    process.argv[10] = 'http://server.com';
+    process.argv[11] = '--repoPassword';
+    process.argv[12] = 'password';
+    await import(`../../src/lib/config.js?${Date.now()}`);
+    expect(messages.length).toBe(3);
+    expect(messages[0]).toEqual(expect.stringContaining('Syntax error!'));
+    expect(messages[1]).toEqual(
+      expect.stringContaining('repoUser or repoToken is mandatory')
+    );
+    expect(exitCode).toBe(1);
   });
 
   describe('global validation error', () => {

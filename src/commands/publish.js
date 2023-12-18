@@ -3,6 +3,8 @@ import colors from 'colors';
 import path from 'path';
 import { paramCase } from 'change-case';
 import settle from 'promise-settle';
+import { publish as npmPublish } from 'libnpmpublish';
+import fs from 'fs';
 
 import { generateSpecsArchive } from '../lib/archiver.js';
 import { getTempDir } from '../lib/utils.js';
@@ -26,18 +28,35 @@ export function publish(config = { config: { specs: [] } }) {
         new Promise(async (resolve, reject) => {
           try {
             const api = await bundleSpec(config, spec);
+            const tempDir = getTempDir();
 
             let fileToArchive = spec.file;
             let archive;
             if (!config.skipBundle) {
               fileToArchive = writeOpenApiDocumentToFile(
-                getTempDir().name,
+                tempDir.name,
                 path.basename(spec.file),
                 spec.file,
                 api
               );
             }
-            archive = await generateSpecsArchive(api, fileToArchive);
+            const files = [fileToArchive];
+            // If npm, we have to add a package.json file
+            const packageNpm = {
+              name: `${config.groupId}/${paramCase(api.info.title)}`,
+              version: api.info.version,
+              main: path.basename(spec.file),
+            };
+            if (config.repoType === 'npm') {
+              var packageNpmJson = JSON.stringify(packageNpm, null, 2);
+              fs.writeFileSync(
+                `${tempDir.name}/package.json`,
+                packageNpmJson,
+                'utf8'
+              );
+              files.push(`${tempDir.name}/package.json`);
+            }
+            archive = await generateSpecsArchive(api, files, config.repoType);
 
             // Find doublon
             if (artifactIds.indexOf(paramCase(api.info.title)) != -1) {
@@ -80,42 +99,72 @@ export function publish(config = { config: { specs: [] } }) {
 
             if (
               config.repoSnapshotsServer &&
-              api.info.version.match(/-snapshot/i)
+              api.info.version.match(/-snapshot/i) &&
+              config.repoType === 'maven'
             ) {
               server = config.repoSnapshotsServer;
             }
 
             artifactIds.push(paramCase(api.info.title));
 
-            deployer.deploy(
-              {
-                groupId: config.groupId,
-                artifactId: paramCase(api.info.title),
-                version: api.info.version,
-                packaging: 'zip',
-                auth: {
-                  username: config.repoUser,
-                  password: config.repoPassword,
+            if (config.repoType === 'maven') {
+              deployer.deploy(
+                {
+                  groupId: config.groupId,
+                  artifactId: paramCase(api.info.title),
+                  version: api.info.version,
+                  packaging: 'zip',
+                  auth: {
+                    username: config.repoUser,
+                    password: config.repoPassword,
+                  },
+                  pomDir: path.dirname(archive),
+                  url: server,
+                  artifact: archive,
+                  insecure: true,
+                  quiet: !config.verbose,
                 },
-                pomDir: path.dirname(archive),
-                url: server,
-                artifact: archive,
-                insecure: true,
-                quiet: !config.verbose,
-              },
-              (err) => {
-                if (err) {
+                (err) => {
+                  if (err) {
+                    reject();
+                    console.error(
+                      colors.red(
+                        `Unable to publish specs '${paramCase(api.info.title)}'`
+                      )
+                    );
+                  } else {
+                    resolve();
+                  }
+                }
+              );
+            } else {
+              let auth = { token: config.repoToken };
+              if (config.repoUser && config.repoPassword) {
+                auth = {
+                  auth: Buffer.from(
+                    `${config.repoUser}:${config.repoPassword}`
+                  ).toString('base64'),
+                };
+              }
+              npmPublish(packageNpm, fs.readFileSync(archive), {
+                registry: config.repoServer,
+                forceAuth: { ...auth },
+                strictSSL: false,
+              })
+                .then(() => {
+                  resolve();
+                })
+                .catch((err) => {
                   reject();
                   console.error(
                     colors.red(
-                      `Unable to publish specs '${paramCase(api.info.title)}'`
+                      `Unable to publish specs '${paramCase(
+                        api.info.title
+                      )}': ${err}`
                     )
                   );
-                } else {
-                  resolve();
-                }
-              }
-            );
+                });
+            }
           } catch (err) {
             console.error(
               colors.red(

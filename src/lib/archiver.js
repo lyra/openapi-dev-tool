@@ -10,23 +10,33 @@ import { getTempDir } from './utils.js';
 // contains the whole of OpenAPI files
 // ##################################################################
 
-export function generateSpecsArchive(api, apiFilename) {
+export function generateSpecsArchive(api, files, repoType) {
   return new Promise((resolve) => {
     const workDir = getTempDir();
-    const zipOutput = createWriteStream(
-      `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
-    );
-    const zip = archiver('zip');
+    // For maven, we generate a zip file
+    // For npm, we generate a tar file
+    const fileResult =
+      repoType === 'maven'
+        ? `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
+        : `${workDir.name}/${paramCase(api.info.title)}-${
+            api.info.version
+          }.tar`;
+    const zipOutput = createWriteStream(fileResult);
+    const zip =
+      repoType === 'maven' ? archiver('zip') : archiver('tar', { gzip: true });
 
     zip.pipe(zipOutput);
-    zip.directory(path.dirname(apiFilename), '/');
+    if (files && files.length > 0) {
+      files.forEach((element) => {
+        zip.file(element, {
+          name:
+            repoType === 'maven' ? '/' : 'package/' + path.basename(element),
+        });
+      });
+    }
 
     zip.finalize();
 
-    zipOutput.on('close', () =>
-      resolve(
-        `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
-      )
-    );
+    zipOutput.on('close', () => resolve(fileResult));
   });
 }

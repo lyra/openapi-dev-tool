@@ -258,8 +258,7 @@ export async function publishValidation(options) {
   // User and password can be overriden from command line
   if (optionsBack.repoUser) options.repoUser = optionsBack.repoUser;
   if (optionsBack.repoPassword) options.repoPassword = optionsBack.repoPassword;
-  if (optionsBack.groupId && optionsBack.groupId !== 'com.openapi')
-    options.groupId = optionsBack.groupId;
+  if (optionsBack.groupId) options.groupId = optionsBack.groupId;
 
   let errors = [];
 
@@ -271,12 +270,20 @@ export async function publishValidation(options) {
     errors.push(`repoServer is mandatory`);
   }
 
+  if (!options.repoType || typeof options.repoType !== 'string') {
+    errors.push(`repoType is mandatory`);
+  }
+
   if (
     options.repoServer &&
     options.repoServer.match &&
     !options.repoServer.match(/(https?:\/\/)?(www\.)?\w{2,}(\.\w{2,}){1,}/)
   ) {
     errors.push(`repoServer is not a valid url`);
+  }
+
+  if (options.repoType !== 'maven' && options.repoType !== 'npm') {
+    errors.push(`repoType is not valid. maven or npm can be specified`);
   }
 
   if (
@@ -289,15 +296,34 @@ export async function publishValidation(options) {
     errors.push(`repoSnapshotsServer is not a valid url`);
   }
 
-  if (!options.groupId || typeof options.groupId !== 'string') {
+  if (!options.groupId) {
+    if (options.repoType === 'maven') options.groupId = 'com.openapi';
+    else options.groupId = '@myCompany';
+  }
+
+  if (typeof options.groupId !== 'string') {
     errors.push(`groupId is mandatory`);
   }
 
-  if (!options.repoUser || typeof options.repoUser !== 'string') {
-    errors.push(`repoUser is mandatory`);
+  if (
+    (!options.repoToken || typeof options.repoToken !== 'string') &&
+    (!options.repoUser || typeof options.repoUser !== 'string')
+  ) {
+    errors.push(
+      `One authentication method has to be defined. repoUser or repoToken is mandatory`
+    );
   }
 
-  if (!options.repoPassword || typeof options.repoPassword !== 'string') {
+  if (options.repoUser && options.repoToken) {
+    errors.push(
+      `Only one authentication method has to be defined. repoUser or repoToken is mandatory`
+    );
+  }
+
+  if (
+    options.repoUser &&
+    (!options.repoPassword || typeof options.repoPassword !== 'string')
+  ) {
     errors.push(`repoPassword is mandatory`);
   }
 
@@ -330,10 +356,13 @@ export async function publishLocalValidation(options) {
     errors.push(`config is mandatory`);
   }
 
-  if (!options.groupId || typeof options.groupId !== 'string') {
+  if (typeof options.groupId !== 'string') {
     errors.push(`groupId is mandatory`);
   }
 
+  if (!options.groupId) {
+    options.groupId = 'com.openapi';
+  }
   // Check local repository path by using mvn command
   if (!mvnExists()) {
     errors.push(

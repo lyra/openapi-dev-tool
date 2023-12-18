@@ -4,15 +4,26 @@ import { generateSpecsArchive } from '../../src/lib/archiver.js';
 
 describe('archiver.js file', () => {
   describe('generateSpecsArchive function', () => {
-    it('should return a archive file when the input is correct', async () => {
+    it('should return a zip archive file when the input is correct', async () => {
       const api = {
         info: {
           version: '1.0.0',
           title: 'title',
         },
       };
-      const res = await generateSpecsArchive(api, '/dir/file.yaml');
+      const res = await generateSpecsArchive(api, ['/dir/file.yaml'], 'maven');
       expect(path.basename(res)).toBe('title-1.0.0.zip');
+    });
+
+    it('should return a tar archive file when the input is correct', async () => {
+      const api = {
+        info: {
+          version: '1.0.0',
+          title: 'title',
+        },
+      };
+      const res = await generateSpecsArchive(api, ['/dir/file.yaml'], 'npm');
+      expect(path.basename(res)).toBe('title-1.0.0.tar');
     });
 
     it('should return a archive file when the title seems incorrect', async () => {
@@ -22,7 +33,7 @@ describe('archiver.js file', () => {
           title: 'My title',
         },
       };
-      const res = await generateSpecsArchive(api, '/dir/file.yaml');
+      const res = await generateSpecsArchive(api, ['/dir/file.yaml'], 'maven');
       expect(path.basename(res)).toBe('my-title-1.0.0.zip');
     });
   });

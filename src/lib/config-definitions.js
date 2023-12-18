@@ -115,11 +115,19 @@ const publishOptionsDefinitions = [
       'Skips bundle openapi files into one before serving or publishing, default is false',
   },
   {
+    name: 'repoType',
+    alias: 't',
+    type: String,
+    defaultValue: 'maven',
+    description:
+      'Repository server type. maven or npm are possible, default is maven',
+  },
+  {
     name: 'groupId',
     alias: 'g',
     type: String,
-    defaultValue: 'com.openapi',
-    description: 'GroupId used in repo server, default is com.openapi',
+    description:
+      'GroupId used in repo server, default is com.openapi for maven repo and @myCompany for npm repo',
   },
   {
     name: 'repoServer',
@@ -131,19 +139,27 @@ const publishOptionsDefinitions = [
     name: 'repoSnapshotsServer',
     type: String,
     description:
-      'Repository server url to store OpenAPI snapshots specification files. If specified, --repoServer will be used to store OpenAPI releases specification files.',
+      'Repository server url to store OpenAPI snapshots specification files. If specified, --repoServer will be used to store OpenAPI releases specification files. For maven repo only',
   },
   {
     name: 'repoUser',
     alias: 'u',
     type: String,
-    description: 'Repository server username',
+    description:
+      'Repository server username. Authentication by using user/password',
   },
   {
     name: 'repoPassword',
     alias: 'p',
     type: String,
-    description: 'Repository server password',
+    description:
+      'Repository server password. Authentication by using user/password',
+  },
+  {
+    name: 'repoToken',
+    type: String,
+    description:
+      'Repository server token. Authentication by using token. For npm repo only',
   },
   {
     name: 'skipValidation',
@@ -231,7 +247,7 @@ const publishUsage = commandLineUsage([
   {
     header: 'openapi-dev-tool publish',
     content:
-      'Publish into a software repository server (like Sonartype Nexus) one or serveral OpenAPI specifications files',
+      'Publish into a software repository server (like Sonartype Nexus) one or serveral OpenAPI specifications files. The repo can be a Maven repository or a npm repository.',
   },
   {
     header: 'Command Options',
