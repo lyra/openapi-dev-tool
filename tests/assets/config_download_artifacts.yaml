@@ -1,0 +1,33 @@
+specs:
+  - artifact: group:artifact1:version
+    file: toto/tata
+  - artifact: group:artifact2:version
+    file: toto/tata
+  - artifact: group:artifact3:version
+    file: toto/tata
+  - artifact: group:artifact4:version
+    file: toto/tata
+  - artifact: group:artifact5:version
+    file: toto/tata
+  - artifact: group:artifact6:version
+    file: toto/tata
+  - artifact: group:artifact7:version
+    file: toto/tata
+  - artifact: group:artifact8:version
+    file: toto/tata
+  - artifact: group:artifact9:version
+    file: toto/tata
+  - artifact: group:artifact10:version
+    file: toto/tata
+  - artifact: group:artifact11:version
+    file: toto/tata
+  - artifact: group:artifact12:version
+    file: toto/tata
+  - artifact: group:artifact13:version
+    file: toto/tata
+  - artifact: group:artifact14:version
+    file: toto/tata
+  - artifact: group:artifact15:version
+    file: toto/tata
+  - artifact: group:artifact16:version
+    file: toto/tata
