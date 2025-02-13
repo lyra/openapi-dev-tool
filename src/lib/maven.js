@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import fs from 'fs';
 import commandExists from 'command-exists';
 import AdmZip from 'adm-zip';

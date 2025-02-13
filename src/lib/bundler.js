@@ -2,7 +2,7 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 import path from 'path';
 import YAML from 'yaml';
 import fs from 'fs';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 
 import { isJSONFile, validateExamples } from './utils.js';
 import { parseFolder } from './templater.js';
@@ -49,7 +49,7 @@ export async function bundleSpec(config, spec) {
 
   // Check title and version syntax
   const titleRegex = /^[a-z\-0-9]+$/;
-  if (!paramCase(api.info.title).match(titleRegex)) {
+  if (!kebabCase(api.info.title).match(titleRegex)) {
     throw new Error(
       `title \'${api.info.title}\' is not valid. Should be correct with ${titleRegex}`
     );
@@ -64,7 +64,7 @@ export async function bundleSpec(config, spec) {
   }
 
   if (config.verbose) {
-    console.log(`\tSpecification validated: ${paramCase(api.info.title)}`);
+    console.log(`\tSpecification validated: ${kebabCase(api.info.title)}`);
   }
   return api;
 }
