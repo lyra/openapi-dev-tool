@@ -130,6 +130,7 @@ Global Options
                                      'artifact' config property) which will be downloaded by using this url. From
                                      this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
                                      replaced.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 ### Publishing
@@ -178,6 +179,7 @@ Global Options
                                      'artifact' config property) which will be downloaded by using this url. From
                                      this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
                                      replaced.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 ### Publishing Locally
@@ -213,6 +215,7 @@ Global Options
                                      'artifact' config property) which will be downloaded by using this url. From
                                      this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
                                      replaced.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 > **Warning**
@@ -252,6 +255,7 @@ Global Options
                                      'artifact' config property) which will be downloaded by using this url. From
                                      this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
                                      replaced.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 ## Configuration file

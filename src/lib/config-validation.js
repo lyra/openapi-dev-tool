@@ -27,7 +27,7 @@ const objectFromPath = (obj, path) =>
 // ######################################
 // Configuration file schema to validate
 // ######################################
-function getConfigSchema(data, urlDownloadTemplate, verbose) {
+function getConfigSchema(data, urlDownloadTemplate, downloadPoolSize, verbose) {
   const enabledDefaultValue = true;
 
   function transformEnabledProperty(value) {
@@ -106,7 +106,12 @@ function getConfigSchema(data, urlDownloadTemplate, verbose) {
                   fieldPath.replace(/\.file$/, '.artifact')
                 ).isValid
               ) {
-                downloadArtifact(artifact, urlDownloadTemplate, verbose)
+                downloadArtifact(
+                  artifact,
+                  urlDownloadTemplate,
+                  downloadPoolSize,
+                  verbose
+                )
                   .then((folder) => {
                     // Does not need to check file if is not enabled
                     const isValid =
@@ -185,11 +190,21 @@ function globalValidation(options, errors) {
       options.config = {};
     }
 
+    if (
+      isNaN(options.downloadPoolSize) ||
+      typeof options.downloadPoolSize !== 'number'
+    ) {
+      errors.push(`downloadPoolSize is invalid`);
+      resolve();
+      return;
+    }
+
     jsonValidator.validate(
       options.config,
       getConfigSchema(
         options.config,
         options.urlDownloadTemplate,
+        options.downloadPoolSize,
         options.verbose
       ),
       (err, messages) => {

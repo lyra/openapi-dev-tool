@@ -5,6 +5,11 @@ import https from 'https';
 import fs from 'fs';
 import validator from '../openapi-examples-validator/dist/index.js';
 
+let agent = new https.Agent({
+  maxSockets: Infinity,
+});
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // ##################################################################
 // The aim of this file is exposed several utils functions
 // ##################################################################
@@ -25,18 +30,17 @@ export function getTempDir() {
   return tmp.dirSync({ prefix: 'openapi-dev-tool_', unsafeCleanup: true });
 }
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 export function getAppVersion() {
   return JSON.parse(
     fs.readFileSync(new URL('../../package.json', import.meta.url))
   ).version;
 }
 
-export function downloadFile(url, targetFile) {
+export function downloadFile(url, downloadPoolSize, targetFile) {
+  agent.maxSockets = downloadPoolSize;
   return new Promise((resolve, reject) => {
     https
-      .get(url, (response) => {
+      .get({ url, agent }, (response) => {
         const code = response.statusCode;
 
         if (code >= 400) {
