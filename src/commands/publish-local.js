@@ -1,6 +1,6 @@
 import colors from 'colors';
 import path from 'path';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import settle from 'promise-settle';
 import fs from 'fs';
 
@@ -43,24 +43,24 @@ export function publishLocal(config = { config: { specs: [] } }) {
             archive = await generateSpecsArchive(api, [fileToArchive], 'maven');
 
             // Find doublon
-            if (artifactIds.indexOf(paramCase(api.info.title)) !== -1) {
+            if (artifactIds.indexOf(kebabCase(api.info.title)) !== -1) {
               throw new Error(
-                `Spec "${api.info.title}" has an artifactId "${paramCase(
+                `Spec "${api.info.title}" has an artifactId "${kebabCase(
                   api.info.title
                 )}" already defined!`
               );
             }
 
-            if (paramCase(api.info.title) === api.info.title) {
+            if (kebabCase(api.info.title) === api.info.title) {
               console.log(
                 '\tPublishing API name: %s, Version: %s',
-                paramCase(api.info.title),
+                kebabCase(api.info.title),
                 api.info.version
               );
             } else {
               console.log(
                 '\tPublishing API name: %s (%s), Version: %s',
-                paramCase(api.info.title),
+                kebabCase(api.info.title),
                 api.info.title,
                 api.info.version
               );
@@ -76,11 +76,11 @@ export function publishLocal(config = { config: { specs: [] } }) {
               }
             }
 
-            artifactIds.push(paramCase(api.info.title));
+            artifactIds.push(kebabCase(api.info.title));
 
             // Write temporary pom file
             const pomContent = getPOMContent(
-              paramCase(api.info.title),
+              kebabCase(api.info.title),
               api.info.version,
               config.groupId,
               'zip'

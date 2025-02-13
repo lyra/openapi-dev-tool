@@ -55,6 +55,12 @@ const globalOptionsDefinitions = [
     description:
       "Rather to use specs from local FS, you can specify remote specs (using 'artifact' config property) which will be downloaded by using this url. From this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be replaced.",
   },
+  {
+    name: 'downloadPoolSize',
+    type: Number,
+    defaultValue: Infinity,
+    description: 'Pool size used to download artifacts, default is "Infinity".',
+  },
 ];
 
 const serveOptionsDefinitions = [

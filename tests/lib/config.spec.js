@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 // We override function to catch messages
 let messages = [];
 console.log = (message) => {
@@ -477,7 +479,7 @@ describe('config.js file', () => {
       process.argv[4] = `./tests/assets/config_valid_artifact.yaml`;
       process.argv[5] = '--urlDownloadTemplate';
       process.argv[6] = 'fake';
-      await await await import(`../../src/lib/config.js?${Date.now()}`);
+      await import(`../../src/lib/config.js?${Date.now()}`);
       expect(messages.length).toBe(3);
       expect(messages[0]).toEqual(expect.stringContaining('Syntax error!'));
       expect(messages[1]).toEqual(
@@ -494,12 +496,29 @@ describe('config.js file', () => {
       process.argv[4] = `./tests/assets/config_valid_artifact.yaml`;
       process.argv[5] = '--urlDownloadTemplate';
       process.argv[6] = 'https://test';
-      await await await import(`../../src/lib/config.js?${Date.now()}`);
+      await import(`../../src/lib/config.js?${Date.now()}`);
       expect(messages.length).toBe(3);
       expect(messages[0]).toEqual(expect.stringContaining('Syntax error!'));
       expect(messages[1]).toEqual(
         expect.stringContaining(
           "Option 'urlDownloadTemplate' has to contain token [ARTIFACT_ID], [GROUP_ID] and [VERSION]"
+        )
+      );
+      expect(exitCode).toBe(1);
+    });
+
+    it('should return error when downloadPoolSize is invalid', async () => {
+      process.argv[2] = 'serve';
+      process.argv[3] = '--config';
+      process.argv[4] = `./tests/assets/config_valid_artifact.yaml`;
+      process.argv[5] = '--downloadPoolSize';
+      process.argv[6] = 'toto';
+      await import(`../../src/lib/config.js?${Date.now()}`);
+      expect(messages.length).toBe(3);
+      expect(messages[0]).toEqual(expect.stringContaining('Syntax error!'));
+      expect(messages[1]).toEqual(
+        expect.stringContaining(
+          "downloadPoolSize is invalid"
         )
       );
       expect(exitCode).toBe(1);

@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import fs from 'fs';
 import commandExists from 'command-exists';
 import AdmZip from 'adm-zip';
@@ -19,7 +19,12 @@ export function getRepoPath() {
   return execSync(mavenLocalPathCmd).toString();
 }
 
-export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
+export function downloadArtifact(
+  artifact,
+  urlDownloadTemplate,
+  downloadPoolSize,
+  verbose
+) {
   return new Promise((resolve, reject) => {
     // We download it in specific folder to avoid downloading if already here
     const folder = `.specs/${artifact}`;
@@ -67,8 +72,7 @@ export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
       .replace(/\[ARTIFACT_ID\]/g, artifactParts[1])
       .replace(/\[GROUP_ID\]/g, artifactParts[0])
       .replace(/\[VERSION\]/g, artifactParts[2]);
-
-    return downloadFile(url, `${folder}/archive.zip`)
+    return downloadFile(url, downloadPoolSize, `${folder}/archive.zip`)
       .then(() => {
         const zip = new AdmZip(`${folder}/archive.zip`);
         zip.extractAllTo(folder, true);
