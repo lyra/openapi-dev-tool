@@ -5,10 +5,6 @@ import https from 'https';
 import fs from 'fs';
 import validator from '../openapi-examples-validator/dist/index.js';
 
-let agent = new https.Agent({
-  maxSockets: Infinity,
-});
-
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // ##################################################################
 // The aim of this file is exposed several utils functions
@@ -36,11 +32,10 @@ export function getAppVersion() {
   ).version;
 }
 
-export function downloadFile(url, downloadPoolSize, targetFile) {
-  agent.maxSockets = downloadPoolSize;
+export function downloadFile(url, targetFile) {
   return new Promise((resolve, reject) => {
     https
-      .get({ url, agent }, (response) => {
+      .get(url, (response) => {
         const code = response.statusCode;
 
         if (code >= 400) {

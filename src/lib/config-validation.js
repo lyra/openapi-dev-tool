@@ -3,7 +3,7 @@ import YAML from 'yaml';
 import rc from 'rc';
 import fs from 'fs';
 import path from 'path';
-
+import pLimit from 'p-limit';
 import jsonValidator from '../json-validator/app.cjs';
 
 import { isYAMLFile } from './utils.js';
@@ -29,7 +29,7 @@ const objectFromPath = (obj, path) =>
 // ######################################
 function getConfigSchema(data, urlDownloadTemplate, downloadPoolSize, verbose) {
   const enabledDefaultValue = true;
-
+  const limit = pLimit(downloadPoolSize);
   function transformEnabledProperty(value) {
     if (typeof value == 'boolean') return value;
     else if (typeof value == 'string') {
@@ -106,33 +106,34 @@ function getConfigSchema(data, urlDownloadTemplate, downloadPoolSize, verbose) {
                   fieldPath.replace(/\.file$/, '.artifact')
                 ).isValid
               ) {
-                downloadArtifact(
-                  artifact,
-                  urlDownloadTemplate,
-                  downloadPoolSize,
-                  verbose
-                )
-                  .then((folder) => {
-                    // Does not need to check file if is not enabled
-                    const isValid =
-                      !enabled ||
-                      (enabled && fs.existsSync(folder + path.sep + name));
+                limit(() => {
+                  return downloadArtifact(
+                    artifact,
+                    urlDownloadTemplate,
+                    verbose
+                  )
+                    .then((folder) => {
+                      // Does not need to check file if is not enabled
+                      const isValid =
+                        !enabled ||
+                        (enabled && fs.existsSync(folder + path.sep + name));
 
-                    // We update file reference to prepend temp folder of unpacked artifact
-                    currentSpec.file = folder + path.sep + name;
-                    if (isValid) cb(null, null);
-                    else
+                      // We update file reference to prepend temp folder of unpacked artifact
+                      currentSpec.file = folder + path.sep + name;
+                      if (isValid) cb(null, null);
+                      else
+                        cb(
+                          null,
+                          `file '${name}' doesn\'t exist in artifact '${artifact}'`
+                        );
+                    })
+                    .catch((err) => {
                       cb(
                         null,
-                        `file '${name}' doesn\'t exist in artifact '${artifact}'`
+                        `artifact '${artifact}' cannot be downloaded, ${err.message}`
                       );
-                  })
-                  .catch((err) => {
-                    cb(
-                      null,
-                      `artifact '${artifact}' cannot be downloaded, ${err.message}`
-                    );
-                  });
+                    });
+                });
               } else {
                 cb(null, null);
               }

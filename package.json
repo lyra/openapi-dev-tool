@@ -1,6 +1,6 @@
 {
   "name": "@lyra-network/openapi-dev-tool",
-  "version": "9.9.0",
+  "version": "9.9.1",
   "description": "OpenAPI Development tool",
   "main": "src/lib.js",
   "scripts": {
@@ -66,6 +66,7 @@
     "lodash.merge": "^4.6.2",
     "maven": "^5.0.0",
     "mkdirp": "^3.0.1",
+    "p-limit": "^6.2.0",
     "promise-settle": "^0.3.0",
     "rc": "^1.2.8",
     "redoc": "^2.4.0",
