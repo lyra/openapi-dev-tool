@@ -27,6 +27,16 @@ export function merge(config = { config: { specs: [] } }) {
       promises.push(
         new Promise(async (resolve, reject) => {
           try {
+            const filename = path.basename(spec.file);
+            const api = await bundleSpec(config, spec);
+
+            // Apply filter if it is defined
+            if (config.filter && api.info.title !== config.filter) {
+              console.log("\tspec '%s': ignored by filter", api.info.title);
+              resolve();
+              return;
+            }
+
             const outputDir = getOutputDirFromConfig(config);
 
             // Create output dir if does not exist
@@ -38,8 +48,6 @@ export function merge(config = { config: { specs: [] } }) {
                 fs.mkdirSync(outputDir, { recursive: true });
               }
             }
-            const filename = path.basename(spec.file);
-            const api = await bundleSpec(config, spec);
 
             // Find doublon
             if (artifactIds.indexOf(kebabCase(api.info.title)) != -1) {
@@ -60,7 +68,8 @@ export function merge(config = { config: { specs: [] } }) {
             artifactIds.push(kebabCase(api.info.title));
             resolve();
             console.log(
-              '\tMerged split files into a single one: %s',
+              "\tspec '%s': merged split files into a single one: %s",
+              api.info.title,
               targetFile
             );
           } catch (err) {

@@ -30,6 +30,13 @@ export function publishLocal(config = { config: { specs: [] } }) {
           try {
             const api = await bundleSpec(config, spec);
 
+            // Apply filter if it is defined
+            if (config.filter && api.info.title !== config.filter) {
+              console.log("\tspec '%s': ignored by filter", api.info.title);
+              resolve();
+              return;
+            }
+
             let fileToArchive = spec.file;
             let archive;
             if (!config.skipBundle) {

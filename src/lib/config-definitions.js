@@ -28,7 +28,7 @@ const commandDefinitions = [
   },
   {
     name: 'help',
-    summary: 'Shows this help message, or help for a specific command',
+    summary: 'Show this help message, or help for a specific command',
   },
 ];
 
@@ -40,6 +40,13 @@ const globalOptionsDefinitions = [
     defaultValue: 'config.json',
     description:
       'Configuration file in JSON or YAML format where specifications are defined, default is config.json',
+  },
+  {
+    name: 'filter',
+    alias: 'f',
+    type: String,
+    description:
+      'Manage only one specification defined by its name (`api.info.title`) rather use the whole of enabled specifications declared into configuration file',
   },
   {
     name: 'verbose',

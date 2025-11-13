@@ -28,6 +28,14 @@ export function publish(config = { config: { specs: [] } }) {
         new Promise(async (resolve, reject) => {
           try {
             const api = await bundleSpec(config, spec);
+
+            // Apply filter if it is defined
+            if (config.filter && api.info.title !== config.filter) {
+              console.log("\tspec '%s': ignored by filter", api.info.title);
+              resolve();
+              return;
+            }
+
             const tempDir = getTempDir();
 
             let fileToArchive = spec.file;
