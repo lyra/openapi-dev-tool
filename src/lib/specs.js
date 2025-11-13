@@ -32,9 +32,13 @@ export function loadSpecs(config) {
       } else {
         api = YAML.parse(raw);
       }
-      if (config.filter && api.info.title !== config.filter) {
-        console.log("\tspec '%s': ignored by filter", api.info.title);
-        return false;
+      // Apply filter if it is defined
+      if (config.filter) {
+        const regex = new RegExp(config.filter);
+        if (!regex.test(api.info.title)) {
+          console.log("\tspec '%s': ignored by filter", api.info.title);
+          return;
+        }
       }
       spec.api = api;
       return true;

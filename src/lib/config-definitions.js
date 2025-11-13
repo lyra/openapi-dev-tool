@@ -46,7 +46,7 @@ const globalOptionsDefinitions = [
     alias: 'f',
     type: String,
     description:
-      'Manage only one specification defined by its name (`api.info.title`) rather use the whole of enabled specifications declared into configuration file',
+      'Manage some specifications defined by its name (`api.info.title`) and which match with this regex filter rather use the whole of enabled specifications declared into configuration file',
   },
   {
     name: 'verbose',

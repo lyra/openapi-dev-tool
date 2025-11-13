@@ -125,8 +125,8 @@ Global Options
 
   -c, --config string                Configuration file in JSON or YAML format where specifications are defined, default
                                      is config.json
-  -f, --filter string                Manage only one specification defined by its name (`api.info.title`) rather use the
-                                     whole of enabled specifications declared
+  -f, --filter string                Manage some specifications defined by its name (`api.info.title`) and which match
+                                     with this regex filter rather use the whole of enabled specifications declared
                                      into configuration file
   -v, --verbose                      Verbose mode, default is false
   -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using 'artifact'
@@ -177,8 +177,8 @@ Global Options
 
   -c, --config string                Configuration file in JSON or YAML format where specifications are defined, default
                                      is config.json
-  -f, --filter string                Manage only one specification defined by its name (`api.info.title`) rather use the
-                                     whole of enabled specifications declared
+  -f, --filter string                Manage some specifications defined by its name (`api.info.title`) and which match
+                                     with this regex filter rather use the whole of enabled specifications declared
                                      into configuration file
   -v, --verbose                      Verbose mode, default is false
   -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using 'artifact'
@@ -216,8 +216,8 @@ Global Options
 
   -c, --config string                Configuration file in JSON or YAML format where specifications are defined, default
                                      is config.json
-  -f, --filter string                Manage only one specification defined by its name (`api.info.title`) rather use the
-                                     whole of enabled specifications declared
+  -f, --filter string                Manage some specifications defined by its name (`api.info.title`) and which match
+                                     with this regex filter rather use the whole of enabled specifications declared
                                      into configuration file
   -v, --verbose                      Verbose mode, default is false
   -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using 'artifact'

@@ -31,10 +31,13 @@ export function merge(config = { config: { specs: [] } }) {
             const api = await bundleSpec(config, spec);
 
             // Apply filter if it is defined
-            if (config.filter && api.info.title !== config.filter) {
-              console.log("\tspec '%s': ignored by filter", api.info.title);
-              resolve();
-              return;
+            if (config.filter) {
+              const regex = new RegExp(config.filter);
+              if (!regex.test(api.info.title)) {
+                console.log("\tspec '%s': ignored by filter", api.info.title);
+                resolve();
+                return;
+              }
             }
 
             const outputDir = getOutputDirFromConfig(config);
