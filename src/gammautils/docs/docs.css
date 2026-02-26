@@ -1,0 +1,13 @@
+.sidebar {
+	background-color: #ffffff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	padding: 15px 0px 30px 30px;
+	width: 200px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	border-right: 1px solid #bbb;
+	-webkit-box-shadow: 0 0 20px #ccc;
+}

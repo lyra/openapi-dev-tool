@@ -1,0 +1,13 @@
+<div class="col-xs-12">
+	<h3 id="<%= name %>"><%= name %>&nbsp;<small><a href="#index" class="small">Go back to index</a></small></h3>
+
+	<% Object.keys(tests).forEach(function(functionName) { %>
+		<h4 id="<%= name %><%= functionName %>"><%= functionName %>&nbsp;<small><a href="#index" class="small">Go back to index</a></small></h4>
+
+		<% Object.keys(tests[functionName]).forEach(function(testName) { %>
+			<p><%= testName %></p>
+			<% var code = beautify(tests[functionName][testName].toString()); %>
+			<pre><code class="hljs"><%= hl('js', code).value %></code></pre>
+		<% });%>
+	<% }); %>
+</div>
