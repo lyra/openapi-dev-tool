@@ -18,12 +18,12 @@ describe('serve.js file', function () {
       port: 8080,
     });
     // API
-    await request(app).get('/assets').expect(301);
+    await request(app).get('/assets/favicon.ico').expect(200);
     await request(app).get('/raw/bundle/petstore.yaml').expect(200);
     await request(app).get('/raw/original/petstore').expect(200);
     await request(app).get('/swagger-ui?urls.primaryName=petstore').expect(200);
     await request(app).get('/redoc?specName=petstore').expect(200);
     await request(app).get('/').expect(200);
-    await request(app).get('/another-assets').expect(301);
+    await request(app).get('/another-assets/config_ok.json').expect(200);
   });
 });
