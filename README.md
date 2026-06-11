@@ -133,6 +133,7 @@ Global Options
                                      config property) which will be downloaded by using this url. From this url template
                                      '[ARTIFACT_ID]', '[GROUP_ID]' and
                                      '[VERSION]' will be replaced.
+                                     In case where download is not possible (by using regex from example) and a Nexus server is used. Openapi-dev-tool will retry to download artifact by using Nexus Asset API.
   --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
@@ -185,6 +186,7 @@ Global Options
                                      config property) which will be downloaded by using this url. From this url template
                                      '[ARTIFACT_ID]', '[GROUP_ID]' and
                                      '[VERSION]' will be replaced.
+                                     In case where download is not possible (by using regex from example) and a Nexus server is used. Openapi-dev-tool will retry to download artifact by using Nexus Asset API.
   --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
@@ -224,6 +226,7 @@ Global Options
                                      config property) which will be downloaded by using this url. From this url template
                                      '[ARTIFACT_ID]', '[GROUP_ID]' and
                                      '[VERSION]' will be replaced.
+                                     In case where download is not possible (by using regex from example) and a Nexus server is used. Openapi-dev-tool will retry to download artifact by using Nexus Asset API.
   --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 

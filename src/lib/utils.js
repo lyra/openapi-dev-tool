@@ -32,6 +32,67 @@ export function getAppVersion() {
   ).version;
 }
 
+export function downloadFileByAssetAPI(url, version, targetFile) {
+  return new Promise((resolve, reject) => {
+    const urlAssetAPI = new URL(url);
+    urlAssetAPI.searchParams.delete('maven.baseVersion');
+    urlAssetAPI.pathname = urlAssetAPI.pathname.replace(
+      '/assets/download',
+      '/assets'
+    );
+    https
+      .get(urlAssetAPI, (response) => {
+        if (response.statusCode === 200) {
+          const chunks = [];
+
+          response.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
+
+          response.on('end', () => {
+            const body = Buffer.concat(chunks).toString('utf8');
+            try {
+              const json = JSON.parse(body);
+              if (!json.items || !Array.isArray(json.items)) {
+                reject(
+                  new Error(
+                    `Unexpected response format from Nexus Asset API: \"${body.slice(0, 100)}...\"`
+                  )
+                );
+                return;
+              }
+
+              const filtered = json.items.filter((item) => {
+                if (item.path) {
+                  const regex = new RegExp(`.*${version}.*`);
+                  return item.path.match(regex);
+                }
+                return false;
+              });
+
+              if (filtered.length > 0) {
+                return downloadFile(filtered[0].downloadUrl, targetFile)
+                  .then(resolve)
+                  .catch(reject);
+              } else {
+                reject(
+                  new Error(`No matching items found for version: ${version}`)
+                );
+              }
+              resolve();
+            } catch (err) {
+              reject(err);
+            }
+          });
+
+          response.on('error', reject);
+          return;
+        }
+      })
+      .on('error', reject);
+  });
+}
+
 export function downloadFile(url, targetFile) {
   return new Promise((resolve, reject) => {
     https
@@ -39,7 +100,25 @@ export function downloadFile(url, targetFile) {
         const code = response.statusCode;
 
         if (code >= 400) {
-          return reject(new Error(response.statusMessage));
+          const chunks = [];
+
+          response.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
+
+          response.on('end', () => {
+            const body = Buffer.concat(chunks).toString('utf8');
+            const error = new Error(
+              `HTTP ${code} ${response.statusMessage} - ${body}`
+            );
+            error.code = code;
+            error.body = body;
+            error.server = response.headers['server'] || 'unknown';
+            reject(error);
+          });
+
+          response.on('error', reject);
+          return;
         }
 
         // handle redirects
