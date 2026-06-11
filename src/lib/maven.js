@@ -5,7 +5,7 @@ import commandExists from 'command-exists';
 import AdmZip from 'adm-zip';
 import maven from 'maven';
 
-import { downloadFile } from './utils.js';
+import { downloadFile, downloadFileByAssetAPI } from './utils.js';
 
 export const mavenCommand = 'mvn';
 
@@ -20,9 +20,14 @@ export function getRepoPath() {
 }
 
 export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
+  const artifactParts = artifact.split(':');
+  const groupId = artifactParts[0];
+  const artifactId = artifactParts[1];
+  const version = artifactParts[2];
+
   return new Promise((resolve, reject) => {
     // We download it in specific folder to avoid downloading if already here
-    const folder = `.specs/${artifact}`;
+    const folder = `.specs/${groupId}:${artifactId}`;
     // If folder is already exist , we use cache
     if (fs.existsSync(folder)) {
       if (verbose) console.log(`Use specs of artifact '${artifact}' in cache!`);
@@ -61,12 +66,11 @@ export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
 
     // Folder does not exist, we have to download spec archive
     fs.mkdirSync(folder, { recursive: true });
-    const artifactParts = artifact.split(':');
 
     const url = urlDownloadTemplate
-      .replace(/\[ARTIFACT_ID\]/g, artifactParts[1])
-      .replace(/\[GROUP_ID\]/g, artifactParts[0])
-      .replace(/\[VERSION\]/g, artifactParts[2]);
+      .replace(/\[ARTIFACT_ID\]/g, artifactId)
+      .replace(/\[GROUP_ID\]/g, groupId)
+      .replace(/\[VERSION\]/g, version);
     return downloadFile(url, `${folder}/archive.zip`)
       .then(() => {
         const zip = new AdmZip(`${folder}/archive.zip`);
@@ -74,8 +78,26 @@ export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
         resolve(folder);
       })
       .catch((err) => {
-        if (fs.existsSync(`${folder}`)) rimraf.sync(`${folder}`);
-        reject(err);
+        if (err.code === 400 && err.server.toLowerCase().includes('nexus')) {
+          // In case where we have an error 400 with nexus, we will try to use asset API
+          if (verbose)
+            console.log(
+              `Trying to get '${artifact}' by using Nexus asset API...`
+            );
+          downloadFileByAssetAPI(url, version, `${folder}/archive.zip`)
+            .then(() => {
+              const zip = new AdmZip(`${folder}/archive.zip`);
+              zip.extractAllTo(folder, true);
+              resolve(folder);
+            })
+            .catch((err) => {
+              if (fs.existsSync(`${folder}`)) rimraf.sync(`${folder}`);
+              reject(err);
+            });
+        } else {
+          if (fs.existsSync(`${folder}`)) rimraf.sync(`${folder}`);
+          reject(err);
+        }
       });
   });
 }
