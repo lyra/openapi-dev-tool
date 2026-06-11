@@ -78,7 +78,12 @@ export function downloadArtifact(artifact, urlDownloadTemplate, verbose) {
         resolve(folder);
       })
       .catch((err) => {
-        if (err.code === 400 && err.server.toLowerCase().includes('nexus')) {
+        if (
+          err.code === 400 &&
+          err.server.toLowerCase().includes('nexus') &&
+          new URL(url).pathname.toLocaleLowerCase() ==
+            '/service/rest/v1/search/assets/download'
+        ) {
           // In case where we have an error 400 with nexus, we will try to use asset API
           if (verbose)
             console.log(

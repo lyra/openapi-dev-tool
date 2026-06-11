@@ -61,6 +61,7 @@ export function downloadFileByAssetAPI(url, version, targetFile) {
                 );
                 return;
               }
+
               const filtered = json.items.filter((item) => {
                 if (item.path) {
                   const regex = new RegExp(`.*${version}.*`);
@@ -68,6 +69,7 @@ export function downloadFileByAssetAPI(url, version, targetFile) {
                 }
                 return false;
               });
+
               if (filtered.length > 0) {
                 return downloadFile(filtered[0].downloadUrl, targetFile)
                   .then(resolve)
