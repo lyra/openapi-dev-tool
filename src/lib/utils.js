@@ -5,6 +5,7 @@ import https from 'https';
 import fs from 'fs';
 import validator from '../openapi-examples-validator/dist/index.js';
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // ##################################################################
 // The aim of this file is exposed several utils functions
 // ##################################################################
@@ -25,12 +26,71 @@ export function getTempDir() {
   return tmp.dirSync({ prefix: 'openapi-dev-tool_', unsafeCleanup: true });
 }
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 export function getAppVersion() {
   return JSON.parse(
     fs.readFileSync(new URL('../../package.json', import.meta.url))
   ).version;
+}
+
+export function downloadFileByAssetAPI(url, version, targetFile) {
+  return new Promise((resolve, reject) => {
+    const urlAssetAPI = new URL(url);
+    urlAssetAPI.searchParams.delete('maven.baseVersion');
+    urlAssetAPI.pathname = urlAssetAPI.pathname.replace(
+      '/assets/download',
+      '/assets'
+    );
+    https
+      .get(urlAssetAPI, (response) => {
+        if (response.statusCode === 200) {
+          const chunks = [];
+
+          response.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
+
+          response.on('end', () => {
+            const body = Buffer.concat(chunks).toString('utf8');
+            try {
+              const json = JSON.parse(body);
+              if (!json.items || !Array.isArray(json.items)) {
+                reject(
+                  new Error(
+                    `Unexpected response format from Nexus Asset API: \"${body.slice(0, 100)}...\"`
+                  )
+                );
+                return;
+              }
+
+              const filtered = json.items.filter((item) => {
+                if (item.path) {
+                  const regex = new RegExp(`.*${version}.*`);
+                  return item.path.match(regex);
+                }
+                return false;
+              });
+
+              if (filtered.length > 0) {
+                return downloadFile(filtered[0].downloadUrl, targetFile)
+                  .then(resolve)
+                  .catch(reject);
+              } else {
+                reject(
+                  new Error(`No matching items found for version: ${version}`)
+                );
+              }
+              resolve();
+            } catch (err) {
+              reject(err);
+            }
+          });
+
+          response.on('error', reject);
+          return;
+        }
+      })
+      .on('error', reject);
+  });
 }
 
 export function downloadFile(url, targetFile) {
@@ -40,7 +100,25 @@ export function downloadFile(url, targetFile) {
         const code = response.statusCode;
 
         if (code >= 400) {
-          return reject(new Error(response.statusMessage));
+          const chunks = [];
+
+          response.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
+
+          response.on('end', () => {
+            const body = Buffer.concat(chunks).toString('utf8');
+            const error = new Error(
+              `HTTP ${code} ${response.statusMessage} - ${body}`
+            );
+            error.code = code;
+            error.body = body;
+            error.server = response.headers['server'] || 'unknown';
+            reject(error);
+          });
+
+          response.on('error', reject);
+          return;
         }
 
         // handle redirects

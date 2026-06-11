@@ -28,7 +28,7 @@ const commandDefinitions = [
   },
   {
     name: 'help',
-    summary: 'Shows this help message, or help for a specific command',
+    summary: 'Show this help message, or help for a specific command',
   },
 ];
 
@@ -42,6 +42,13 @@ const globalOptionsDefinitions = [
       'Configuration file in JSON or YAML format where specifications are defined, default is config.json',
   },
   {
+    name: 'filter',
+    alias: 'f',
+    type: String,
+    description:
+      'Manage some specifications defined by its name (`api.info.title`) and which match with this regex filter rather use the whole of enabled specifications declared into configuration file',
+  },
+  {
     name: 'verbose',
     alias: 'v',
     type: Boolean,
@@ -53,7 +60,13 @@ const globalOptionsDefinitions = [
     alias: 'a',
     type: String,
     description:
-      "Rather to use specs from local FS, you can specify remote specs (using 'artifact' config property) which will be downloaded by using this url. From this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be replaced.",
+      "Rather to use specs from local FS, you can specify remote specs (using 'artifact' config property) which will be downloaded by using this url. From this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be replaced. In case where download is not possible (by using regex from example) and a Nexus server is used. Openapi-dev-tool will retry to download artifact by using Nexus Asset API.",
+  },
+  {
+    name: 'downloadPoolSize',
+    type: Number,
+    defaultValue: Infinity,
+    description: 'Pool size used to download artifacts, default is "Infinity".',
   },
 ];
 

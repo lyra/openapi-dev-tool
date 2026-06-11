@@ -1,7 +1,7 @@
 import { createWriteStream } from 'fs';
 import archiver from 'archiver';
 import path from 'path';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 
 import { getTempDir } from './utils.js';
 
@@ -17,8 +17,8 @@ export function generateSpecsArchive(api, files, repoType) {
     // For npm, we generate a tar file
     const fileResult =
       repoType === 'maven'
-        ? `${workDir.name}/${paramCase(api.info.title)}-${api.info.version}.zip`
-        : `${workDir.name}/${paramCase(api.info.title)}-${
+        ? `${workDir.name}/${kebabCase(api.info.title)}-${api.info.version}.zip`
+        : `${workDir.name}/${kebabCase(api.info.title)}-${
             api.info.version
           }.tar`;
     const zipOutput = createWriteStream(fileResult);

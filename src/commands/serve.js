@@ -67,11 +67,15 @@ export function serve(config = { config: { specs: [] } }) {
       // Middleware to expose OpenAPI files original and bundle
       const exposerMiddleware = exposer(config, specs);
       app.get(
-        `${config.contextPath}raw/bundle/:specName.(yaml|json)`,
+        `${config.contextPath}raw/bundle/:specName\\.json`,
         exposerMiddleware.bundle
       );
       app.get(
-        `${config.contextPath}raw/original/:specName*`,
+        `${config.contextPath}raw/bundle/:specName\\.yaml`,
+        exposerMiddleware.bundle
+      );
+      app.get(
+        `${config.contextPath}raw/original/:specName`,
         exposerMiddleware.original
       );
 

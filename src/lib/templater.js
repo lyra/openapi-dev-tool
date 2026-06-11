@@ -1,6 +1,6 @@
 import fs from 'fs';
 import ejs from 'ejs';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 
 import { isJSONFile, isYAMLFile, getTempDir } from './utils.js';
 

@@ -123,13 +123,18 @@ Command Options
 
 Global Options
 
-  -c, --config string                Configuration file in JSON or YAML format where specifications are defined,
-                                     default is config.json
+  -c, --config string                Configuration file in JSON or YAML format where specifications are defined, default
+                                     is config.json
+  -f, --filter string                Manage some specifications defined by its name (`api.info.title`) and which match
+                                     with this regex filter rather use the whole of enabled specifications declared
+                                     into configuration file
   -v, --verbose                      Verbose mode, default is false
-  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using
-                                     'artifact' config property) which will be downloaded by using this url. From
-                                     this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
-                                     replaced.
+  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using 'artifact'
+                                     config property) which will be downloaded by using this url. From this url template
+                                     '[ARTIFACT_ID]', '[GROUP_ID]' and
+                                     '[VERSION]' will be replaced.
+                                     In case where download is not possible (by using regex from example) and a Nexus server is used. Openapi-dev-tool will retry to download artifact by using Nexus Asset API.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 ### Publishing
@@ -171,13 +176,18 @@ Command Options
 
 Global Options
 
-  -c, --config string                Configuration file in JSON or YAML format where specifications are defined,
-                                     default is config.json
+  -c, --config string                Configuration file in JSON or YAML format where specifications are defined, default
+                                     is config.json
+  -f, --filter string                Manage some specifications defined by its name (`api.info.title`) and which match
+                                     with this regex filter rather use the whole of enabled specifications declared
+                                     into configuration file
   -v, --verbose                      Verbose mode, default is false
-  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using
-                                     'artifact' config property) which will be downloaded by using this url. From
-                                     this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
-                                     replaced.
+  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using 'artifact'
+                                     config property) which will be downloaded by using this url. From this url template
+                                     '[ARTIFACT_ID]', '[GROUP_ID]' and
+                                     '[VERSION]' will be replaced.
+                                     In case where download is not possible (by using regex from example) and a Nexus server is used. Openapi-dev-tool will retry to download artifact by using Nexus Asset API.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 ### Publishing Locally
@@ -206,13 +216,18 @@ Command Options
 
 Global Options
 
-  -c, --config string                Configuration file in JSON or YAML format where specifications are defined,
-                                     default is config.json
+  -c, --config string                Configuration file in JSON or YAML format where specifications are defined, default
+                                     is config.json
+  -f, --filter string                Manage some specifications defined by its name (`api.info.title`) and which match
+                                     with this regex filter rather use the whole of enabled specifications declared
+                                     into configuration file
   -v, --verbose                      Verbose mode, default is false
-  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using
-                                     'artifact' config property) which will be downloaded by using this url. From
-                                     this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
-                                     replaced.
+  -a, --urlDownloadTemplate string   Rather to use specs from local FS, you can specify remote specs (using 'artifact'
+                                     config property) which will be downloaded by using this url. From this url template
+                                     '[ARTIFACT_ID]', '[GROUP_ID]' and
+                                     '[VERSION]' will be replaced.
+                                     In case where download is not possible (by using regex from example) and a Nexus server is used. Openapi-dev-tool will retry to download artifact by using Nexus Asset API.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 > **Warning**
@@ -252,6 +267,7 @@ Global Options
                                      'artifact' config property) which will be downloaded by using this url. From
                                      this url template '[ARTIFACT_ID]', '[GROUP_ID]' and '[VERSION]' will be
                                      replaced.
+  --downloadPoolSize number          Pool size used to download artifacts, default is "Infinity".
 ```
 
 ## Configuration file

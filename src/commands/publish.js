@@ -1,7 +1,7 @@
 import deployer from '@lyra-network/nexus-deployer';
 import colors from 'colors';
 import path from 'path';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import settle from 'promise-settle';
 import { publish as npmPublish } from 'libnpmpublish';
 import fs from 'fs';
@@ -28,6 +28,17 @@ export function publish(config = { config: { specs: [] } }) {
         new Promise(async (resolve, reject) => {
           try {
             const api = await bundleSpec(config, spec);
+
+            // Apply filter if it is defined
+            if (config.filter) {
+              const regex = new RegExp(config.filter);
+              if (!regex.test(api.info.title)) {
+                console.log("\tspec '%s': ignored by filter", api.info.title);
+                resolve();
+                return;
+              }
+            }
+
             const tempDir = getTempDir();
 
             let fileToArchive = spec.file;
@@ -43,7 +54,7 @@ export function publish(config = { config: { specs: [] } }) {
             const files = [fileToArchive];
             // If npm, we have to add a package.json file
             const packageNpm = {
-              name: `${config.groupId}/${paramCase(api.info.title)}`,
+              name: `${config.groupId}/${kebabCase(api.info.title)}`,
               version: api.info.version,
               main: path.basename(spec.file),
             };
@@ -59,24 +70,24 @@ export function publish(config = { config: { specs: [] } }) {
             archive = await generateSpecsArchive(api, files, config.repoType);
 
             // Find doublon
-            if (artifactIds.indexOf(paramCase(api.info.title)) != -1) {
+            if (artifactIds.indexOf(kebabCase(api.info.title)) != -1) {
               throw new Error(
-                `Spec "${api.info.title}" has an artifactId "${paramCase(
+                `Spec "${api.info.title}" has an artifactId "${kebabCase(
                   api.info.title
                 )}" already defined!`
               );
             }
 
-            if (paramCase(api.info.title) === api.info.title) {
+            if (kebabCase(api.info.title) === api.info.title) {
               console.log(
                 '\tPublishing API name: %s, Version: %s',
-                paramCase(api.info.title),
+                kebabCase(api.info.title),
                 api.info.version
               );
             } else {
               console.log(
                 '\tPublishing API name: %s (%s), Version: %s',
-                paramCase(api.info.title),
+                kebabCase(api.info.title),
                 api.info.title,
                 api.info.version
               );
@@ -104,13 +115,13 @@ export function publish(config = { config: { specs: [] } }) {
               server = config.repoSnapshotsServer;
             }
 
-            artifactIds.push(paramCase(api.info.title));
+            artifactIds.push(kebabCase(api.info.title));
 
             if (config.repoType === 'maven') {
               deployer.deploy(
                 {
                   groupId: config.groupId,
-                  artifactId: paramCase(api.info.title),
+                  artifactId: kebabCase(api.info.title),
                   version: api.info.version,
                   packaging: 'zip',
                   auth: {
@@ -128,7 +139,7 @@ export function publish(config = { config: { specs: [] } }) {
                     reject();
                     console.error(
                       colors.red(
-                        `Unable to publish specs '${paramCase(api.info.title)}'`
+                        `Unable to publish specs '${kebabCase(api.info.title)}'`
                       )
                     );
                   } else {
@@ -157,7 +168,7 @@ export function publish(config = { config: { specs: [] } }) {
                   reject();
                   console.error(
                     colors.red(
-                      `Unable to publish specs '${paramCase(
+                      `Unable to publish specs '${kebabCase(
                         api.info.title
                       )}': ${err}`
                     )

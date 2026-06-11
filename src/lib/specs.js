@@ -23,7 +23,8 @@ export function loadSpecs(config) {
   // We filter to work only on enabled specs
   const specsPromises = config.config.specs
     .filter((spec) => spec.enabled)
-    .map(async (spec) => {
+    .filter((spec) => {
+      // Apply filter if it is defined
       let api;
       let raw = parseFile(spec.file, spec.context);
       if (isJSONFile(spec.file)) {
@@ -31,22 +32,33 @@ export function loadSpecs(config) {
       } else {
         api = YAML.parse(raw);
       }
-
+      // Apply filter if it is defined
+      if (config.filter) {
+        const regex = new RegExp(config.filter);
+        if (!regex.test(api.info.title)) {
+          console.log("\tspec '%s': ignored by filter", api.info.title);
+          return;
+        }
+      }
+      spec.api = api;
+      return true;
+    })
+    .map(async (spec) => {
       return await {
-        name: api.info.title,
-        version: api.info.version,
-        description: converter.makeHtml(api.info.description),
+        name: spec.api.info.title,
+        version: spec.api.info.version,
+        description: converter.makeHtml(spec.api.info.description),
         url: !config.skipBundle
-          ? `./raw/bundle/${encodeURIComponent(api.info.title)}.${
+          ? `./raw/bundle/${encodeURIComponent(spec.api.info.title)}.${
               isJSONFile(spec.file) ? 'json' : 'yaml'
             }`
           : `./raw/original/${encodeURIComponent(
-              api.info.title
+              spec.api.info.title
             )}/${path.basename(spec.file)}`,
         file: spec.file,
         context: spec.context,
         vFolders: spec.vFolders,
-        tags: api.info['x-tags'] || [],
+        tags: spec.api.info['x-tags'] || [],
       };
     });
 

@@ -1,6 +1,6 @@
 var NULL = require('./constants.cjs').NULL,
 	validator = require('validator'),
-	utils = require('gammautils'),
+	utils = require('../gammautils'),
 	deepMerge = utils.object.deepMerge,
 	util = require("util");
 

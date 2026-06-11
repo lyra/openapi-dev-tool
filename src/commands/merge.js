@@ -1,6 +1,6 @@
 import colors from 'colors';
 import path from 'path';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import settle from 'promise-settle';
 import fs from 'fs';
 
@@ -27,6 +27,19 @@ export function merge(config = { config: { specs: [] } }) {
       promises.push(
         new Promise(async (resolve, reject) => {
           try {
+            const filename = path.basename(spec.file);
+            const api = await bundleSpec(config, spec);
+
+            // Apply filter if it is defined
+            if (config.filter) {
+              const regex = new RegExp(config.filter);
+              if (!regex.test(api.info.title)) {
+                console.log("\tspec '%s': ignored by filter", api.info.title);
+                resolve();
+                return;
+              }
+            }
+
             const outputDir = getOutputDirFromConfig(config);
 
             // Create output dir if does not exist
@@ -38,13 +51,11 @@ export function merge(config = { config: { specs: [] } }) {
                 fs.mkdirSync(outputDir, { recursive: true });
               }
             }
-            const filename = path.basename(spec.file);
-            const api = await bundleSpec(config, spec);
 
             // Find doublon
-            if (artifactIds.indexOf(paramCase(api.info.title)) != -1) {
+            if (artifactIds.indexOf(kebabCase(api.info.title)) != -1) {
               throw new Error(
-                `Spec "${api.info.title}" has an artifactId "${paramCase(
+                `Spec "${api.info.title}" has an artifactId "${kebabCase(
                   api.info.title
                 )}" already defined!`
               );
@@ -52,15 +63,16 @@ export function merge(config = { config: { specs: [] } }) {
 
             const targetFile = writeOpenApiDocumentToFile(
               outputDir,
-              paramCase(api.info.title) + path.extname(filename),
+              kebabCase(api.info.title) + path.extname(filename),
               spec.file,
               api
             );
 
-            artifactIds.push(paramCase(api.info.title));
+            artifactIds.push(kebabCase(api.info.title));
             resolve();
             console.log(
-              '\tMerged split files into a single one: %s',
+              "\tspec '%s': merged split files into a single one: %s",
+              api.info.title,
               targetFile
             );
           } catch (err) {
