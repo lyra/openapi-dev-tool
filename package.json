@@ -83,17 +83,10 @@
     "@babel/plugin-syntax-import-assertions": "^7.28.6",
     "husky": "^9.1.7",
     "jest": "^30.2.0",
-    "markdown-magic": "^4.8.0",
-    "markdown-magic-branch-badge": "^1.1.0",
     "node-stream-zip": "^1.15.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.1",
     "supertest": "^7.2.2"
-  },
-  "husky": {
-    "hooks": {
-      "post-checkout": "markdown-badge -u ./scripts/update-readme.js"
-    }
   },
   "jest": {
     "coveragePathIgnorePatterns": [
